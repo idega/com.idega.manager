@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.13 2005/01/19 18:24:29 thomas Exp $
+ * $Id: ModuleManager.java,v 1.14 2005/01/20 13:04:40 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,7 +9,6 @@
  */
 package com.idega.manager.bean;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,7 @@ import javax.faces.el.ValueBinding;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.business.Installer;
+import com.idega.manager.business.ApplicationUpdater;
 import com.idega.manager.business.PomSorter;
 import com.idega.manager.data.Module;
 import com.idega.manager.util.ManagerUtils;
@@ -33,14 +32,13 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/20 13:04:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ModuleManager {
 	
-	private static final String ACTION_NEXT = "next";
 	private static final String ACTION_BACK_INSTALL = "backInstall";
 	private static final String ACTION_BACK_UPDATE = "backUpdate";
 	private static final String ACTION_CANCEL = "cancel";
@@ -58,6 +56,8 @@ public class ModuleManager {
 	private String button3Label;
 	
 	private String actionBack = ACTION_BACK_UPDATE;
+	private String actionNext = "";
+	private String actionNextChangeToNewValue = null;
 	
 	public ModuleManager() {
 		initialize();
@@ -81,7 +81,7 @@ public class ModuleManager {
 	private void initializeOutputText() {
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install","Do you want to install the following updates?");
+		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
 	}
 
 	private void initializeSubmitButtons() {
@@ -135,12 +135,20 @@ public class ModuleManager {
 	}	
 
 	private void initializeErrorMessages() {
+		List errorMessages = pomSorter.getErrorMessages();
+		initializeErrorMessages(errorMessages);
+	}
+		
+	private void initializeErrorMessages(List errorMessages) {
 		HtmlPanelGroup group = getGroupPanel1();
 		List list = group.getChildren();
-		List errorMessages = pomSorter.getErrorMessages(); 
 		list.clear();
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button2.setDisabled(false);
+		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
+		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
 		if (errorMessages != null) {
+			outputText2Value = resourceBundle.getLocalizedString("man_manager_successl","Problems occurred, you can not proceed");
 			button2.setDisabled(true);
 			Iterator iterator = errorMessages.iterator();
 			while (iterator.hasNext()) {
@@ -239,19 +247,21 @@ public class ModuleManager {
 
 	public void submitForm(ActionEvent event) {
 		if (pomSorter != null) {
-			if (pomSorter.getErrorMessages() == null) {
-				try {
-					Installer installer = Installer.getInstance(pomSorter);
-					installer.extractBundleArchives();
-			/*		installer.mergeFacesConfiguration();
-					installer.mergeLibrary();
-					installer.mergeTagLibraries();
-					installer.mergeBundles();
-					installer.mergeWebConfiguration();  */
-				}
-				catch (IOException ex) {
-					// what next?
-				}
+			ApplicationUpdater updater = new ApplicationUpdater(pomSorter);
+			if (updater.installModules()) { 
+				String errorMessage = updater.getErrorMessage();
+				List errorMessages = new ArrayList(1);
+				errorMessages.add(errorMessage);
+				initializeErrorMessages(errorMessages);
+			}
+			else {
+				IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+				outputText2Value = resourceBundle.getLocalizedString("man_manager_successl","Modules have been successfully installed");
+				button1.setDisabled(true);
+				button3.setDisabled(true);
+				pomSorter = null;
+				button2Label = resourceBundle.getLocalizedString("man_manager_finish","Finish");
+				actionNextChangeToNewValue = ACTION_CANCEL;
 			}
 		}
 	}
@@ -349,8 +359,15 @@ public class ModuleManager {
     	return actionBack;
     }
     
+    // first submitForm is called then this method is invoked 
+    // change the value after returning the old value!
     public String button2_action() {
-    	return ACTION_NEXT;
+		String returnValue = actionNext;
+    	if (actionNextChangeToNewValue != null) {
+    		actionNext = actionNextChangeToNewValue;
+    		actionNextChangeToNewValue = null;
+    	}
+    	return returnValue;
     }    
     
     

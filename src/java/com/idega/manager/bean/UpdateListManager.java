@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.13 2005/01/19 18:24:29 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.14 2005/01/20 13:04:40 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,7 +22,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
@@ -44,10 +43,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/20 13:04:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class UpdateListManager {
 	
