@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.1 2004/12/03 17:01:12 thomas Exp $
+ * $Id: Installer.java,v 1.2 2004/12/03 17:36:49 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,27 +10,27 @@
 package com.idega.manager.business;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import com.idega.manager.data.Module;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:36:49 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Installer {
 	
-	public static Installer getInstance(List toBeInstalledPom) {
+	public static Installer getInstance(Collection toBeInstalledPom) {
 		Installer installer = new Installer();
 		installer.setToBeInstalled(toBeInstalledPom);
 		return installer;
 	}
 	
-	private List toBeInstalled = null;
+	private Collection toBeInstalled = null;
 	
 	private Installer() {
 		// use the class method
@@ -51,11 +51,11 @@ public class Installer {
 	}
 	
 	
-	public List getToBeInstalled() {
+	public Collection getToBeInstalled() {
 		return toBeInstalled;
 	}
 	
-	public void setToBeInstalled(List toBeInstalled) {
+	public void setToBeInstalled(Collection toBeInstalled) {
 		this.toBeInstalled = toBeInstalled;
 	}
 }

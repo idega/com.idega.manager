@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.4 2004/12/03 17:01:12 thomas Exp $
+ * $Id: PomSorter.java,v 1.5 2004/12/03 17:36:49 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import com.idega.manager.data.Module;
 import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RealPom;
@@ -25,10 +26,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:36:49 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PomSorter {
 	
@@ -39,7 +40,7 @@ public class PomSorter {
 	// key: fileName String value: PomProxy
 	Map fileNameRepositoryPom = null;
 	// 
-	List toBeInstalledPoms = null;
+	SortedMap toBeInstalledPoms = null;
 	
 	public void initializeInstalledPomsAndAvailableUpdates() {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
@@ -101,10 +102,18 @@ public class PomSorter {
 	public Map getSortedRepositoryPoms() {
 		return sortedRepositoryPom;
 	}
-	public List getToBeInstalledPoms() {
+	
+	public SortedMap getToBeInstalledPoms() {
 		return toBeInstalledPoms;
 	}
+	
 	public void setToBeInstalledPoms(List toBeInstalledPoms) {
-		this.toBeInstalledPoms = toBeInstalledPoms;
+		this.toBeInstalledPoms = new TreeMap();
+		Iterator iterator = toBeInstalledPoms.iterator();
+		while (iterator.hasNext()) {
+			Module module = (Module) iterator.next();
+			String key = module.getArtifactId();
+			this.toBeInstalledPoms.put(key, module);
+		}
 	}
 }

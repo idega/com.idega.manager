@@ -1,5 +1,5 @@
 /*
- * $Id: InstallManager.java,v 1.1 2004/12/02 18:06:57 thomas Exp $
+ * $Id: InstallManager.java,v 1.2 2004/12/03 17:36:49 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:36:49 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class InstallManager {
 	
@@ -86,7 +86,7 @@ public class InstallManager {
 		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
 		String snapshot = resourceBundle.getLocalizedString("man_manager_snapshot", "Snapshot");
 		List rows = new ArrayList();
-		List toBeInstalled = null;
+		SortedMap toBeInstalled = null;
 		SortedMap sortedInstalledMap = null;
 		if (pomSorter != null) {
 			toBeInstalled = pomSorter.getToBeInstalledPoms();
@@ -98,7 +98,7 @@ public class InstallManager {
 			rows.add(firstRow);
 		}
 		else {
-			Iterator iterator = toBeInstalled.iterator();
+			Iterator iterator = toBeInstalled.values().iterator();
 			while (iterator.hasNext()) {
 				Module module = (Module) iterator.next();
 				String artifactId = module.getArtifactId();
