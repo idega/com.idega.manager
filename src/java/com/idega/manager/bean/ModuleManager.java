@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.16 2005/02/23 18:02:17 thomas Exp $
+ * $Id: ModuleManager.java,v 1.17 2005/03/02 16:50:02 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/02 16:50:02 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ModuleManager {
 	
@@ -87,7 +87,6 @@ public class ModuleManager {
 	
 	private void initializeDataTable1() {
 		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
-		String snapshot = resourceBundle.getLocalizedString("man_manager_snapshot", "Snapshot");
 		List rows = new ArrayList();
 		SortedMap toBeInstalled = null;
 		SortedMap sortedInstalledMap = null;
@@ -252,10 +251,11 @@ public class ModuleManager {
 			else {
 				outputText2Value = resourceBundle.getLocalizedString("man_manager_success","Modules have been successfully installed");
 				button1.setDisabled(true);
+				button2.setDisabled(true);
 				button3.setDisabled(true);
 				pomSorter = null;
-				button2Label = resourceBundle.getLocalizedString("man_manager_finish","Finish");
-				actionNextChangeToNewValue = ManagerConstants.ACTION_CANCEL;
+//				button2Label = resourceBundle.getLocalizedString("man_manager_finish","Finish");
+//				actionNextChangeToNewValue = ManagerConstants.ACTION_CANCEL;
 			}
 		}
 	}
