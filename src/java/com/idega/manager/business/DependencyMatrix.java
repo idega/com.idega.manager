@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.3 2004/12/02 13:43:14 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.4 2004/12/06 18:11:45 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.datastructures.HashMatrix;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 13:43:14 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/06 18:11:45 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DependencyMatrix {
 	
@@ -73,10 +73,6 @@ public class DependencyMatrix {
 			while (iteratorMap.hasNext()) {
 				String innerKey = (String) iteratorMap.next();
 				Module module = (Module) map.get(innerKey);
-				// tests
-				if (module.getArtifactId().endsWith("article")) {
-					System.out.println("Weserl");
-				}
 				if (toBeInstalled == null || (module.compare(toBeInstalled) > 0)) {
 					toBeInstalled = module;
 				}

@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.3 2004/12/03 17:01:11 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.4 2004/12/06 18:11:45 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,7 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.maven.wagon.ConnectionException;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.authentication.AuthenticationException;
+import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
 import org.apache.maven.wagon.repository.Repository;
 import org.doomdark.uuid.UUID;
@@ -35,10 +40,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:01:11 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/06 18:11:45 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RepositoryBrowser {
 	
@@ -311,9 +316,25 @@ public class RepositoryBrowser {
 			        wagon.get(fileName, destination );
 		    }
 		}
-		catch (Exception e) {
-			getLogger().log(Level.WARNING, "[RepositoryBrowser] URL is malformed: "+ urlAddress , e);
-			//return null;
+		catch (TransferFailedException ex) {
+			getLogger().log(Level.WARNING, "[RepositoryBrowser] Transfer failed: "+ urlAddress + fileName , ex);
+			return null;
+		}
+		catch (ConnectionException ex) {
+			getLogger().log(Level.WARNING, "[RepositoryBrowser] Connection problems: "+ urlAddress + fileName , ex);
+			return null;
+		}
+		catch (AuthenticationException ex) {
+			getLogger().log(Level.WARNING, "[RepositoryBrowser] Authentication problems: "+ urlAddress + fileName , ex);
+			return null;
+		}
+		catch (ResourceDoesNotExistException ex) {
+			getLogger().log(Level.WARNING, "[RepositoryBrowser] File does not exist: "+ urlAddress + fileName , ex);
+			return null;
+		}
+		catch (AuthorizationException ex) {
+			getLogger().log(Level.WARNING, "[RepositoryBrowser] Authorization problems: "+ urlAddress + fileName , ex);
+			return null;
 		}
 		return destination;
 	}
