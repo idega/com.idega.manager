@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.6 2005/01/10 14:31:55 thomas Exp $
+ * $Id: Installer.java,v 1.7 2005/01/10 18:31:45 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.doomdark.uuid.UUID;
+import org.doomdark.uuid.UUIDGenerator;
 import com.idega.manager.data.Module;
 import com.idega.manager.data.Pom;
 import com.idega.manager.data.RealPom;
@@ -25,17 +27,20 @@ import com.idega.manager.util.ManagerUtils;
 import com.idega.util.BundleFileMerger;
 import com.idega.util.FacesConfigMerger;
 import com.idega.util.FileUtil;
+import com.idega.util.StringHandler;
 import com.idega.util.WebXmlMerger;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 18:31:45 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Installer {
+	
+	private File backupFolder = null;
 	
 	public static Installer getInstance(PomSorter pomSorter) {
 		Installer installer = new Installer();
@@ -79,7 +84,7 @@ public class Installer {
 			// does an old version of the bundle exist?
 			File target = new File(bundlesFolder, bundleFolderName);
 			if (target.exists()) {
-				FileUtil.backup(target);
+				FileUtil.backupToFolder(target, getBackupDirectory());
 				FileUtil.deleteContentOfFolder(target);
 			}
 			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleArchive, target);
@@ -91,7 +96,7 @@ public class Installer {
 	//from auxiliary folder
 	public void mergeTagLibraries() throws IOException {
 		File tagLibrary = idegawebDirectoryStructure.getTagLibrary();
-		FileUtil.backup(tagLibrary);
+		FileUtil.backupToFolder(tagLibrary, getBackupDirectory());
 		// delete all files that are not necessary
 		//TODO: !!!!! does not work, because the tag libraries are not stored in the bundle folders !!!!!!
 		// cleanTagLibrary(tagLibrary);
@@ -152,8 +157,7 @@ public class Installer {
 	public void mergeConfiguration(BundleFileMerger merger, File fileInWebInf ) throws IOException {
 		// do not remove existing modules!
 		merger.setIfRemoveOlderModules(false);		
-
-		FileUtil.backup(fileInWebInf);
+		FileUtil.backupToFolder(fileInWebInf, getBackupDirectory());
 		// set the target 
 		merger.setOutputFile(fileInWebInf);
 		Iterator moduleIterator = pomSorter.getToBeInstalledPoms().values().iterator();
@@ -173,7 +177,7 @@ public class Installer {
 	// from auxiliary folder
 	public void mergeLibrary() throws IOException {
 		File library = idegawebDirectoryStructure.getLibrary();
-		FileUtil.backup(library);
+		FileUtil.backupToFolder(library, getBackupDirectory());
 		// delete all files that are not necessary
 		cleanLibrary(library);
 		// add the new missing jars to the library
@@ -258,5 +262,21 @@ public class Installer {
 		containedFileNames.size();
 		notInstalledYet.size();
 		deletedFiles.size();
+	}
+	
+	private File getBackupDirectory() {
+		if (backupFolder == null) {
+			File folder = idegawebDirectoryStructure.getBackupDirectory();
+			backupFolder = new File(folder, getIdentifier());
+		}
+		return backupFolder;
+	}
+	
+	
+	private String getIdentifier() {
+		UUIDGenerator generator = UUIDGenerator.getInstance();
+		UUID uuid = generator.generateTimeBasedUUID();
+		String identifier = uuid.toString();
+		return StringHandler.remove(identifier, "-");
 	}
 }

@@ -25,6 +25,7 @@ import com.idega.presentation.IWContext;
 public class IdegawebDirectoryStructure {
 	
 	// keys
+	private static final String BACKUP_FOLDER_KEY = "backupFolderKey";
 	private static final String WORKING_DIRECTORY_KEY= "auxiliaryManagerFolder";
 	private static final String APPLICATION_KEY = "application";
 	private static final String WEB_INF_KEY = "WEB_INF";
@@ -36,7 +37,8 @@ public class IdegawebDirectoryStructure {
 	private static final String BUNDLES_KEY = "bundles";
 	
 	// real existing folders or files
-	private static final String WORKING_FOLDER = "auxiliaryManagerFolder";
+	private static final String BACKUP_FOLDER = "backupManager";
+	private static final String WORKING_FOLDER = "auxiliaryManager";
 	private static final String FACES_CONFIG_FILE = "faces-config.xml";
 	private static final String WEB_DEPLOYMENT_FILE = "web.xml";
 	private static final String WEB_INF_FOLDER = "WEB-INF";
@@ -70,6 +72,15 @@ public class IdegawebDirectoryStructure {
 	public File getTagLibrary()	{
 		return getPath(TAG_LIBRARY_KEY);
 	}
+	
+	public File getBackupDirectory() {
+		File backupDirectory = getPath(BACKUP_FOLDER_KEY);
+		if (! backupDirectory.exists()) {
+			backupDirectory.mkdir();
+		}
+		return backupDirectory;
+	}
+	
 	
 	public File getWorkingDirectory() {
 		File workingDir = getPath(WORKING_DIRECTORY_KEY);
@@ -158,6 +169,7 @@ public class IdegawebDirectoryStructure {
 		File applicationSpecial = new File(mainApplication.getApplicationSpecialRealPath());
 		pathes.put(APPLICATION_SPECIAL_KEY, applicationSpecial);
 		pathes.put(WORKING_DIRECTORY_KEY, new File(applicationSpecial, WORKING_FOLDER));
+		pathes.put(BACKUP_FOLDER_KEY, new File(applicationSpecial, BACKUP_FOLDER));
 		
 		File webInf =  new File(application, WEB_INF_FOLDER);
 		pathes.put(WEB_INF_KEY, webInf);
