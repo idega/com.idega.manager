@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.4 2004/12/01 19:24:21 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.5 2004/12/02 13:43:14 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package com.idega.manager.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,10 +40,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 13:43:14 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class UpdateListManager {
 	
@@ -127,20 +128,13 @@ public class UpdateListManager {
 			String artifactId = pom.getArtifactId();
 			selectedPoms.put(artifactId, pom);
 		}
-		DependencyMatrix matrix = new DependencyMatrix();
-		Iterator iterator = selectedPoms.values().iterator();
-		while (iterator.hasNext()) {
-			Pom pom = (Pom) iterator.next();
-			matrix.addEntry(pom);
-		}
 		Map installedPoms = pomSorter.getSortedInstalledPoms();
-		Iterator installedPomsIterator = installedPoms.values().iterator();
-		while (installedPomsIterator.hasNext()) {
-			Pom pom = (Pom) installedPomsIterator.next();
-			matrix.addEntry(pom);
-		}
-		List list = matrix.getListOfModulesToBeInstalled();
-		list.size();
+		Collection installedModules = installedPoms.values();
+		Collection notInstalledModules = selectedPoms.values();
+		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules);
+		List toBeInstalled = dependencyMatrix.getListOfModulesToBeInstalled();
+		toBeInstalled.size();
+
 	}
  
 	

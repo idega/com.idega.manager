@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.4 2004/12/02 11:43:03 thomas Exp $
+ * $Id: Pom.java,v 1.5 2004/12/02 13:43:14 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 11:43:03 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 13:43:14 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class Pom implements Module {
 	
@@ -31,6 +31,11 @@ public abstract class Pom implements Module {
 	public abstract boolean isSnapshot();
 	
 	public abstract IWTimestamp getTimestamp();
+	
+	public int compare(Dependency dependency) {
+		// not supported, it has never the same group id
+		return -1;
+	}
 	
 	public int compare(Module module) {
 		// change the algebraic sign of the returned result
