@@ -4,7 +4,7 @@
   <extend>${base.project.dir}/base-project.xml</extend>
   <name>idegaWeb Manager</name>
   <artifactId>com.idega.manager</artifactId>
-  <currentVersion>0.2.0-SNAPSHOT</currentVersion>
+  <currentVersion>0.1.1</currentVersion>
   <inceptionYear>2004</inceptionYear>
   <shortDescription>Manager</shortDescription>
   <description>idegaWeb manager is a manager for updating and installing modules</description>
@@ -13,6 +13,12 @@
       <id>0.1.0</id>
       <name>0.1.0</name>
       <tag>MANAGER_0_1_0</tag>
+    </version>
+   </versions>
+       <version>
+      <id>0.1.1</id>
+      <name>0.1.1</name>
+      <tag>MANAGER_0_1_1</tag>
     </version>
    </versions>
   <developers>
@@ -35,8 +41,8 @@
       <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--<version>3.0.0</version>-->
-      <version>SNAPSHOT</version>
+      <version>3.0.4</version>
+      <!--version>SNAPSHOT</version-->
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
