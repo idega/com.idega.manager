@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.17 2005/03/02 16:50:02 thomas Exp $
+ * $Id: ModuleManager.java,v 1.18 2005/03/09 15:19:04 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,7 +20,6 @@ import javax.faces.application.Application;
 import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlDataTable;
-import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.el.ValueBinding;
@@ -37,10 +36,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/02 16:50:02 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class ModuleManager {
 	
@@ -162,16 +161,6 @@ public class ModuleManager {
 		initializeErrorMessages();
 	}
 	
-	private HtmlForm form1 = new HtmlForm();
-
-    public HtmlForm getForm1() {
-        return form1;
-    }
-
-    public void setForm1(HtmlForm hf) {
-        this.form1 = hf;
-    }
-
     private HtmlDataTable dataTable1 = new HtmlDataTable();
 
     public HtmlDataTable getDataTable1() {

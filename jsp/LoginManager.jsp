@@ -7,7 +7,7 @@
     <jsp:directive.page contentType="text/html;charset=ISO-8859-1" pageEncoding="UTF-8"/>
     <f:view>
 		<ws:page>
-        	<h:form binding="#{LoginManager.loginManagerForm1}" id="loginManagerForm1">
+        	<h:form id="loginManagerForm1">
             <wf:wfblock>
                 
                 <wf:container>

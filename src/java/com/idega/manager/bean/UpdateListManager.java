@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.15 2005/02/23 18:02:17 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.16 2005/03/09 15:19:04 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,7 +23,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyListbox;
@@ -46,10 +45,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class UpdateListManager {
 	
@@ -230,16 +229,6 @@ public class UpdateListManager {
 		initializeList();
 	}	
 	
-   private HtmlForm form1 = new HtmlForm();
-
-    public HtmlForm getForm1() {
-        return form1;
-    }
-
-    public void setForm1(HtmlForm hf) {
-        this.form1 = hf;
-    }
-
     private HtmlSelectManyListbox multiSelectListbox1 = new HtmlSelectManyListbox();
 
     public HtmlSelectManyListbox getMultiSelectListbox1() {

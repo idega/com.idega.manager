@@ -7,7 +7,7 @@
     <jsp:directive.page contentType="text/html;charset=ISO-8859-1" pageEncoding="UTF-8"/>
     <f:view>
 		<ws:page>
-            <h:form binding="#{UpdateListManager.form1}" id="form1">
+            <h:form id="form1">
             <wf:wfblock>
             
 	            <wf:container>

@@ -1,5 +1,5 @@
 /*
- * $Id: LoginManager.java,v 1.2 2005/03/07 18:19:37 thomas Exp $
+ * $Id: LoginManager.java,v 1.3 2005/03/09 15:19:04 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlInputSecret;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
@@ -47,10 +46,10 @@ import com.idega.manager.util.ManagerUtils;
  * 4. ModuleManager
  * 
  * 
- *  Last modified: $Date: 2005/03/07 18:19:37 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class LoginManager {
 	
@@ -136,16 +135,6 @@ public class LoginManager {
 	}
 
 	
-    private HtmlForm loginManagerForm1 = new HtmlForm();
-
-    public HtmlForm getLoginManagerForm1() {
-        return loginManagerForm1;
-    }
-
-    public void setLoginManagerForm1(HtmlForm hf) {
-        this.loginManagerForm1 = hf;
-    }
-
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {

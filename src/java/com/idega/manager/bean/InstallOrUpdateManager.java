@@ -1,5 +1,5 @@
 /*
- * $Id: InstallOrUpdateManager.java,v 1.4 2005/02/23 18:02:17 thomas Exp $
+ * $Id: InstallOrUpdateManager.java,v 1.5 2005/03/09 15:19:04 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectOneRadio;
@@ -26,10 +25,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class InstallOrUpdateManager {
 	
@@ -83,16 +82,6 @@ public class InstallOrUpdateManager {
 		return pomSorter;
 	}
 	
-    private HtmlForm form1 = new HtmlForm();
-
-    public HtmlForm getForm1() {
-        return form1;
-    }
-
-    public void setForm1(HtmlForm hf) {
-        this.form1 = hf;
-    }
-
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
