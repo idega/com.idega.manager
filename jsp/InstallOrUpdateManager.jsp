@@ -1,18 +1,15 @@
-<?xml version="1.0"?>
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:w="http://xmlns.idega.com/com.idega.webface" version="1.2">
-
-	<f:view>
-		<w:workspace_page id="workspace1" >
+<jsp:root version="1.2" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:jsp="http://java.sun.com/JSP/Page">
+    <jsp:directive.page contentType="text/html;charset=ISO-8859-1" pageEncoding="UTF-8"/>
+    <f:view>
+        <html lang="en-US" xml:lang="en-US">
 			<head>
                 <meta content="no-cache" http-equiv="Cache-Control"/>
                 <meta content="no-cache" http-equiv="Pragma"/>
-                <title>InstallOrUpdateManager Title</title>
-                <link href="resources/stylesheet.css" rel="stylesheet" type="text/css"/>
-            </head>
-            <body style="-rave-layout: grid">
+                <title>InstallOrUpdateManager</title>
+                <link href="../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
+                <link href="../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
+           </head>
+            <body class="wf_body" style="-rave-layout: grid">
                 <h:form binding="#{InstallOrUpdateManager.form1}" id="form1">
                     <h:outputText binding="#{InstallOrUpdateManager.outputText1}" id="outputText1" style="height: 26px; left: 48px; top: 48px; position: absolute; width: 216px"
                     value="#{InstallOrUpdateManager.outputText1Value}"/>
@@ -29,11 +26,11 @@
                     <h:commandButton binding="#{InstallOrUpdateManager.button2}" id="button2" action="#{InstallOrUpdateManager.button2_action}"
                     	value="#{InstallOrUpdateManager.button2Label}"
                         style="height: 24px; left: 168px; top: 312px; position: absolute; width: 96px"/>
-                    <h:commandButton binding="#{InstallOrUpdateManager.button3}" id="button3"
+                    <h:commandButton binding="#{InstallOrUpdateManager.button3}" id="button3" disabled="true"
                     	value="#{InstallOrUpdateManager.button3Label}"
                         style="height: 24px; left: 288px; top: 312px; position: absolute; width: 96px"/>
                 </h:form>
             </body>
-        </w:workspace_page>
+        </html>
     </f:view>
 </jsp:root>

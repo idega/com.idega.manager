@@ -5,14 +5,35 @@
 	margin: 0px;
 }
 
+.datatable_area {
+	width:515px;
+	height:150px;
+	overflow: scroll;
+}
+
+
 .list-row-even { 
 }
 
 .list-row-odd { 
-  background-color: #ffffff;
+  background-color: #FFFFFF;
 }
 
 .moduleManagerColumnClass {
-	width: 60px;
+	font-size: 12;
     text-align: right;
+    height: 14;
+}
+
+.moduleManagerBigColumnClass {
+	width: 50%;
+	font-size: 12;
+    text-align: left;
+}
+
+.moduleManagerHeaderClass {
+	width: 25%;
+	font-size: 12;
+    text-align: center;
+    background-color: #A7A7A7;
 }
