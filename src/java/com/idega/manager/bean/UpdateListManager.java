@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.16 2005/03/09 15:19:04 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.17 2005/03/16 17:49:40 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -40,15 +40,16 @@ import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RepositoryLogin;
 import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
+import com.idega.manager.util.VersionComparator;
 import com.idega.util.datastructures.SortedByValueMap;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class UpdateListManager {
 	
@@ -199,8 +200,9 @@ public class UpdateListManager {
 		Map installedPoms = pomSorter.getSortedInstalledPoms();
 		Collection installedModules = installedPoms.values();
 		Collection notInstalledModules = selectedPoms.values();
+		VersionComparator versionComparator = pomSorter.getUsedVersionComparator();
 		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, resourceBundle);
-		List necessaryModules = dependencyMatrix.getListOfNecessaryModules();
+		List necessaryModules = dependencyMatrix.getListOfNecessaryModules(versionComparator);
 		// it is important to reset the error messages - that is to set to null - if there are not any
 		List errorMessages = dependencyMatrix.hasErrors() ? dependencyMatrix.getErrorMessages() : null;
 		pomSorter.setErrorMessages(errorMessages);

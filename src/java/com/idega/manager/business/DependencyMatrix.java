@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.8 2005/01/10 14:31:55 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.9 2005/03/16 17:49:40 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,15 +19,16 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.data.Dependency;
 import com.idega.manager.data.Module;
 import com.idega.manager.data.Pom;
+import com.idega.manager.util.VersionComparator;
 import com.idega.util.datastructures.HashMatrix;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class DependencyMatrix {
 	
@@ -52,7 +53,7 @@ public class DependencyMatrix {
 		return dependencyMatrix;
 	}
 	
-	public List getListOfNecessaryModules() {
+	public List getListOfNecessaryModules(VersionComparator versionComparator) {
 		Collection tempNotInstalled = notInstalledModules;
 		Collection tempInstalled = installedModules;
 		tempToBeInstalledModules = null;
@@ -62,7 +63,14 @@ public class DependencyMatrix {
 		// (e.g. another modules demands a newer version, the older version must not to be installed) 
 		while (go) {
 			initializeMatrix(tempNotInstalled, tempInstalled);
-			tryCalculateListOfModulesToBeInstalled();
+			try {
+				tryCalculateListOfModulesToBeInstalled(versionComparator);
+			}
+			catch (IOException ex) {
+				String errorMessage = resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies" + ex.getMessage());
+				addErrorMessage(errorMessage);
+				return tempNecessaryModules;
+			}
 			go = tempNotInstalled.retainAll(tempToBeInstalledModules);
 		}
 		return tempNecessaryModules;
@@ -76,7 +84,7 @@ public class DependencyMatrix {
 		return errorMessages;
 	}
 	
-	private void tryCalculateListOfModulesToBeInstalled() {
+	private void tryCalculateListOfModulesToBeInstalled(VersionComparator versionComparator) throws IOException {
 		tempToBeInstalledModules = new ArrayList();
 		tempNecessaryModules = new ArrayList();
 		// get a list of required modules
@@ -91,7 +99,7 @@ public class DependencyMatrix {
 				// y (also innerKey) = dependantKey
 				String innerKey = (String) iteratorMap.next();
 				Module module = (Module) map.get(innerKey);
-				if (toBeInstalled == null || (module.compare(toBeInstalled) > 0)) {
+				if (toBeInstalled == null || (module.compare(toBeInstalled, versionComparator) > 0)) {
 					toBeInstalled = module;
 				}
 			}

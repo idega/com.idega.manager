@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.10 2005/02/23 18:02:17 thomas Exp $
+ * $Id: Dependency.java,v 1.11 2005/03/16 17:49:40 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,16 +12,16 @@ package com.idega.manager.data;
 import java.io.File;
 import java.io.IOException;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.StringHandler;
+import com.idega.manager.util.VersionComparator;
 import com.idega.xml.XMLElement;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Dependency implements Module  {
 	
@@ -109,20 +109,20 @@ public class Dependency implements Module  {
 	}
 	
 	
-	public int compare(Pom pom)	{
+	public int compare(Pom pom, VersionComparator versionComparator)	throws IOException{
 		// not supported, it has never the same group id
 		return -1;
 	}
 	
-	public int compare(DependencyPomBundle dependencyPomBundle) {
+	public int compare(DependencyPomBundle dependencyPomBundle, VersionComparator versionComparator) throws IOException {
 		// not supported, it has never the same group id
 		return -1;
 	}
 	
-	public int compare(Dependency dependency)	{
+	public int compare(Dependency dependency, VersionComparator versionComparator) {
 		String version1 = getCurrentVersion();
 		String version2 = dependency.getCurrentVersion();
-		int result = StringHandler.compareVersions(version1, version2);
+		int result = versionComparator.compare(version1, version2);
 		// if both are equal the installed one wins
 		if (result == 0) {
 			if (isInstalled() && dependency.isInstalled()) {
@@ -140,9 +140,9 @@ public class Dependency implements Module  {
 	}
 	
 	// you can only compare a dependency with another dependency
-	public int compare(Module module) {
+	public int compare(Module module, VersionComparator versionComparator) throws IOException {
 		// change algebraic sign of returned result
-		return - (module.compare(this));
+		return - (module.compare(this, versionComparator));
 	}
 	
 	public String getCurrentVersionForLabel(IWResourceBundle resourcreBundle) {

@@ -1,5 +1,5 @@
 /*
- * $Id: InstallNewModuleListManager.java,v 1.4 2005/02/23 18:02:17 thomas Exp $
+ * $Id: InstallNewModuleListManager.java,v 1.5 2005/03/16 17:49:40 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.manager.util.ManagerConstants;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class InstallNewModuleListManager extends UpdateListManager {
 	
@@ -33,6 +33,10 @@ public class InstallNewModuleListManager extends UpdateListManager {
 
 	public InstallNewModuleListManager() {
 		initialize();
+	}
+	
+	public String getTitle() {
+       	return resourceBundle.getLocalizedString("man_manager_install_new_modules","Install new modules");
 	}
 	
 	protected void initializeList() {

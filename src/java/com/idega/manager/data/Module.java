@@ -1,5 +1,5 @@
 /*
- * $Id: Module.java,v 1.6 2005/02/23 18:02:17 thomas Exp $
+ * $Id: Module.java,v 1.7 2005/03/16 17:49:40 thomas Exp $
  * Created on Nov 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,24 +12,25 @@ package com.idega.manager.data;
 import java.io.File;
 import java.io.IOException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.manager.util.VersionComparator;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface Module {
 	
-	int compare(Module module);
+	int compare(Module module, VersionComparator versionComparator) throws IOException;
 	
-	int compare(Dependency dependency);
+	int compare(Dependency dependency, VersionComparator versionComparator) throws IOException;
 	
-	int compare(DependencyPomBundle dependencyPomBundle);
+	int compare(DependencyPomBundle dependencyPomBundle, VersionComparator versionComparator) throws IOException;
 	
-	int compare(Pom pom);
+	int compare(Pom pom, VersionComparator versionComparator) throws IOException;
 	
 	boolean isIncluded();
 

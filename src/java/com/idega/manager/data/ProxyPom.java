@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.9 2005/03/02 16:51:30 thomas Exp $
+ * $Id: ProxyPom.java,v 1.10 2005/03/16 17:49:40 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2005/03/02 16:51:30 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ProxyPom extends Pom {
 
@@ -84,7 +84,18 @@ public class ProxyPom extends Pom {
 	}
 	
 	private static String[] splitFileName(String fileNameWithoutExtension) {
-		 return fileNameWithoutExtension.split(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+		// myfaces-1.0.5 -> myfaces, 1.0.5
+		// jaxen-1.0-FCS-full -> jaxen, 1.0-FCS-full
+		int index = fileNameWithoutExtension.indexOf(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+		String name = fileNameWithoutExtension.substring(0, index);
+		index++;
+		if (fileNameWithoutExtension.length() >  index) {
+			String version = fileNameWithoutExtension.substring(index, fileNameWithoutExtension.length());
+			String[] result = {name, version} ;
+			return result;
+		}
+		String[] result = {name};
+		return result;
 	}
 	
 	private static IWTimestamp parseVersion(String version) {

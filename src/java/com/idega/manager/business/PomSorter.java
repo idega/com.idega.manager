@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.12 2005/02/23 18:02:18 thomas Exp $
+ * $Id: PomSorter.java,v 1.13 2005/03/16 17:49:41 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,14 +24,15 @@ import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RealPom;
 import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.util.VersionComparator;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:18 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/16 17:49:41 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class PomSorter {
 
@@ -57,15 +58,20 @@ public class PomSorter {
 	
 	List errorMessages = null;
 	
-
-	public void initializeInstalledPomsAndAvailableUpdates(RepositoryLogin repositoryLogin) throws IOException { 
+	// version comparator works with caches, that is 
+	// a reused comparator works faster when dealing with the same versions again
+	VersionComparator usedVersionComparator = null;
+	
+	public void initializeInstalledPomsAndAvailableUpdates(RepositoryLogin repositoryLogin) throws IOException {
+		VersionComparator versionComparator = getUsedVersionComparator();
 		findInstalledPoms();
-		findAvailableUpdates(repositoryLogin);
+		findAvailableUpdates(repositoryLogin, versionComparator);
 	}
 	
 	public void initializeInstalledPomsAndAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
+		VersionComparator versionComparator = getUsedVersionComparator();
 		findInstalledPoms();
-		findAvailableNewModules(repositoryLogin);
+		findAvailableNewModules(repositoryLogin, versionComparator);
 	}
 		
 		
@@ -83,7 +89,7 @@ public class PomSorter {
 		}
 	}
 		
-	private void findAvailableUpdates(RepositoryLogin repositoryLogin) throws IOException {
+	private void findAvailableUpdates(RepositoryLogin repositoryLogin, VersionComparator versionComparator) throws IOException {
 		//if (true) throw new IOException("test");
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
 		List allPoms = repositoryBrowser.getPomsSynchronizingBundleArchivesFolderAndPomsFolder();
@@ -96,15 +102,15 @@ public class PomSorter {
 				RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
 				// fetch only poms that are newer than the installed ones
 				// and fetch additionally versions if the installed one is a snapshot
-				if (proxy.compare(pom) > 0 || (pom.isSnapshot() && ! proxy.isSnapshot())) {
-					putPom(artifactId, proxy, sortedRepositoryPomAvailableUpdates);
+				if (proxy.compare(pom, versionComparator) > 0 || (pom.isSnapshot() && ! proxy.isSnapshot())) {
+					putPom(artifactId, proxy, sortedRepositoryPomAvailableUpdates, versionComparator);
 				}
 			}
 		}
 	}
 	
 	
-	private void findAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
+	private void findAvailableNewModules(RepositoryLogin repositoryLogin, VersionComparator versionComparator) throws IOException {
 		//if (true) throw new IOException("test");
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
 		List allPoms= repositoryBrowser.getPomsSynchronizingBundleArchivesFolderAndPomsFolder();
@@ -114,13 +120,13 @@ public class PomSorter {
 			ProxyPom proxy = (ProxyPom) allPomsIterator.next();
 			String artifactId = proxy.getArtifactId();
 			if (! sortedInstalledPom.containsKey(artifactId)) {
-				putPom(artifactId, proxy, sortedRepositoryPomAvailableNewModules);
+				putPom(artifactId, proxy, sortedRepositoryPomAvailableNewModules, versionComparator);
 			}
 		}
 	
 	}
 	
-	private void putPom(String key, ProxyPom value, Map pomMap) {
+	private void putPom(String key, ProxyPom value, Map pomMap, final VersionComparator versionComparator) {
 		// first store in fileNameMap
 		if (fileNameRepositoryPom == null) {
 			fileNameRepositoryPom = new HashMap();
@@ -135,7 +141,7 @@ public class PomSorter {
 				public int compare(Object proxy1, Object proxy2) {
 					Pom pom1 = (Pom) proxy1;
 					Pom pom2 = (Pom) proxy2;
-					return pom1.compare(pom2);
+					return pom1.compare(pom2, versionComparator);
 				}
 			};
 			 pomSet = new TreeSet(comparator);
@@ -192,5 +198,21 @@ public class PomSorter {
 	}
 	public void setErrorMessages(List errorMessages) {
 		this.errorMessages = errorMessages;
+	}
+	
+	/**
+	 * 
+	 * <p>
+	 * 	A version comparator works with a cache, that is a 
+	*  	reused comparator works faster 
+	*  when dealing with the same versions again
+	 * </p>
+	 * @return
+	 */
+	public VersionComparator getUsedVersionComparator() {
+		if (usedVersionComparator == null) {
+			usedVersionComparator = new VersionComparator();
+		}
+		return usedVersionComparator;
 	}
 }
