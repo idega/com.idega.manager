@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleStarter.java,v 1.3 2005/02/23 18:02:17 thomas Exp $
+ * $Id: IWBundleStarter.java,v 1.4 2005/03/06 13:17:41 tryggvil Exp $
  * Created on 2.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,18 +9,18 @@
  */
 package com.idega.manager;
 
-import com.idega.idegaweb.GlobalIncludeManager;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
+import com.idega.idegaweb.include.GlobalIncludeManager;
 import com.idega.manager.view.ManagerViewManager;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/06 13:17:41 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	private static final String STYLE_SHEET_URL = "/style/manager.css";
