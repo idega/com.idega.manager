@@ -73,6 +73,14 @@
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>  
+    <dependency>
+      <groupId>servletapi</groupId>
+      <artifactId>servletapi</artifactId>
+      <version>2.4</version>
+      <type>jar</type>
+      <url>http://java.sun.com/products/servlet/docs.html</url>
+      <properties/>
+    </dependency>
     </dependencies>
   <build>
     <sourceDirectory>src/java</sourceDirectory>
