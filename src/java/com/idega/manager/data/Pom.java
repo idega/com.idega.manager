@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.11 2005/03/18 14:16:36 thomas Exp $
+ * $Id: Pom.java,v 1.12 2005/03/23 15:31:07 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,57 +11,36 @@ package com.idega.manager.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.VersionComparator;
 import com.idega.util.IWTimestamp;
+import com.idega.util.StringHandler;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/18 14:16:36 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
-public abstract class Pom implements Module {
-	 
-	static protected int compareModules(Module module1, Module module2, VersionComparator versionComparator) {
-		if (! ( module1.isSnapshot() || module2.isSnapshot()) ) {
-			// Case 2: both are not snapshots !!!!
-			String version1 =  module1.getCurrentVersion();
-			String version2 = module2.getCurrentVersion();
-			int result = versionComparator.compare(version1, version2);
-			// if both are equal the installed one wins
-			if (result == 0) {
-				if ( module1.isInstalled() && module2.isInstalled()) {
-					return 0;
-				}
-				if ( module1.isInstalled()) {
-					return 1;
-				}
-				if (module2.isInstalled()) {
-					return -1;
-				}
-			}
-			return result;
-		}
-		
-		// Case 3: only one of them are snapshots 
-		//  -------------  that is you can not compare them ---------------------
-		// or the result was zero
-		
-		// module that is not installed wins
-		if (  module1.isInstalled() && ! module2.isInstalled()) {
-			// that is: dependencyPomBundle is not installed
-			return -1;
-		}
-		if (!  module1.isInstalled() && module2.isInstalled()) {
-			// that is: this is not installed
-			return 1;
-		}
-		return 0;
-	}
+public abstract class Pom extends ModulePomImpl {
 	
+	public static final String POM_TIMESTAMP_FORMAT = "yyyyMMdd.HHmmss";
+	
+	private static SimpleDateFormat dateParser = null;
+	
+	private static SimpleDateFormat getDateParser() {
+		if (dateParser == null) {
+			dateParser = new SimpleDateFormat(POM_TIMESTAMP_FORMAT);
+		}
+		return dateParser;
+	}
+
 	public abstract List getDependencies() throws IOException;
 	
 	public abstract Pom getPom(DependencyPomBundle dependency) throws IOException;
@@ -94,10 +73,54 @@ public abstract class Pom implements Module {
 			return timestamp1.compareTo(timestamp2);
 		}
 		
-		return Pom.compareModules(this, aPom, versionComparator);
+		return compareModules(aPom, versionComparator);
+	}
+
+	/**
+	 * Returns timestamp from filename else null
+	 * 
+	 */
+	protected IWTimestamp getTimestampFromFileName(String fileNameWithExtension) {
+		String nameWithoutExtension = StringHandler.cutExtension(fileNameWithExtension);
+		String[] partOfFileName = splitFileName(nameWithoutExtension);
+		if (partOfFileName.length < 2) {
+			return null;
+		}
+		String version = partOfFileName[1];
+		if (RealPom.isSnapshot(version)) {
+			//	like:  com.idega.content-SNAPSHOT.pom
+			return null;
+		}
+		// like: com.idega.block.article-20041109.112340.pom   
+		return parseVersion(version);
 	}
 	
+	protected String[] splitFileName(String fileNameWithoutExtension) {
+		// myfaces-1.0.5 -> myfaces, 1.0.5
+		// jaxen-1.0-FCS-full -> jaxen, 1.0-FCS-full
+		int index = fileNameWithoutExtension.indexOf(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+		String name = fileNameWithoutExtension.substring(0, index);
+		index++;
+		if (fileNameWithoutExtension.length() >  index) {
+			String version = fileNameWithoutExtension.substring(index, fileNameWithoutExtension.length());
+			String[] result = {name, version} ;
+			return result;
+		}
+		String[] result = {name};
+		return result;
+	}
 
-	
+	protected static IWTimestamp parseVersion(String version) {
+		SimpleDateFormat parser = Pom.getDateParser();
+		try {
+			Date date = parser.parse(version);
+			IWTimestamp timestamp = new IWTimestamp(date);
+			return timestamp;
+		}
+		catch (ParseException ex) {
+			// do nothing
+			return null;
+		}
+	}	
 	
 }

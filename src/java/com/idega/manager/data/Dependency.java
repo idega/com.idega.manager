@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.11 2005/03/16 17:49:40 thomas Exp $
+ * $Id: Dependency.java,v 1.12 2005/03/23 15:31:07 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,15 +18,16 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
-public class Dependency implements Module  {
+public class Dependency extends ModulePomImpl  {
 	
 	private static final String GROUP_ID = "groupId";
 	private static final String VERSION = "version";
+	private static final String JAR = "jar";
 	
 	public static Dependency getInstanceForElement(Pom dependant, XMLElement element) {
 		String tempGroupId = element.getTextTrim(GROUP_ID);
@@ -43,6 +44,9 @@ public class Dependency implements Module  {
 		if (tempVersion == null) {
 			tempVersion = ""; 
 		}
+		String tempJarFileName = element.getTextTrim(JAR);
+		// note: in most cases this string will be null
+		dependency.setJarFileName(tempJarFileName);
 		dependency.setDependantPom(dependant);
 		dependency.setIsInstalled(dependant.isInstalled());
 		dependency.setGroupId(tempGroupId);
@@ -54,6 +58,7 @@ public class Dependency implements Module  {
 	String groupId = null;
 	String artifactId = null;
 	String version = null;
+	String jarFileName = null;
 	
 	boolean isInstalled = false;
 	
@@ -156,5 +161,11 @@ public class Dependency implements Module  {
 		buffer.append(getGroupId());
 		buffer.append(")");
 		return buffer.toString();
+	}
+	public String getJarFileName() {
+		return jarFileName;
+	}
+	public void setJarFileName(String jarFileName) {
+		this.jarFileName = jarFileName;
 	}
 }

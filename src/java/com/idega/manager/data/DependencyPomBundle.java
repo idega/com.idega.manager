@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.10 2005/03/18 14:16:36 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.11 2005/03/23 15:31:07 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.manager.util.VersionComparator;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/18 14:16:36 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -72,7 +72,7 @@ public class DependencyPomBundle extends Dependency {
 			Pom tempPom = dependencyPomBundle.getPom();   
 			return compare(tempPom, versionComparator);
 		}
-		return Pom.compareModules(this, dependencyPomBundle, versionComparator);
+		return compareModules(dependencyPomBundle, versionComparator);
 	}
 		
 	public int compare(Pom aPom, VersionComparator versionComparator) throws IOException { 
@@ -82,7 +82,7 @@ public class DependencyPomBundle extends Dependency {
 			Pom tempPom = getPom();   
 			return tempPom.compare(aPom, versionComparator);
 		}
-		return Pom.compareModules(this, aPom, versionComparator);
+		return compareModules(aPom, versionComparator);
 	}
 	
 	public boolean isSnapshot() {

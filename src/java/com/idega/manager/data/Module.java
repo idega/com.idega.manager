@@ -1,5 +1,5 @@
 /*
- * $Id: Module.java,v 1.7 2005/03/16 17:49:40 thomas Exp $
+ * $Id: Module.java,v 1.8 2005/03/23 15:31:07 thomas Exp $
  * Created on Nov 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.manager.util.VersionComparator;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface Module {
 	
@@ -45,6 +45,8 @@ public interface Module {
 	String getArtifactId();
 
 	String getCurrentVersion();
+	
+	String getJarFileName();
 	
 	// returns the unchanged original version string
 	String getCurrentVersionForLabel(IWResourceBundle resourceBundle);

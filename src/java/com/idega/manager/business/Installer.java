@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.9 2005/03/18 14:17:12 thomas Exp $
+ * $Id: Installer.java,v 1.10 2005/03/23 15:31:07 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,12 +35,14 @@ import com.idega.util.logging.LogFile;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/18 14:17:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Installer {
+	
+	private static final int WAIT_PERIOD = 10000;
 	
 	private LogFile logFile = null;
 	private File backupFolder = null;
@@ -186,7 +188,7 @@ public class Installer {
 				public void run() {
 			          try { 
 			          	System.out.println("[Installer] Start sleeping....");
-			          	sleep(20000);
+			          	sleep(WAIT_PERIOD);
 			          	System.out.println("[Installer] Stop sleeping...application will restart pretty soon");
 			          	try {
 			          		FileUtil.copyFile(mergedFile, fileInWebInf);
@@ -253,45 +255,18 @@ public class Installer {
 		Iterator iterator = necessaryPoms.iterator();
 		while (iterator.hasNext()) {
 			Module module = (Module) iterator.next();
-			String artifactId = module.getArtifactId();
-			// this is a little bit tricky and complicated....
-			//
-			// If pom is not null, the module is a Dependency that refers to a bundle module
-			// the version of the dependency could be "SNAPSHOT" but the real used one could have the version "1.0-SNAPSHOT".
-			
-			// In other words: 
-			// If the dependency is a snapshot the method module.getCurrentVersion returns "SNAPSHOT" (and this is actually the value
-			// that is used in the project file of the dependant) but the 
-			// the method pom.getCurrentVersion() might either return null or "" or "1.0". 
-			// Therefore to get the right file name ask the real one!
-			//
-			// If the version is not "SNAPSHOT" 
-			// the method module.getCurrentVersion() and pom.getCurrentVersion() should return the same result.
-			
-			Pom pom = module.getPom();
-			String version = (pom == null) ?  module.getCurrentVersion() : pom.getCurrentVersion();
-			StringBuffer buffer = new StringBuffer(artifactId);
-			// sometimes the version is not set
-			
-			// if the version is equal to SNAPSHOT do not add the current version (avoiding file names like com.idega.block.article-SNAPSHOT-SNAPSHOT)
-			if (version !=null && version.length() != 0 && ! version.equals(RealPom.SNAPSHOT)) {
-				buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
-				buffer.append(version);
+			// check if the name of the jar file is explicit defined
+			String fileName = module.getJarFileName();
+			if (fileName == null) {
+				fileName = getJarFileName(module);
 			}
-			if (module.isSnapshot()) {
-				buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
-				buffer.append(RealPom.SNAPSHOT);
-			}
-			buffer.append('.');
-			buffer.append(ManagerConstants.JAR_EXTENSION);
 			if (module.isInstalled()) {
-				necessaryFileNames.add(buffer.toString());
+				necessaryFileNames.add(fileName);
 			}
 			else {
 				// only for debugging
-				notInstalledYet.add(buffer.toString());
+				notInstalledYet.add(fileName);
 			}
-				
 		}
 		List files = FileUtil.getFilesInDirectory(library);
 		Iterator filesIterator = files.iterator();
@@ -316,6 +291,41 @@ public class Installer {
 		containedFileNames.size();
 		notInstalledYet.size();
 		deletedFiles.size();
+	}
+	
+	private String getJarFileName(Module module) throws IOException {
+		String artifactId = module.getArtifactId();
+		// this is a little bit tricky and complicated....
+		//
+		// If pom is not null, the module is a Dependency that refers to a bundle module
+		// the version of the dependency could be "SNAPSHOT" but the real used one could have the version "1.0-SNAPSHOT".
+		
+		// In other words: 
+		// If the dependency is a snapshot the method module.getCurrentVersion returns "SNAPSHOT" (and this is actually the value
+		// that is used in the project file of the dependant) but the 
+		// the method pom.getCurrentVersion() might either return null or "" or "1.0". 
+		// Therefore to get the right file name ask the real one!
+		//
+		// If the version is not "SNAPSHOT" 
+		// the method module.getCurrentVersion() and pom.getCurrentVersion() should return the same result.
+		
+		Pom pom = module.getPom();
+		String version = (pom == null) ?  module.getCurrentVersion() : pom.getCurrentVersion();
+		StringBuffer buffer = new StringBuffer(artifactId);
+		// sometimes the version is not set
+		
+		// if the version is equal to SNAPSHOT do not add the current version (avoiding file names like com.idega.block.article-SNAPSHOT-SNAPSHOT)
+		if (version !=null && version.length() != 0 && ! version.equals(RealPom.SNAPSHOT)) {
+			buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+			buffer.append(version);
+		}
+		if (module.isSnapshot()) {
+			buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+			buffer.append(RealPom.SNAPSHOT);
+		}
+		buffer.append('.');
+		buffer.append(ManagerConstants.JAR_EXTENSION);
+		return buffer.toString();
 	}
 	
 	public LogFile getLogFile() throws IOException {
