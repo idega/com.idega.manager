@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.8 2005/03/23 15:31:07 thomas Exp $
+ * $Id: RealPom.java,v 1.9 2005/03/31 15:48:50 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/31 15:48:50 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RealPom extends Pom {
 	
@@ -81,32 +81,7 @@ public class RealPom extends Pom {
 	
 	public static RealPom getPom(File projectFile) throws IOException {
 		XMLData pomData = createXMLData(projectFile);
-		RealPom pom =  new RealPom(pomData, projectFile);
-		IWTimestamp timestamp = null;
-		// try to get timestamp from origin file
-		File originFile = FileUtil.getFileRelativeToFile(projectFile, ManagerConstants.ORIGIN_FILE);
-		if (originFile.exists()) {
-			BufferedReader fileReader = null;
-			try {
-				fileReader = new BufferedReader(new FileReader(originFile));
-				String orignFileName = fileReader.readLine();
-				timestamp = pom.getTimestampFromFileName(orignFileName);
-			}
-			finally {
-				fileReader.close();
-			}
-		}
-		if (timestamp == null) {
-			// failed?  try to get timestamp from corresponding MANIFEST_FILE  
-			File manifestFile = FileUtil.getFileRelativeToFile(projectFile, MANIFEST_PATH);
-			if (manifestFile.exists()) {
-				long dateValue = manifestFile.lastModified();
-				Date date = new Date(dateValue);
-				timestamp = new IWTimestamp(date);
-			}
-		}
-		pom.setTimestamp(timestamp);
-		return pom;
+		return new RealPom(pomData, projectFile);
 	}
 	
 	public static XMLData createXMLData(File projectFile) throws IOException {
@@ -131,9 +106,12 @@ public class RealPom extends Pom {
 		return StringHandler.contains(version.toUpperCase(), SNAPSHOT);
 	}
 	
+	// are we navigating in an eclipse project or on a web server?
+	private boolean isEclipseProject = false;
+	
 	boolean isInstalled = false;
 	
-	private File projectFile = null;
+	protected File projectFile = null;
 	
 	private XMLData xmlData = null;
 	private XMLElement root = null;
@@ -147,16 +125,46 @@ public class RealPom extends Pom {
 	
 	private List dependencies = null;
 	
-	private RealPom(XMLData xmlData, File projectFile) {
+	protected RealPom(XMLData xmlData, File projectFile) throws IOException {
 		this.projectFile = projectFile;
 		this.xmlData =xmlData ;
 		initialize();
 	}
-	
-	private void initialize() {
+
+	private void initialize() throws IOException {
 		// initilaize snapshot variable
 		getCurrentVersion();
+		initializeTimestamp();
+	}	
+	
+	private void initializeTimestamp() throws IOException {
+		IWTimestamp timestamp = null;
+		// try to get timestamp from origin file
+		File originFile = FileUtil.getFileRelativeToFile(projectFile, ManagerConstants.ORIGIN_FILE);
+		if (originFile.exists()) {
+			BufferedReader fileReader = null;
+			try {
+				fileReader = new BufferedReader(new FileReader(originFile));
+				String orignFileName = fileReader.readLine();
+				timestamp = getTimestampFromFileName(orignFileName);
+			}
+			finally {
+				fileReader.close();
+			}
+		}
+		if (timestamp == null) {
+			// failed?  try to get timestamp from corresponding MANIFEST_FILE  
+			File manifestFile = FileUtil.getFileRelativeToFile(projectFile, MANIFEST_PATH);
+			if (manifestFile.exists()) {
+				long dateValue = manifestFile.lastModified();
+				Date date = new Date(dateValue);
+				timestamp = new IWTimestamp(date);
+			}
+		}
+		setTimestamp(timestamp);
 	}
+	
+
 	
 	public void setTimestamp(IWTimestamp timestamp) {
 		this.timesstamp = timestamp;
@@ -224,13 +232,18 @@ public class RealPom extends Pom {
 	
 	public Pom getPom(DependencyPomBundle dependency) throws IOException {
 		String dependencyArtifactId = dependency.getArtifactId();
-		String moduleName = StringHandler.concat(dependencyArtifactId, BUNDLE_SUFFIX);
-		File bundlesFolder = projectFile.getParentFile().getParentFile();
+		String moduleName = (isEclipseProject()) ? dependencyArtifactId : StringHandler.concat(dependencyArtifactId, BUNDLE_SUFFIX);
+		File bundlesFolder = getBundlesFolder(projectFile);
 		File module = new File(bundlesFolder, moduleName);
 		File dependencyProjectFile = new File(module, RealPom.POM_FILE);
-		Pom pom = RealPom.getPom(dependencyProjectFile);
+		RealPom pom = RealPom.getPom(dependencyProjectFile);
+		pom.setEclipseProject(isEclipseProject());
 		pom.setIsInstalled(isInstalled());
 		return pom;
+	}
+	
+	protected File getBundlesFolder(File startFile) {
+		return startFile.getParentFile().getParentFile();
 	}
 	
 	public File getBundleArchive(DependencyPomBundle dependency) {
@@ -286,5 +299,12 @@ public class RealPom extends Pom {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(version).append(" ").append(tempCurrentVersion);
 		return buffer.toString();
+	}
+	
+	public boolean isEclipseProject() {
+		return isEclipseProject;
+	}
+	public void setEclipseProject(boolean isEclipseProject) {
+		this.isEclipseProject = isEclipseProject;
 	}
 }
