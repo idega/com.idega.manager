@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.2 2004/12/02 11:43:03 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.3 2004/12/02 18:06:57 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 11:43:03 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -34,6 +34,10 @@ public class DependencyPomBundle extends Dependency {
 	Boolean isSnapshot = null;
 	
 	Pom pom = null;
+	
+	DependencyPomBundle() {
+		// use the class method of Dependency
+	}
 	
 	public Pom getPom() throws IOException {
 		if (pom == null) {

@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.2 2004/12/02 18:06:57 thomas Exp $
+ * $Id: InstallManager.java,v 1.1 2004/12/02 18:06:57 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,7 +21,6 @@ import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.business.PomSorter;
@@ -34,11 +33,9 @@ import com.idega.manager.util.ManagerUtils;
  *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
-public class ModuleManager {
-	
-	private static final String ACTION_INSTALL_MANAGER = "installManager";
+public class InstallManager {
 	
 	private IWResourceBundle resourceBundle;
 	private FacesContext context = null;
@@ -51,7 +48,7 @@ public class ModuleManager {
 	private String button2Label;
 	private String button3Label;
 	
-	public ModuleManager() {
+	public InstallManager() {
 		initialize();
 	}
 	
@@ -195,11 +192,6 @@ public class ModuleManager {
     	}
     }
 
-	public void submitForm(ActionEvent event) {
-		System.out.println("Weser");
-	}
-    
-    
     private ListDataModel dataTable1Model = new ListDataModel();
 
     public ListDataModel getDataTable1Model() {
@@ -277,9 +269,5 @@ public class ModuleManager {
     }
     public String getButton3Label() {
     	return button3Label;
-    }
-    
-    public String button2_action() {
-    	return ACTION_INSTALL_MANAGER;
     }
 }

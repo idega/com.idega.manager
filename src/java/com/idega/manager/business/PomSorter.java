@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
+ * $Id: PomSorter.java,v 1.3 2004/12/02 18:06:57 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PomSorter {
 	
@@ -38,6 +38,8 @@ public class PomSorter {
 	Map sortedRepositoryPom = null;
 	// key: fileName String value: PomProxy
 	Map fileNameRepositoryPom = null;
+	// 
+	List toBeInstalledPoms = null;
 	
 	public void initializeInstalledPomsAndAvailableUpdates() {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
@@ -61,24 +63,6 @@ public class PomSorter {
 				if (proxy.compare(pom) > 0) {
 					putPom(artifactId, proxy);
 				}
-//				if (proxy.isSnapshot()) {
-//					IWTimestamp installedTimestamp = pom.getTimestamp();
-//					IWTimestamp repositoryTimestamp = proxy.getTimestamp();
-//					if (repositoryTimestamp == null || installedTimestamp.compareTo(repositoryTimestamp) < 0) {
-//						putPom(artifactId, proxy);
-//						int k = proxy.compare(pom);
-//						k++;
-//					}
-//				}
-//				else {
-//					String installedVersion = pom.getCurrentVersion();
-//					String repositoryVersion = proxy.getCurrentVersion();
-//					if (StringHandler.compareVersions(installedVersion, repositoryVersion) < 0) {
-//						putPom(artifactId, proxy);
-//						int k = proxy.compare(pom);
-//						k++;
-//					}
-//				}
 			}
 		}
 	}
@@ -116,5 +100,11 @@ public class PomSorter {
 	}
 	public Map getSortedRepositoryPoms() {
 		return sortedRepositoryPom;
+	}
+	public List getToBeInstalledPoms() {
+		return toBeInstalledPoms;
+	}
+	public void setToBeInstalledPoms(List toBeInstalledPoms) {
+		this.toBeInstalledPoms = toBeInstalledPoms;
 	}
 }

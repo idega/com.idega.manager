@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.5 2004/12/02 13:43:14 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.6 2004/12/02 18:06:57 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 13:43:14 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class UpdateListManager {
 	
@@ -133,8 +133,7 @@ public class UpdateListManager {
 		Collection notInstalledModules = selectedPoms.values();
 		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules);
 		List toBeInstalled = dependencyMatrix.getListOfModulesToBeInstalled();
-		toBeInstalled.size();
-
+		pomSorter.setToBeInstalledPoms(toBeInstalled);
 	}
  
 	
@@ -258,4 +257,7 @@ public class UpdateListManager {
     	return ACTION_MODULE_MANAGER;
     }
     
+	public PomSorter getPomSorter() {
+		return pomSorter;
+	}
 }
