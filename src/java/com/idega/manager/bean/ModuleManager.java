@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.14 2005/01/20 13:04:40 thomas Exp $
+ * $Id: ModuleManager.java,v 1.15 2005/01/20 14:06:18 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/20 13:04:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/20 14:06:18 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class ModuleManager {
 	
@@ -248,7 +248,7 @@ public class ModuleManager {
 	public void submitForm(ActionEvent event) {
 		if (pomSorter != null) {
 			ApplicationUpdater updater = new ApplicationUpdater(pomSorter);
-			if (updater.installModules()) { 
+			if (! updater.installModules()) { 
 				String errorMessage = updater.getErrorMessage();
 				List errorMessages = new ArrayList(1);
 				errorMessages.add(errorMessage);
