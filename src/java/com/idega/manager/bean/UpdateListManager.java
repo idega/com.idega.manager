@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.9 2005/01/07 11:03:35 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.10 2005/01/14 16:43:58 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
@@ -41,14 +42,18 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/14 16:43:58 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class UpdateListManager {
 	
-	private static final String ACTION_MODULE_MANAGER = "moduleManager";
+	private static final String JSF_VALUE_REFERENCE_MODULE_MANAGER = "#{ModuleManager}";
+	
+	private static final String ACTION_NEXT = "next";
+	private static final String ACTION_BACK = "back";
+	private static final String ACTION_CANCEL = "cancel";
 	
 	private IWResourceBundle resourceBundle;
 	private PomValidator pomValidator = null;
@@ -73,7 +78,7 @@ public class UpdateListManager {
 	
 	private void initializeOutputText() {
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_choose","Choose one option");
+		outputText2Value = resourceBundle.getLocalizedString("man_manager_select _updates","Select updates");
 	}
 
 	private void initializeSubmitButtons() {
@@ -146,6 +151,12 @@ public class UpdateListManager {
 			pomSorter.setErrorMessages(dependencyMatrix.getErrorMessages());
 		}
 		pomSorter.setNecessaryPoms(necessaryModules);
+		FacesContext context  = FacesContext.getCurrentInstance(); 
+		Application application = context.getApplication();
+		ModuleManager moduleManager = (ModuleManager) ManagerUtils.getInstanceForCurrentContext().getValue(application, JSF_VALUE_REFERENCE_MODULE_MANAGER);
+		if (moduleManager != null) {
+			moduleManager.initializeDataTable1();
+		}
 	}
  
 	
@@ -266,8 +277,17 @@ public class UpdateListManager {
     	return button3Label;
     }
     
+    public String button1_action() {
+    	return ACTION_BACK;
+    }
+    
     public String button2_action() {
-    	return ACTION_MODULE_MANAGER;
+    	return ACTION_NEXT;
+    }    
+    
+    
+    public String button3_action() {
+    	return ACTION_CANCEL;
     }
     
 	public PomSorter getPomSorter() {

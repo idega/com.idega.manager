@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.9 2005/01/12 14:46:48 thomas Exp $
+ * $Id: ModuleManager.java,v 1.10 2005/01/14 16:43:58 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,18 +35,20 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/12 14:46:48 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/14 16:43:58 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ModuleManager {
 	
-	private static final String ACTION_INSTALL_MANAGER = "installManager";
+	private static final String ACTION_NEXT = "next";
+	private static final String ACTION_BACK = "back";
+	private static final String ACTION_CANCEL = "cancel";
 	
 	private static final String JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER = "#{UpdateListManager}";
 	private static final String JSF_ID_REFERENCE_FORM1 = "form1";
-	
+
 	private IWResourceBundle resourceBundle;
 	private FacesContext context = null;
 	private Application application = null;
@@ -69,7 +71,7 @@ public class ModuleManager {
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
-		initializeDataTable1();
+		//initializeDataTable1(null);
 	}
 	
 	private void initializePomSorter() {
@@ -83,17 +85,17 @@ public class ModuleManager {
 	}
 	
 	private void initializeOutputText() {
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_mamager_choose","Choose one option");
+		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Update Manager");
+		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install","Do you want to install the following updates?");
 	}
 
 	private void initializeSubmitButtons() {
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
+		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
-	private void initializeDataTable1() {
+	public void initializeDataTable1() {
 		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
 		String snapshot = resourceBundle.getLocalizedString("man_manager_snapshot", "Snapshot");
 		List rows = new ArrayList();
@@ -129,7 +131,7 @@ public class ModuleManager {
 		dataTable1Model = new ListDataModel(rows);
 		// initialize columnNames
 		String module = resourceBundle.getLocalizedString("man_manager_module", "Module");
-		String version = resourceBundle.getLocalizedString("man_manager_module", "Version");
+		String version = resourceBundle.getLocalizedString("man_manager_module", "New Version");
 		String oldVersion = resourceBundle.getLocalizedString("man_manager_old_version","Old version");
 		String[] columnNames = {module, version, oldVersion};
 		initializeHtmlDataTable(columnNames);
@@ -183,6 +185,8 @@ public class ModuleManager {
 //     
 //    		ResultSetMetaData metaData = resultSet.getMetaData();
     		dataTable1.setVar("currentRow");
+    		dataTable1.setColumnClasses("moduleManagerBigColumnClass, moduleManagerColumnClass, moduleManagerColumnClass");
+//			dataTable1.setHeaderClass("moduleManagerHeaderClass");
     		
     		// "currentRow" must be set in the corresponding JSP page!
     		// this variable is used above by the method call dataTable1.getVar()
@@ -198,6 +202,7 @@ public class ModuleManager {
     			headerText = new HtmlOutputText();
     			headerText.setTitle(columnNames[i]);
     			headerText.setValue(columnNames[i]);
+    			//headerText.setStyleClass("moduleManagerHeaderClass");
      
     			outText = new HtmlOutputText();
      
@@ -207,7 +212,8 @@ public class ModuleManager {
     			outText.setValueBinding("value", vb);
      
     			column = new UIColumn();
-    			Map map = column.getAttributes();
+
+
     			//map.put("width","444px");
      
     			column.getChildren().add(outText);
@@ -226,11 +232,11 @@ public class ModuleManager {
 				try {
 					Installer installer = Installer.getInstance(pomSorter);
 					installer.extractBundleArchives();
-					installer.mergeFacesConfiguration();
+			/*		installer.mergeFacesConfiguration();
 					installer.mergeLibrary();
 					installer.mergeTagLibraries();
 					installer.mergeBundles();
-					installer.mergeWebConfiguration();
+					installer.mergeWebConfiguration();  */
 				}
 				catch (IOException ex) {
 					// what next?
@@ -319,7 +325,16 @@ public class ModuleManager {
     	return button3Label;
     }
     
+    public String button1_action() {
+    	return ACTION_BACK;
+    }
+    
     public String button2_action() {
-    	return ACTION_INSTALL_MANAGER;
+    	return ACTION_NEXT;
+    }    
+    
+    
+    public String button3_action() {
+    	return ACTION_CANCEL;
     }
 }

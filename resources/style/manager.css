@@ -1,0 +1,18 @@
+.wf_body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #F1F1F1;
+	margin: 0px;
+}
+
+.list-row-even { 
+}
+
+.list-row-odd { 
+  background-color: #ffffff;
+}
+
+.moduleManagerColumnClass {
+	width: 60px;
+    text-align: right;
+}
