@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.9 2005/01/17 19:14:16 thomas Exp $
+ * $Id: PomSorter.java,v 1.10 2005/01/19 18:24:29 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class PomSorter {
 	
@@ -83,6 +83,7 @@ public class PomSorter {
 	}
 		
 	private void findAvailableUpdates() throws IOException {
+		if (true) throw new IOException("test");
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
 		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
 		sortedRepositoryPomAvailableUpdates = new HashMap();
@@ -102,6 +103,7 @@ public class PomSorter {
 	
 	
 	private void findAvailableNewModules() throws IOException {
+		if (true) throw new IOException("test");
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
 		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
 		sortedRepositoryPomAvailableNewModules = new TreeMap();

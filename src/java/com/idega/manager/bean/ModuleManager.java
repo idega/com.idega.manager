@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.12 2005/01/18 18:20:40 thomas Exp $
+ * $Id: ModuleManager.java,v 1.13 2005/01/19 18:24:29 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,10 +33,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/18 18:20:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ModuleManager {
 	
@@ -68,7 +68,6 @@ public class ModuleManager {
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
-		//initializeDataTable1(null);
 	}
 	
 	private void initializePomSorter() {
@@ -81,7 +80,7 @@ public class ModuleManager {
 	}	
 	private void initializeOutputText() {
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Update Manager");
+		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install","Do you want to install the following updates?");
 	}
 
@@ -138,20 +137,21 @@ public class ModuleManager {
 	private void initializeErrorMessages() {
 		HtmlPanelGroup group = getGroupPanel1();
 		List list = group.getChildren();
-		List errorMessages = pomSorter.getErrorMessages();
-		if (errorMessages == null) {
-			list.clear();
-			return;
-		}
-		Iterator iterator = errorMessages.iterator();
-		while (iterator.hasNext()) {
-			String errorMessage = (String) iterator.next();
-			errorMessage = errorMessage + " <br/>";
-			HtmlOutputText error = new HtmlOutputText();
-			error.setValue(errorMessage);
-			error.setStyle("color: red");
-			error.setEscape(false);
-			list.add(error);
+		List errorMessages = pomSorter.getErrorMessages(); 
+		list.clear();
+		button2.setDisabled(false);
+		if (errorMessages != null) {
+			button2.setDisabled(true);
+			Iterator iterator = errorMessages.iterator();
+			while (iterator.hasNext()) {
+				String errorMessage = (String) iterator.next();
+				errorMessage = errorMessage + " <br/>";
+				HtmlOutputText error = new HtmlOutputText();
+				error.setValue(errorMessage);
+				error.setStyle("color: red");
+				error.setEscape(false);
+				list.add(error);
+			}
 		}
 	}
 	

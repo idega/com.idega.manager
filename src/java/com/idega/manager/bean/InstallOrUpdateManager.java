@@ -1,5 +1,5 @@
 /*
- * $Id: InstallOrUpdateManager.java,v 1.2 2005/01/17 19:14:16 thomas Exp $
+ * $Id: InstallOrUpdateManager.java,v 1.3 2005/01/19 18:24:29 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,13 +25,15 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class InstallOrUpdateManager {
 	
+	private static final String JSF_VALUE_REFERENCE_INSTALL_LIST_MANAGER = "#{InstallListManager}";
+	private static final String JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER = "#{UpdateListManager}";
 	private static final String INSTALL_NEW_MODULES = "installNewModules";
 	private static final String UPDATE_MODULES = "updateModules";
 	
@@ -210,8 +212,17 @@ public class InstallOrUpdateManager {
     	
     public String button2_action() {
     	String action = (String) radioButtonList1.getValue();
-    	if (INSTALL_NEW_MODULES.equals(action) || UPDATE_MODULES.equals(action)) {
-    		return action;
+    	if (INSTALL_NEW_MODULES.equals(action)) {
+    		InstallListManager installListManager = (InstallListManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_INSTALL_LIST_MANAGER);
+    		if (installListManager != null) {
+    			installListManager.initializeDynamicContent();
+    		}
+    	}
+    	else if (UPDATE_MODULES.equals(action)) {
+    		UpdateListManager updateListManager = (UpdateListManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER);
+    		if (updateListManager != null) {
+    			updateListManager.initializeDynamicContent();
+    		}
     	}
     	return action;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: InstallListManager.java,v 1.1 2005/01/17 19:14:16 thomas Exp $
+ * $Id: InstallListManager.java,v 1.2 2005/01/19 18:24:29 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,10 +16,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -33,15 +35,16 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class InstallListManager {
 	
 	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
 	private static final String JSF_VALUE_REFERENCE_INSTALL_NEW_MODULE_LIST_MANAGER = "#{InstallNewModuleListManager}";
+	private static final String JSF_COMPONENT_ID = "form1:multiSelectListbox1";
 	
 	private static final String ACTION_NEXT = "next";
 	private static final String ACTION_BACK = "back";
@@ -66,7 +69,6 @@ public class InstallListManager {
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
-		initializeList();
 	}
 	
 	private void initializePomSorter() {
@@ -95,43 +97,33 @@ public class InstallListManager {
 	private void initializeList() {
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		 multiSelectListbox1DefaultItems = new ArrayList();
+		 String errorMessage = null;
 		 try {
-		 	pomSorter.initializeInstalledPomsAndAvailableNewModules();
+		 	pomSorter.initializeInstalledPomsAndAvailableNewModules(); 
 		 }
 		 catch (IOException ex) {
-		 	String errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
-		 	SelectItemGroup errorGroup = new SelectItemGroup(errorMessage, null, true,  new SelectItem[0]);
-		 	multiSelectListbox1DefaultItems.add(errorGroup);	
-		 	return;
+		 	errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
 		 }
+		HtmlPanelGroup group = getGroupPanel1();
+		List list = group.getChildren();
+		list.clear();
+		button2.setDisabled(false);
+		if (errorMessage != null) {
+			button2.setDisabled(true);
+			errorMessage = errorMessage + " <br/>";
+			HtmlOutputText error = new HtmlOutputText();
+			error.setValue(errorMessage);
+			error.setStyle("color: red");
+			error.setEscape(false);
+			list.add(error);	
+			return;
+		}
+		 
 		 Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableNewModules();
 		 Iterator iterator = repositoryPom.keySet().iterator();
 		 while (iterator.hasNext()) {
 		 	String artifactId = (String) iterator.next();
 		 	SelectItem item = new SelectItem(artifactId, artifactId);
-//		 	
-//		 	SortedSet pomProxies = (SortedSet) repositoryPom.get(artifactId);
-//		 	SelectItem[] items = null;
-//		 	if (pomProxies == null) {
-//		 		items = new SelectItem[0];
-//		 	}
-//		 	else {
-//		 		Iterator pomProxiesIterator = pomProxies.iterator();
-//		 		items = new SelectItem[pomProxies.size()];
-//			 	int i = 0;
-//			 	while (pomProxiesIterator.hasNext()) {
-//			 		ProxyPom proxy = (ProxyPom) pomProxiesIterator.next();
-//			 		// file is used as identifier
-//			 		String fileName = proxy.getFileName();
-//			 		IWTimestamp timestamp = proxy.getTimestamp();
-//			 		String label = (timestamp == null) ? proxy.getCurrentVersion() : timestamp.toString(true);
-//			 		items[i++] = new SelectItem(fileName, label);
-//			 	}
-//		 	}
-//		 	RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
-//		 	String currentVersion = pom.getCurrentVersion();
-//		 	StringBuffer buffer = new StringBuffer();
-//		 	buffer.append(artifactId).append(" ").append(currentVersion);
 			 multiSelectListbox1DefaultItems.add(item);		 	
 		 }
 	}
@@ -142,37 +134,29 @@ public class InstallListManager {
 		HtmlSelectManyListbox selectManyList = (HtmlSelectManyListbox) parentForm.findComponent("multiSelectListbox1");
 		Object[] selectedValues = selectManyList.getSelectedValues();
 		List selectedModules = Arrays.asList(selectedValues);
-//		Map repositoryPoms = pomSorter.getRepositoryPoms();
-//		Map selectedPoms = new HashMap();
-//		for (int i = 0; i < selectedValues.length; i++) {
-//			Pom pom = (Pom) repositoryPoms.get(selectedValues[i]);
-//			String artifactId = pom.getArtifactId();
-//			selectedPoms.put(artifactId, pom);
-//		}
-//		Map installedPoms = pomSorter.getSortedInstalledPoms();
-//		Collection installedModules = installedPoms.values();
-//		Collection notInstalledModules = selectedPoms.values();
-//		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, resourceBundle);
-//		List necessaryModules = dependencyMatrix.getListOfNecessaryModules();
-//		if (dependencyMatrix.hasErrors()) {
-//			pomSorter.setErrorMessages(dependencyMatrix.getErrorMessages());
-//		}
-//		pomSorter.setNecessaryPoms(necessaryModules);
 		InstallNewModuleListManager installNewModuleListManager = (InstallNewModuleListManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_INSTALL_NEW_MODULE_LIST_MANAGER);
 		if (installNewModuleListManager != null) {
-			installNewModuleListManager.initializeList(selectedModules);
+			installNewModuleListManager.initializeDynamicContent(selectedModules);
 		}
 	}
- 
-	
+
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
+		// the value of a hidden input is validated because only in this way this method is called even if nothing has been selected.
+		// We could use the attribute "required" but this causes problems with the localization of the corresponding error message.
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+		// get the value of the component we are really interested in....
+		UIComponent component = context.getViewRoot().findComponent(JSF_COMPONENT_ID);
+		Object componentValue = ((UIInput) component).getValue();
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModuleNames(context, toValidate, value, resourceBundle);
+		pomValidator.validateSelectedModuleNames(context, toValidate, componentValue, resourceBundle);
 	}
 	
+	public void initializeDynamicContent() {
+		initializeList();
+	}
+
    private HtmlForm form1 = new HtmlForm();
 
     public HtmlForm getForm1() {
@@ -294,5 +278,16 @@ public class InstallListManager {
     public String button3_action() {
     	return ACTION_CANCEL;
     }
-    
+
+    private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
+
+    public HtmlPanelGroup getGroupPanel1() {
+        return groupPanel1;
+    }
+
+    public void setGroupPanel1(HtmlPanelGroup hpg) {
+        this.groupPanel1 = hpg;
+    }
+
+
 }

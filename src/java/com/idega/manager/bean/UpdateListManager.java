@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.12 2005/01/18 18:20:40 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.13 2005/01/19 18:24:29 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,13 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -41,15 +44,16 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/18 18:20:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class UpdateListManager {
 	
 	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
 	private static final String JSF_VALUE_REFERENCE_MODULE_MANAGER = "#{ModuleManager}";
+	private static final String JSF_COMPONENT_ID = "form1:multiSelectListbox1";
 	
 	private static final String ACTION_NEXT = "next";
 	private static final String ACTION_BACK = "back";
@@ -74,7 +78,6 @@ public class UpdateListManager {
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
-		initializeList();
 	}
 
 	private void initializePomSorter() {
@@ -101,20 +104,33 @@ public class UpdateListManager {
 	
 	private void initializeList() {
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
-		 multiSelectListbox1DefaultItems = new ArrayList();
-		 try {
-		 	pomSorter.initializeInstalledPomsAndAvailableUpdates();
-		 }
-		 catch (IOException ex) {
-		 	String errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
-		 	SelectItemGroup errorGroup = new SelectItemGroup(errorMessage, null, true,  new SelectItem[0]);
-		 	multiSelectListbox1DefaultItems.add(errorGroup);	
-		 	return;
-		 }
-		 SortedMap sortedInstalledPom = pomSorter.getSortedInstalledPoms();
-		 Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableUpdates();
-		 Iterator iterator = sortedInstalledPom.keySet().iterator();
-		 while (iterator.hasNext()) {
+		multiSelectListbox1DefaultItems = new ArrayList();
+		String errorMessage = null;
+		try {
+			pomSorter.initializeInstalledPomsAndAvailableUpdates();
+		}
+		catch (IOException ex) {
+			errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
+		}
+		HtmlPanelGroup group = getGroupPanel1();
+		List list = group.getChildren();
+		list.clear();
+		button2.setDisabled(false);
+		if (errorMessage != null) {
+			button2.setDisabled(true);
+			errorMessage = errorMessage + " <br/>";
+			HtmlOutputText error = new HtmlOutputText();
+			error.setValue(errorMessage);
+			error.setStyle("color: red");
+			error.setEscape(false);
+			list.add(error);		
+			return;
+		}
+	 	
+		SortedMap sortedInstalledPom = pomSorter.getSortedInstalledPoms();
+		Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableUpdates();
+		Iterator iterator = sortedInstalledPom.keySet().iterator();
+		while (iterator.hasNext()) {
 		 	String artifactId = (String) iterator.next();
 		 	SortedSet pomProxies = (SortedSet) repositoryPom.get(artifactId);
 		 	SelectItem[] items = null;
@@ -138,8 +154,8 @@ public class UpdateListManager {
 		 	String currentVersion = pom.getCurrentVersion();
 		 	StringBuffer buffer = new StringBuffer();
 		 	buffer.append(artifactId).append(" ").append(currentVersion);
-			 multiSelectListbox1DefaultItems.add(new SelectItemGroup(buffer.toString(), null, true, items));		 	
-		 }
+		 	multiSelectListbox1DefaultItems.add(new SelectItemGroup(buffer.toString(), null, true, items));		 	
+		}
 	}
 	
 	public void submitForm(ActionEvent event) {
@@ -173,12 +189,21 @@ public class UpdateListManager {
  
 	
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
+		// the value of a hidden input is validated because only in this way this method is called even if nothing has been selected.
+		// We could use the attribute "required" but this causes problems with the localization of the corresponding error message.
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+		// get the value of the component we are really interested in....
+		UIComponent component = context.getViewRoot().findComponent(JSF_COMPONENT_ID);
+		Object componentValue = ((UIInput) component).getValue();
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModules(context, toValidate, value, pomSorter , resourceBundle);
+		pomValidator.validateSelectedModules(context, toValidate, componentValue, pomSorter , resourceBundle);
 	}
+
+	public void initializeDynamicContent() {
+		initializeList();
+	}	
 	
    private HtmlForm form1 = new HtmlForm();
 
@@ -301,6 +326,16 @@ public class UpdateListManager {
     public String button3_action() {
     	return ACTION_CANCEL;
     }
-    
+
+    private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
+
+    public HtmlPanelGroup getGroupPanel1() {
+        return groupPanel1;
+    }
+
+    public void setGroupPanel1(HtmlPanelGroup hpg) {
+        this.groupPanel1 = hpg;
+    }
+
 
 }

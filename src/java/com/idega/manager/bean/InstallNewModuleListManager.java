@@ -1,5 +1,5 @@
 /*
- * $Id: InstallNewModuleListManager.java,v 1.2 2005/01/18 18:20:40 thomas Exp $
+ * $Id: InstallNewModuleListManager.java,v 1.3 2005/01/19 18:24:29 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
@@ -39,15 +40,16 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/18 18:20:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class InstallNewModuleListManager {
 	
 	private static final String JSF_VALUE_REFERENCE_MODULE_MANAGER = "#{ModuleManager}";
 	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
+	private static final String JSF_COMPONENT_ID = "form1:multiSelectListbox1";
 	
 	private static final String ACTION_NEXT = "next";
 	private static final String ACTION_BACK = "back";
@@ -77,7 +79,6 @@ public class InstallNewModuleListManager {
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
-		initializeList();
 	}
 	
 	private void initializeOutputText() {
@@ -91,12 +92,6 @@ public class InstallNewModuleListManager {
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
-	}
-	
-	
-	public void initializeList(List modules) {
-		this.selectedModules = modules;
-		initializeList();
 	}
 	
 	private void initializePomSorter() {
@@ -173,13 +168,23 @@ public class InstallNewModuleListManager {
 	}
 
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
+		// the value of a hidden input is validated because only in this way this method is called even if nothing has been selected.
+		// We could use the attribute "required" but this causes problems with the localization of the corresponding error message.
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+		// get the value of the component we are really interested in....
+		UIComponent component = context.getViewRoot().findComponent(JSF_COMPONENT_ID);
+		Object componentValue = ((UIInput) component).getValue();
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModules(context, toValidate, value, pomSorter , resourceBundle);
+		pomValidator.validateSelectedModules(context, toValidate, componentValue, pomSorter , resourceBundle);
 	}
 	
+	public void initializeDynamicContent(List modules) {
+		this.selectedModules = modules;
+		initializeList();
+	}
+
    private HtmlForm form1 = new HtmlForm();
 
     public HtmlForm getForm1() {
