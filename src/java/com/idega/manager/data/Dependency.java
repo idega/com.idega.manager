@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.2 2004/11/26 17:19:09 thomas Exp $
+ * $Id: Dependency.java,v 1.3 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,29 +9,36 @@
  */
 package com.idega.manager.data;
 
+import java.io.IOException;
+import com.idega.util.StringHandler;
 import com.idega.xml.XMLElement;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class Dependency {
-	
-	private static final String GROUP_ID_BUNDLE = "bundles";
+public class Dependency implements Module  {
 	
 	private static final String GROUP_ID = "groupId";
 	private static final String VERSION = "version";
 	
-	public static Dependency getInstanceForElement(RealPom dependentPom, XMLElement element) {
-		Dependency dependency = new Dependency();
-		dependency.setDependentPom(dependentPom);
+	public static Dependency getInstanceForElement(Pom dependant, XMLElement element) {
 		String tempGroupId = element.getTextTrim(GROUP_ID);
+		Dependency dependency = null;
+		if (DependencyPomBundle.GROUP_ID_BUNDLE.equalsIgnoreCase(tempGroupId))	{
+			dependency = new DependencyPomBundle();
+		}
+		else {
+			dependency = new Dependency();
+		}
 		String tempArtifactId = element.getTextTrim(RealPom.ARTIFACT_ID);
 		String tempVersion = element.getTextTrim(VERSION);
+		dependency.setDependantPom(dependant);
+		dependency.setIsInstalled(dependant.isInstalled());
 		dependency.setGroupId(tempGroupId);
 		dependency.setArtifactId(tempArtifactId);
 		dependency.setVersion(tempVersion);
@@ -42,11 +49,9 @@ public class Dependency {
 	String artifactId = null;
 	String version = null;
 	
-	RealPom dependentPom = null;
+	boolean isInstalled = false;
 	
-	public boolean isBundle() {
-		return GROUP_ID_BUNDLE.equalsIgnoreCase(getGroupId());
-	}
+	Pom dependantPom = null;
 	
 	public String getArtifactId() {
 		return artifactId;
@@ -54,11 +59,11 @@ public class Dependency {
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
-	public RealPom getDependentPom() {
-		return dependentPom;
+	public Pom getDependantPom() {
+		return dependantPom;
 	}
-	public void setDependentPom(RealPom dependentPom) {
-		this.dependentPom = dependentPom;
+	public void setDependantPom(Pom dependantPom) {
+		this.dependantPom = dependantPom;
 	}
 	public String getGroupId() {
 		return groupId;
@@ -71,5 +76,36 @@ public class Dependency {
 	}
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public boolean isInstalled() {
+		return isInstalled;
+	}
+
+	public void setIsInstalled(boolean isInstalled) {
+		this.isInstalled = isInstalled;
+	}
+
+	public String getCurrentVersion() {
+		return getVersion();
+	}
+	
+	public Pom getPom()	throws IOException {
+		return null;
+	}
+	
+	public boolean isIncluded() {
+		return true;
+	}
+	
+	public int compare(Dependency dependency)	{
+		String version1 = getCurrentVersion();
+		String version2 = dependency.getCurrentVersion();
+		return StringHandler.compareVersions(version1, version2);
+	}
+	
+	// you can only compare a dependency with another dependency
+	public int compare(Module module) {
+		return 0;
 	}
 }

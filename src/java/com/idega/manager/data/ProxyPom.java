@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.1 2004/11/26 17:19:09 thomas Exp $
+ * $Id: ProxyPom.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,21 +18,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.idega.manager.business.RepositoryBrowser;
-import com.idega.manager.util.ManagerUtils;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringHandler;
-import com.sun.rsasign.b;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class ProxyPom implements Pom {
+public class ProxyPom extends Pom {
 	
+
 	// see examples: 
 	// com.idega.block.article-20041109.112340.pom
 	// com.idega.core-1.9.1.pom 
@@ -59,13 +58,23 @@ public class ProxyPom implements Pom {
 	
 	private String fileName = null;
 	
+	private String groupId = null;
 	private String artifactId = null;
 	private String currentVersion = null;
 	
 	private boolean snapshot = false;
 	private IWTimestamp timestamp = null;
 	
-	public ProxyPom(String nameOfFile, RepositoryBrowser repositoryBrowser) {
+	boolean isInstalled = false;
+	
+	
+	public static ProxyPom getInstanceOfGroupBundles(String nameOfFile, RepositoryBrowser repositoryBrowser) {
+		return new ProxyPom(RealPom.BUNDLES_GROUP_ID, nameOfFile, repositoryBrowser);
+	}
+	
+	
+	private ProxyPom(String groupId, String nameOfFile, RepositoryBrowser repositoryBrowser) {
+		this.groupId = groupId;
 		this.repositoryBrowser = repositoryBrowser;
 		initialize(nameOfFile);
 	}
@@ -110,6 +119,11 @@ public class ProxyPom implements Pom {
 			currentVersion = tempVersion;
 		}
 	}
+	
+	public String getGroupId()	{
+		return groupId;
+	}
+	
 	public String getArtifactId() {
 		return artifactId;
 	}
@@ -141,10 +155,7 @@ public class ProxyPom implements Pom {
 		return realSubject;
 	}
 	
-	public Pom getPom(Dependency dependency) throws IOException {
-		if (! dependency.isBundle()) {
-			throw new IOException("Dependency does not belong to group bundles");
-		}
+	public Pom getPom(DependencyPomBundle dependency) throws IOException {
 		String dependencyArtifactId = dependency.getArtifactId();
 		StringBuffer buffer = new StringBuffer(dependencyArtifactId);
 		buffer.append(ARTIFACT_ID_VERSION_SEPARATOR);
@@ -152,7 +163,7 @@ public class ProxyPom implements Pom {
 		version = RealPom.isSnapshot(version) ? RealPom.SNAPSHOT : version;
 		buffer.append(version).append(EXTENSION);
 		String pomFileName = repositoryBrowser.convertPomNameIfNecessary(buffer.toString());
-		ProxyPom proxy = new ProxyPom(pomFileName, repositoryBrowser);
+		ProxyPom proxy = ProxyPom.getInstanceOfGroupBundles(pomFileName, repositoryBrowser);
 		return proxy;
 	}
 	
@@ -160,11 +171,31 @@ public class ProxyPom implements Pom {
 		RealPom pom = getRealSubject();
 		return (pom == null) ? null : pom.getDependencies();
 	}
+
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(artifactId).append(" ").append(fileName);
 		return buffer.toString();
 	}
+	
+	public boolean isInstalled() {
+		return isInstalled;
+	}
+	
+	public void setIsInstalled(boolean isInstalled) {
+		this.isInstalled = isInstalled;
+	}
+	
+	public Pom getPom() {
+		return this;
+	}
+	
+	public boolean isIncluded() {
+		return false;
+	}
+	
 
+	
+	
 }

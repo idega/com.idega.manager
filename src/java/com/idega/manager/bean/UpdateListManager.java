@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.3 2004/11/29 18:10:52 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.4 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package com.idega.manager.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,23 +23,26 @@ import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.manager.business.DependencyMatrix;
 import com.idega.manager.business.PomSorter;
 import com.idega.manager.business.PomValidator;
-import com.idega.manager.data.RealPom;
+import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
+import com.idega.manager.data.RealPom;
 import com.idega.manager.util.ManagerUtils;
 import com.idega.util.IWTimestamp;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/29 18:10:52 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class UpdateListManager {
 	
@@ -111,11 +115,40 @@ public class UpdateListManager {
 		 }
 	}
 	
+	public void submitForm(ActionEvent event) {
+		UIComponent component = event.getComponent();
+		UIComponent parentForm = component.getParent();
+		HtmlSelectManyListbox selectManyList = (HtmlSelectManyListbox) parentForm.findComponent("multiSelectListbox1");
+		Object[] selectedValues = selectManyList.getSelectedValues();
+		Map repositoryPoms = pomSorter.getRepositoryPoms();
+		Map selectedPoms = new HashMap();
+		for (int i = 0; i < selectedValues.length; i++) {
+			Pom pom = (Pom) repositoryPoms.get(selectedValues[i]);
+			String artifactId = pom.getArtifactId();
+			selectedPoms.put(artifactId, pom);
+		}
+		DependencyMatrix matrix = new DependencyMatrix();
+		Iterator iterator = selectedPoms.values().iterator();
+		while (iterator.hasNext()) {
+			Pom pom = (Pom) iterator.next();
+			matrix.addEntry(pom);
+		}
+		Map installedPoms = pomSorter.getSortedInstalledPoms();
+		Iterator installedPomsIterator = installedPoms.values().iterator();
+		while (installedPomsIterator.hasNext()) {
+			Pom pom = (Pom) installedPomsIterator.next();
+			matrix.addEntry(pom);
+		}
+		List list = matrix.getListOfModulesToBeInstalled();
+		list.size();
+	}
+ 
+	
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModules(context, toValidate, value, pomSorter, resourceBundle);
+		pomValidator.validateSelectedModules(context, toValidate, value, resourceBundle);
 	}
 	
    private HtmlForm form1 = new HtmlForm();

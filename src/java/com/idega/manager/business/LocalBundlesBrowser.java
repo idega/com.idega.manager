@@ -1,5 +1,5 @@
 /*
- * $Id: LocalBundlesBrowser.java,v 1.1 2004/11/26 17:19:09 thomas Exp $
+ * $Id: LocalBundlesBrowser.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.FileUtil;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LocalBundlesBrowser {
 	
@@ -54,10 +54,8 @@ public class LocalBundlesBrowser {
 			File projectFile = new File(folder, RealPom.POM_FILE);
 			if (projectFile.exists()) {
 				try {
-					RealPom pom = RealPom.getPom(projectFile);
+					RealPom pom = RealPom.getInstalledPomOfGroupBundles(projectFile);
 					poms.add(pom);
-					List list = pom.getDependencies();
-					list.size();
 				}
 				catch (IOException ex) {
 					Logger logger = getLogger();

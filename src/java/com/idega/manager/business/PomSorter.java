@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.1 2004/11/26 17:19:09 thomas Exp $
+ * $Id: PomSorter.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,18 +18,17 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import com.idega.manager.data.RealPom;
+import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
-import com.idega.util.IWTimestamp;
-import com.idega.util.StringHandler;
+import com.idega.manager.data.RealPom;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PomSorter {
 	
@@ -59,20 +58,27 @@ public class PomSorter {
 			String artifactId = proxy.getArtifactId();
 			if (sortedInstalledPom.containsKey(artifactId)) {
 				RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
-				if (proxy.isSnapshot()) {
-					IWTimestamp installedTimestamp = pom.getTimesstamp();
-					IWTimestamp repositoryTimestamp = proxy.getTimestamp();
-					if (repositoryTimestamp == null || installedTimestamp.compareTo(repositoryTimestamp) < 0) {
-						putPom(artifactId, proxy);
-					}
+				if (proxy.compare(pom) > 0) {
+					putPom(artifactId, proxy);
 				}
-				else {
-					String installedVersion = pom.getCurrentVersion();
-					String repositoryVersion = proxy.getCurrentVersion();
-					if (StringHandler.compareVersions(installedVersion, repositoryVersion) < 0) {
-						putPom(artifactId, proxy);
-					}
-				}
+//				if (proxy.isSnapshot()) {
+//					IWTimestamp installedTimestamp = pom.getTimestamp();
+//					IWTimestamp repositoryTimestamp = proxy.getTimestamp();
+//					if (repositoryTimestamp == null || installedTimestamp.compareTo(repositoryTimestamp) < 0) {
+//						putPom(artifactId, proxy);
+//						int k = proxy.compare(pom);
+//						k++;
+//					}
+//				}
+//				else {
+//					String installedVersion = pom.getCurrentVersion();
+//					String repositoryVersion = proxy.getCurrentVersion();
+//					if (StringHandler.compareVersions(installedVersion, repositoryVersion) < 0) {
+//						putPom(artifactId, proxy);
+//						int k = proxy.compare(pom);
+//						k++;
+//					}
+//				}
 			}
 		}
 	}
@@ -90,28 +96,9 @@ public class PomSorter {
 			Comparator comparator = new Comparator() {
 				
 				public int compare(Object proxy1, Object proxy2) {
-					ProxyPom pomProxy1 = (ProxyPom) proxy1;
-					ProxyPom pomProxy2 = (ProxyPom) proxy2;
-					if (pomProxy1.isSnapshot() && pomProxy2.isSnapshot()) {
-						IWTimestamp timestamp1 = pomProxy1.getTimestamp();
-						IWTimestamp timestamp2 = pomProxy2.getTimestamp();
-						if (timestamp1 == null) {
-							return 1;
-						}
-						if (timestamp2 == null) {
-							return -1;
-						}
-						return timestamp1.compareTo(timestamp2);
-					}
-					if (pomProxy1.isSnapshot()) {
-						return 1;
-					}
-					if (pomProxy2.isSnapshot()) {
-						return -1;
-					}
-					String version1 = pomProxy1.getCurrentVersion();
-					String version2 = pomProxy2.getCurrentVersion();
-					return StringHandler.compareVersions(version1, version2);
+					Pom pom1 = (Pom) proxy1;
+					Pom pom2 = (Pom) proxy2;
+					return pom1.compare(pom2);
 				}
 			};
 			 pomSet = new TreeSet(comparator);

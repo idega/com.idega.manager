@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.1 2004/11/26 17:19:09 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RepositoryBrowser {
 	
@@ -195,7 +195,7 @@ public class RepositoryBrowser {
 					if (c == HTML_LINK_END_PATTERN) {
 						// yes it is, store the name and reset the buffer and read variable
 						String fileName = buffer.toString();
-						ProxyPom pomProxy = new ProxyPom(fileName, this);
+						ProxyPom pomProxy = ProxyPom.getInstanceOfGroupBundles(fileName, this);
 						poms.add(pomProxy);
 						buffer = null;
 						read = false;

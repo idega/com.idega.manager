@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.1 2004/11/26 17:19:09 thomas Exp $
+ * $Id: RealPom.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,13 +24,14 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class RealPom implements Pom {
+public class RealPom extends Pom {
 	
+	public static final String BUNDLES_GROUP_ID = "bundles";	
 
 	public static final String SNAPSHOT = "SNAPSHOT";
 	
@@ -39,6 +40,7 @@ public class RealPom implements Pom {
 	public static final String POM_FILE = "project.xml";
 	
 	private static final String EXTEND = "extend";
+	private static final String GROUP_ID = "groupId";
 	static final String ARTIFACT_ID = "artifactId";
 	private static final String CURRENT_VERSION = "currentVersion";
 	private static final String DEPENDENCY = "dependency";
@@ -47,6 +49,14 @@ public class RealPom implements Pom {
 	private static final String MANIFEST_PATH = "./META-INF/MANIFEST.MF";
 	private static final String BASE_PROJECT_PATH = "../com.idega.core.bundle";
 	private static final String BASE_PROJECT_VARIABLE = "${base.project.dir}";
+	
+	public static RealPom getInstalledPomOfGroupBundles(File projectFile) throws IOException {
+		RealPom pom = getPom(projectFile);
+		pom.setIsInstalled(true);
+		// save time....
+		pom.groupId = BUNDLES_GROUP_ID;	
+		return pom;
+	}
 	
 	public static RealPom getPom(File projectFile) throws IOException {
 		XMLData pomData = createXMLData(projectFile);
@@ -84,11 +94,14 @@ public class RealPom implements Pom {
 		return StringHandler.contains(version.toUpperCase(), SNAPSHOT);
 	}
 	
+	boolean isInstalled = false;
+	
 	private File projectFile = null;
 	
 	private XMLData xmlData = null;
 	private XMLElement root = null;
 	
+	private String groupId = null;
 	private String artifactId = null;
 	private String currentVersion = null;
 	
@@ -112,9 +125,16 @@ public class RealPom implements Pom {
 		this.timesstamp = timestamp;
 	}
 	
+	public String getGroupId() {
+		if (groupId == null) {
+			groupId = getRoot().getTextTrim(GROUP_ID);
+		}
+		return groupId;
+	}
+	
 	public String getArtifactId() {
 		if (artifactId == null) {
-			artifactId = getRoot().getText(ARTIFACT_ID);
+			artifactId = getRoot().getTextTrim(ARTIFACT_ID);
 		}
 		return artifactId;
 	}
@@ -125,7 +145,7 @@ public class RealPom implements Pom {
 	
 	public String getCurrentVersion() {
 		if (currentVersion == null) { 
-			currentVersion = getRoot().getText(CURRENT_VERSION);
+			currentVersion = getRoot().getTextTrim(CURRENT_VERSION);
 			snapshot = RealPom.isSnapshot(currentVersion);
 			if (snapshot) {
 				currentVersion = StringHandler.remove(currentVersion, SNAPSHOT);
@@ -156,19 +176,18 @@ public class RealPom implements Pom {
 		return dependencies;
 	}
 	
-	public Pom getPom(Dependency dependency) throws IOException {
-		if (! dependency.isBundle()) {
-			throw new IOException("Dependency does not belong to group bundles");
-		}
+	public Pom getPom(DependencyPomBundle dependency) throws IOException {
 		String dependencyArtifactId = dependency.getArtifactId();
 		String moduleName = StringHandler.concat(dependencyArtifactId, BUNDLE_SUFFIX);
 		File bundlesFolder = projectFile.getParentFile().getParentFile();
 		File module = new File(bundlesFolder, moduleName);
 		File dependencyProjectFile = new File(module, RealPom.POM_FILE);
-		return RealPom.getPom(dependencyProjectFile);
+		Pom pom = RealPom.getPom(dependencyProjectFile);
+		pom.setIsInstalled(isInstalled());
+		return pom;
 	}
 
-	public IWTimestamp getTimesstamp() {
+	public IWTimestamp getTimestamp() {
 		return timesstamp;
 	}
 	
@@ -176,5 +195,25 @@ public class RealPom implements Pom {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(getArtifactId()).append(" ").append(currentVersion).append(" ").append(timesstamp);
 		return buffer.toString();
+	}
+	
+	public boolean isInstalled() {
+		return isInstalled;
+	}
+	
+	public void setIsInstalled(boolean isInstalled) {
+		this.isInstalled = isInstalled;
+	}
+	
+	public boolean isBundle() {
+		return BUNDLES_GROUP_ID.equalsIgnoreCase(getGroupId());
+	}
+
+	public Pom getPom() {
+		return this;
+	}
+	
+	public boolean isIncluded() {
+		return false;
 	}
 }
