@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <extend>${base.project.dir}/base-project.xml</extend>
+  <name>idegaWeb Manager</name>
+  <artifactId>com.idega.manager</artifactId>
+  <currentVersion>0.1.0-SNAPSHOT</currentVersion>
+  <inceptionYear>2004</inceptionYear>
+  <shortDescription>Manager</shortDescription>
+  <description>idegaWeb manager is a manager for updating and installing modules</description>
+  <versions>
+  </versions>  
+  <developers>
+    <developer>
+      <id>tryggvil</id>
+      <name>Tryggvi Larusson</name>
+      <email>tryggvi@idega.is</email>
+      <organization>idega software</organization>
+      <roles/>
+    </developer>
+    <developer>
+      <id>thomas</id>
+      <name>Thomas Hilbig</name>
+      <email>thomas.hilbig@idega.is</email>
+      <organization/>
+      <roles/>
+    </developer>
+  </developers>
+  <dependencies>
+     <dependency>
+      <groupId>maven</groupId>
+      <artifactId>wagon-api</artifactId>
+      <version>1.0-alpha-1</version>
+      <type>jar</type>
+      <url>http://maven.apache.org/</url>
+      <properties>
+        <idegaweb.bundle.include>true</idegaweb.bundle.include>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
+      <version>1.0-alpha-1-SNAPSHOT</version>
+      <type>jar</type>
+      <url>http://maven.apache.org/</url>
+      <properties>
+        <idegaweb.bundle.include>true</idegaweb.bundle.include>
+      </properties>
+    </dependency>
+     <dependency>
+      <groupId>jug</groupId>
+      <artifactId>jug</artifactId>
+      <version>1.1</version>
+      <type>jar</type>
+      <url>http://www.doomdark.org/doomdark/proj/jug/</url>
+    </dependency>
+    <dependency>
+      <groupId>myfaces</groupId>
+      <artifactId>jsf-api</artifactId>
+      <version>1.0</version>
+      <type>jar</type>
+      <url>http://java.sun.com/j2ee/javaserverfaces/</url>
+      <properties/>
+    </dependency>
+    <dependency>
+      <groupId>bundles</groupId>
+      <artifactId>com.idega.core</artifactId>
+     <!-- <version>1.9.1</version>-->
+      <version>SNAPSHOT</version>
+      <type>jar</type>
+      <url>http://www.idega.com/</url>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>  
+    </dependencies>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+    <unitTest>
+      <includes>
+        <include>**/*Test.java</include>
+      </includes>
+    </unitTest>
+  </build>
+</project>

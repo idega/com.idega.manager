@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <classpath>
+  <classpathentry excluding="" kind="src" path="src/java">
+  </classpathentry>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/maven/jars/wagon-api-1.0-alpha-1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/maven/jars/wagon-http-lightweight-1.0-alpha-1-SNAPSHOT.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/jug/jars/jug-1.1.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/jsf-api-1.0.jar">
+  </classpathentry>
+  <classpathentry kind="src" path="/com.idega.core">
   </classpathentry>
   <classpathentry kind="output" path="target/classes">
   </classpathentry>
