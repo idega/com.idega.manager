@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.7 2005/01/10 14:31:55 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.8 2005/02/23 18:02:17 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,16 +13,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.util.ManagerUtils;
 import com.idega.util.StringHandler;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -147,5 +148,40 @@ public class DependencyPomBundle extends Dependency {
 		}
 		return isSnapshot.booleanValue();
 	}
+
+	public String getCurrentVersionForLabel(IWResourceBundle resourceBundle) {
+		Pom tempPom = null;
+		try {
+			tempPom = getPom();
+		}
+		catch (IOException ex) {
+			String problem = resourceBundle.getLocalizedString("man_manager_could_not_ figure_out_version","Could not figure out version");
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(problem);
+			buffer.append(" ");
+			buffer.append(getCurrentVersion());
+			return buffer.toString();
+		}
+		return tempPom.getCurrentVersionForLabel(resourceBundle);
+	}
 	
+	public String getNameForLabel(IWResourceBundle resourceBundle) {
+		Pom tempPom = null;
+		try {
+			tempPom = getPom();
+		}
+		catch (IOException ex) {
+			String problem = resourceBundle.getLocalizedString("man_manager_could_not_ figure_out_name_for","Could not figure out name for");
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(problem);
+			buffer.append(" ");
+			buffer.append(getArtifactId());
+			buffer.append(" (");
+			buffer.append(getGroupId());
+			buffer.append(")");
+			return buffer.toString();
+		}
+		return tempPom.getNameForLabel(resourceBundle);
+	}
+
 }

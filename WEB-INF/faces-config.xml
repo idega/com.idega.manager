@@ -5,6 +5,13 @@
   "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
 
 <faces-config>
+
+
+	<managed-bean>
+		<managed-bean-name>LoginManager</managed-bean-name>
+		<managed-bean-class>com.idega.manager.bean.LoginManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
 	<managed-bean>
 		<managed-bean-name>InstallOrUpdateManager</managed-bean-name>
 		<managed-bean-class>com.idega.manager.bean.InstallOrUpdateManager</managed-bean-class>
@@ -36,74 +43,89 @@
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<navigation-rule>
+  		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/LoginManager.jsp</from-view-id>
+  		<navigation-case>
+    	<from-outcome>next</from-outcome>
+    	<to-view-id>/workspace/manager/Install/InstallUpdate/</to-view-id>
+  		</navigation-case>
+  		<navigation-case>
+    	<from-outcome>cancel</from-outcome>
+    	<to-view-id>/workspace/</to-view-id>
+  		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallOrUpdateManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>updateModules</from-outcome>
-    	<to-view-id>/workspace/manager/update/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/Update/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>installNewModules</from-outcome>
-    	<to-view-id>/workspace/manager/newModules/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/NewModule/</to-view-id>
+  		</navigation-case>
+ 		<navigation-case>
+    	<from-outcome>cancel</from-outcome>
+    	<to-view-id>/workspace/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/UpdateListManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>next</from-outcome>
-    	<to-view-id>/workspace/manager/commit/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/Commit/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>back</from-outcome>
-    	<to-view-id>/workspace/manager/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/InstallUpdate/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>cancel</from-outcome>
-    	<to-view-id>/workspace/manager/</to-view-id>
+    	<to-view-id>/workspace/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/ModuleManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>backUpdate</from-outcome>
-    	<to-view-id>/workspace/manager/update/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/Update/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>backInstall</from-outcome>
-    	<to-view-id>/workspace/manager/newModuleVersion/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/NewModuleVersion/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>cancel</from-outcome>
-    	<to-view-id>/workspace/manager/</to-view-id>
+    	<to-view-id>/workspace/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallListManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>next</from-outcome>
-    	<to-view-id>/workspace/manager/newModuleVersion/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/NewModuleVersion/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>back</from-outcome>
-    	<to-view-id>/workspace/manager/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/InstallUpdate/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>cancel</from-outcome>
-    	<to-view-id>/workspace/manager/</to-view-id>
+    	<to-view-id>/workspace/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallNewModuleListManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>next</from-outcome>
-    	<to-view-id>/workspace/manager/commit/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/Commit/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>back</from-outcome>
-    	<to-view-id>/workspace/manager/newModules/</to-view-id>
+    	<to-view-id>/workspace/manager/Install/NewModule/</to-view-id>
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>cancel</from-outcome>
-    	<to-view-id>/workspace/manager/</to-view-id>
+    	<to-view-id>/workspace/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 </faces-config>

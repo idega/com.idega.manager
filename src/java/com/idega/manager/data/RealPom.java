@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.5 2005/01/07 11:03:35 thomas Exp $
+ * $Id: RealPom.java,v 1.6 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.util.ManagerConstants;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
@@ -25,10 +26,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RealPom extends Pom {
 	
@@ -42,6 +43,7 @@ public class RealPom extends Pom {
 	
 	private static final String EXTEND = "extend";
 	private static final String GROUP_ID = "groupId";
+	private static final String NAME = "name";
 	static final String ARTIFACT_ID = "artifactId";
 	private static final String CURRENT_VERSION = "currentVersion";
 	private static final String DEPENDENCY = "dependency";
@@ -249,5 +251,23 @@ public class RealPom extends Pom {
 	
 	public boolean isIncluded() {
 		return false;
+	}
+	
+	public String getNameForLabel(IWResourceBundle resourceBundle) {
+		String tempName = getRoot().getTextTrim(NAME);
+		String tempArtifactId = getRoot().getTextTrim(ARTIFACT_ID);
+		String id = resourceBundle.getLocalizedString("man_manager_id","Id");
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(tempName).append(", ");
+		buffer.append(id).append(": ").append(tempArtifactId);
+		return buffer.toString();
+	}
+	
+	public String getCurrentVersionForLabel(IWResourceBundle resourceBundle) {
+		String tempCurrentVersion = getRoot().getTextTrim(CURRENT_VERSION);
+		String version = resourceBundle.getLocalizedString("man_manager_version","Version");
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(version).append(" ").append(tempCurrentVersion);
+		return buffer.toString();
 	}
 }

@@ -6,8 +6,8 @@
                 <meta content="no-cache" http-equiv="Cache-Control"/>
                 <meta content="no-cache" http-equiv="Pragma"/>
                 <title>InstallListManager</title>
-                <link href="../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
                 <link href="../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
+                <link href="../../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
             </head>
             <body class="wf_body" style="-rave-layout: grid">
             	<h:panelGroup binding="#{InstallListManager.groupPanel1}" id="groupPanel1" style="height: 144px; left: 48px; top: 4px; position: absolute; width: 312px">

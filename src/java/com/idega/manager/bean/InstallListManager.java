@@ -1,5 +1,5 @@
 /*
- * $Id: InstallListManager.java,v 1.2 2005/01/19 18:24:29 thomas Exp $
+ * $Id: InstallListManager.java,v 1.3 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,9 +12,12 @@ package com.idega.manager.bean;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
@@ -26,31 +29,26 @@ import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.business.PomSorter;
 import com.idega.manager.business.PomValidator;
+import com.idega.manager.data.ProxyPom;
+import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
+import com.idega.util.datastructures.SortedByValueMap;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class InstallListManager {
 	
-	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
-	private static final String JSF_VALUE_REFERENCE_INSTALL_NEW_MODULE_LIST_MANAGER = "#{InstallNewModuleListManager}";
-	private static final String JSF_COMPONENT_ID = "form1:multiSelectListbox1";
-	
-	private static final String ACTION_NEXT = "next";
-	private static final String ACTION_BACK = "back";
-	private static final String ACTION_CANCEL = "cancel";
-	
-	private ManagerUtils managerUtils;
+	private IWResourceBundle resourceBundle;
 	private PomValidator pomValidator = null;
 	private PomSorter pomSorter = null;
 	
@@ -65,7 +63,7 @@ public class InstallListManager {
 	}
 	
 	private void initialize() {
-		managerUtils = ManagerUtils.getInstanceForCurrentContext();
+		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
@@ -73,33 +71,28 @@ public class InstallListManager {
 	
 	private void initializePomSorter() {
 		if (pomSorter == null) {
-			InstallOrUpdateManager installOrUpdateManager = (InstallOrUpdateManager) managerUtils.getValue(JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER);
-			if (installOrUpdateManager != null) {
-				pomSorter = installOrUpdateManager.getPomSorter();
-			}
+			pomSorter = ManagerUtils.getPomSorter();
 		}
 	}
 	
 	
 	private void initializeOutputText() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_select _new_modules","Select new modules you wish to install");
 	}
 
 	private void initializeSubmitButtons() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	private void initializeList() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		 multiSelectListbox1DefaultItems = new ArrayList();
 		 String errorMessage = null;
+			RepositoryLogin repositoryLogin = ManagerUtils.getRepositoryLogin();
 		 try {
-		 	pomSorter.initializeInstalledPomsAndAvailableNewModules(); 
+		 	pomSorter.initializeInstalledPomsAndAvailableNewModules(repositoryLogin); 
 		 }
 		 catch (IOException ex) {
 		 	errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
@@ -120,12 +113,23 @@ public class InstallListManager {
 		}
 		 
 		 Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableNewModules();
+		 Map listItems = new HashMap();
 		 Iterator iterator = repositoryPom.keySet().iterator();
 		 while (iterator.hasNext()) {
 		 	String artifactId = (String) iterator.next();
-		 	SelectItem item = new SelectItem(artifactId, artifactId);
-			 multiSelectListbox1DefaultItems.add(item);		 	
-		 }
+		 	Set pomSet = (Set) repositoryPom.get(artifactId);
+		 	ProxyPom proxyPom = (ProxyPom) pomSet.iterator().next();
+		 	String name = proxyPom.getNameForLabel(resourceBundle);
+		 	SelectItem item = new SelectItem(artifactId, name);
+	 	 	listItems.put(item, name);
+	 	}
+		Locale locale = resourceBundle.getLocale();
+		SortedByValueMap sortedMap = new SortedByValueMap(listItems, locale);
+		Iterator valueIterator = sortedMap.keySet().iterator();
+		while (valueIterator.hasNext()) {
+			SelectItem item = (SelectItem) valueIterator.next();
+			 multiSelectListbox1DefaultItems.add(item);	
+		}
 	}
 	
 	public void submitForm(ActionEvent event) {
@@ -134,7 +138,7 @@ public class InstallListManager {
 		HtmlSelectManyListbox selectManyList = (HtmlSelectManyListbox) parentForm.findComponent("multiSelectListbox1");
 		Object[] selectedValues = selectManyList.getSelectedValues();
 		List selectedModules = Arrays.asList(selectedValues);
-		InstallNewModuleListManager installNewModuleListManager = (InstallNewModuleListManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_INSTALL_NEW_MODULE_LIST_MANAGER);
+		InstallNewModuleListManager installNewModuleListManager = ManagerUtils.getInstallNewModuleListManager();
 		if (installNewModuleListManager != null) {
 			installNewModuleListManager.initializeDynamicContent(selectedModules);
 		}
@@ -143,9 +147,8 @@ public class InstallListManager {
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
 		// the value of a hidden input is validated because only in this way this method is called even if nothing has been selected.
 		// We could use the attribute "required" but this causes problems with the localization of the corresponding error message.
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		// get the value of the component we are really interested in....
-		UIComponent component = context.getViewRoot().findComponent(JSF_COMPONENT_ID);
+		UIComponent component = context.getViewRoot().findComponent(ManagerConstants.JSF_COMPONENT_ID_MULTI_SELECT_1);
 		Object componentValue = ((UIInput) component).getValue();
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
@@ -267,16 +270,16 @@ public class InstallListManager {
     }
     
     public String button1_action() {
-    	return ACTION_BACK;
+    	return ManagerConstants.ACTION_BACK;
     }
     
     public String button2_action() {
-    	return ACTION_NEXT;
+    	return ManagerConstants.ACTION_NEXT;
     }    
     
     
     public String button3_action() {
-    	return ACTION_CANCEL;
+    	return ManagerConstants.ACTION_CANCEL;
     }
 
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();

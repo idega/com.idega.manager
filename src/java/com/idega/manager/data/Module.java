@@ -1,5 +1,5 @@
 /*
- * $Id: Module.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
+ * $Id: Module.java,v 1.6 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,14 +11,15 @@ package com.idega.manager.data;
 
 import java.io.File;
 import java.io.IOException;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public interface Module {
 	
@@ -43,6 +44,11 @@ public interface Module {
 	String getArtifactId();
 
 	String getCurrentVersion();
+	
+	// returns the unchanged original version string
+	String getCurrentVersionForLabel(IWResourceBundle resourceBundle);
+	
+	String getNameForLabel(IWResourceBundle resourceBundle);
 	
 	Pom getPom() throws IOException;
 	

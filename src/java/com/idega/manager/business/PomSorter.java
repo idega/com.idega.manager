@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.11 2005/01/20 13:04:40 thomas Exp $
+ * $Id: PomSorter.java,v 1.12 2005/02/23 18:02:18 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,17 +23,18 @@ import com.idega.manager.data.Module;
 import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RealPom;
+import com.idega.manager.data.RepositoryLogin;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/20 13:04:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:18 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class PomSorter {
-	
+
 	//key: artifactId String value: List of Files
 	Map bundlesTagLibraries = null;
 	
@@ -57,14 +58,14 @@ public class PomSorter {
 	List errorMessages = null;
 	
 
-	public void initializeInstalledPomsAndAvailableUpdates() throws IOException { 
+	public void initializeInstalledPomsAndAvailableUpdates(RepositoryLogin repositoryLogin) throws IOException { 
 		findInstalledPoms();
-		findAvailableUpdates();
+		findAvailableUpdates(repositoryLogin);
 	}
 	
-	public void initializeInstalledPomsAndAvailableNewModules() throws IOException {
+	public void initializeInstalledPomsAndAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
 		findInstalledPoms();
-		findAvailableNewModules();
+		findAvailableNewModules(repositoryLogin);
 	}
 		
 		
@@ -82,10 +83,10 @@ public class PomSorter {
 		}
 	}
 		
-	private void findAvailableUpdates() throws IOException {
+	private void findAvailableUpdates(RepositoryLogin repositoryLogin) throws IOException {
 		//if (true) throw new IOException("test");
-		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
-		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
+		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
+		List allPoms = repositoryBrowser.getPomsSynchronizingBundleArchivesFolderAndPomsFolder();
 		sortedRepositoryPomAvailableUpdates = new HashMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
@@ -94,7 +95,8 @@ public class PomSorter {
 			if (sortedInstalledPom.containsKey(artifactId)) {
 				RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
 				// fetch only poms that are newer than the installed ones
-				if (proxy.compare(pom) > 0) {
+				// and fetch additionally versions if the installed one is a snapshot
+				if (proxy.compare(pom) > 0 || (pom.isSnapshot() && ! proxy.isSnapshot())) {
 					putPom(artifactId, proxy, sortedRepositoryPomAvailableUpdates);
 				}
 			}
@@ -102,10 +104,10 @@ public class PomSorter {
 	}
 	
 	
-	private void findAvailableNewModules() throws IOException {
+	private void findAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
 		//if (true) throw new IOException("test");
-		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
-		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
+		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
+		List allPoms= repositoryBrowser.getPomsSynchronizingBundleArchivesFolderAndPomsFolder();
 		sortedRepositoryPomAvailableNewModules = new TreeMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {

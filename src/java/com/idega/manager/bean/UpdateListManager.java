@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.14 2005/01/20 13:04:40 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.15 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -34,79 +35,68 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.business.DependencyMatrix;
 import com.idega.manager.business.PomSorter;
 import com.idega.manager.business.PomValidator;
+import com.idega.manager.data.Module;
 import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
-import com.idega.manager.data.RealPom;
+import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
-import com.idega.util.IWTimestamp;
+import com.idega.util.datastructures.SortedByValueMap;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/20 13:04:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class UpdateListManager {
 	
-	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
-	private static final String JSF_VALUE_REFERENCE_MODULE_MANAGER = "#{ModuleManager}";
-	private static final String JSF_COMPONENT_ID = "form1:multiSelectListbox1";
+	protected IWResourceBundle resourceBundle;
+	protected PomValidator pomValidator = null;
+	protected PomSorter pomSorter = null;
 	
-	private static final String ACTION_NEXT = "next";
-	private static final String ACTION_BACK = "back";
-	private static final String ACTION_CANCEL = "cancel";
-	
-	private ManagerUtils managerUtils;
-	private PomValidator pomValidator = null;
-	private PomSorter pomSorter = null;
-	
-	private String outputText1Value;
-	private String outputText2Value;
-	private String button1Label;
-	private String button2Label;
-	private String button3Label;
+	protected String outputText1Value;
+	protected String outputText2Value;
+	protected String button1Label;
+	protected String button2Label;
+	protected String button3Label;
 	
 	public UpdateListManager() {
 		initialize();
 	}
 	
-	private void initialize() {
-		managerUtils = ManagerUtils.getInstanceForCurrentContext();
+	protected void initialize() {
+		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
 	}
 
-	private void initializePomSorter() {
+	protected void initializePomSorter() {
 		if (pomSorter == null) {
-			InstallOrUpdateManager installOrUpdateManager = (InstallOrUpdateManager) managerUtils.getValue(JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER);
-			if (installOrUpdateManager != null) {
-				pomSorter = installOrUpdateManager.getPomSorter();
-			}
+			pomSorter = ManagerUtils.getPomSorter();
 		}
 	}
 	
-	private void initializeOutputText() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+	protected void initializeOutputText() {
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_select _updates","Select updates");
 	}
 
-	private void initializeSubmitButtons() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+	protected void initializeSubmitButtons() {
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
-	private void initializeList() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+	protected void initializeList() {
 		multiSelectListbox1DefaultItems = new ArrayList();
 		String errorMessage = null;
 		try {
-			pomSorter.initializeInstalledPomsAndAvailableUpdates();
+			RepositoryLogin repositoryLogin = ManagerUtils.getRepositoryLogin();
+			pomSorter.initializeInstalledPomsAndAvailableUpdates(repositoryLogin);
 		}
 		catch (IOException ex) {
 			errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
@@ -128,37 +118,74 @@ public class UpdateListManager {
 	 	
 		SortedMap sortedInstalledPom = pomSorter.getSortedInstalledPoms();
 		Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableUpdates();
-		Iterator iterator = sortedInstalledPom.keySet().iterator();
+		fillList(sortedInstalledPom.keySet(), repositoryPom, sortedInstalledPom);
+	}
+		
+	protected void fillList(Collection	keys, Map repositoryPom, Map groupItemMap) {
+		Map listItems = new HashMap();
+		Iterator iterator = keys.iterator();
 		while (iterator.hasNext()) {
 		 	String artifactId = (String) iterator.next();
 		 	SortedSet pomProxies = (SortedSet) repositoryPom.get(artifactId);
 		 	SelectItem[] items = null;
-		 	if (pomProxies == null) {
-		 		items = new SelectItem[0];
-		 	}
-		 	else {
+		 	if (pomProxies != null) {
 		 		Iterator pomProxiesIterator = pomProxies.iterator();
+			 	Module pom = getModuleGroupItem(groupItemMap, artifactId);
 		 		items = new SelectItem[pomProxies.size()];
-			 	int i = 0;
+			 	int i = items.length;
 			 	while (pomProxiesIterator.hasNext()) {
 			 		ProxyPom proxy = (ProxyPom) pomProxiesIterator.next();
 			 		// file is used as identifier
 			 		String fileName = proxy.getFileName();
-			 		IWTimestamp timestamp = proxy.getTimestamp();
-			 		String label = (timestamp == null) ? proxy.getCurrentVersion() : timestamp.toString(true);
-			 		items[i++] = new SelectItem(fileName, label);
+			 		String label = getLabelForItem(pom, proxy);
+			 		items[--i] = new SelectItem(fileName, label);
 			 	}
+			 	String label = getLabelForItemGroup(pom);
+			 	SelectItemGroup itemGroup = new SelectItemGroup(label, null, true, items);
+			 	listItems.put(itemGroup, label);
 		 	}
-		 	RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
-		 	String currentVersion = pom.getCurrentVersion();
-		 	StringBuffer buffer = new StringBuffer();
-		 	buffer.append(artifactId).append(" ").append(currentVersion);
-		 	multiSelectListbox1DefaultItems.add(new SelectItemGroup(buffer.toString(), null, true, items));		 	
+		}
+		Locale locale = resourceBundle.getLocale();
+		SortedByValueMap sortedMap = new SortedByValueMap(listItems, locale);
+		Iterator valueIterator = sortedMap.keySet().iterator();
+		while (valueIterator.hasNext()) {
+			SelectItemGroup selectItemGroup = (SelectItemGroup) valueIterator.next();
+			multiSelectListbox1DefaultItems.add(selectItemGroup);		 	
 		}
 	}
 	
+	protected String getLabelForItemGroup(Module groupModule) {
+	 	String pomName = groupModule.getNameForLabel(resourceBundle);
+	 	String pomVersion = groupModule.getCurrentVersionForLabel(resourceBundle);
+	 	StringBuffer buffer = new StringBuffer();
+	 	buffer.append(pomName);
+	 	buffer.append(", ");
+	 	buffer.append(pomVersion);
+	 	return buffer.toString();
+	}
+	
+	
+	protected String getLabelForItem(Module groupModule, Module itemModule) {
+ 		String label = itemModule.getCurrentVersionForLabel(resourceBundle);
+		// if the installed version is a snapshot do not recommend to install a stable version and vice versa
+ 		if (groupModule.isSnapshot() ^ itemModule.isSnapshot()) {
+ 			String notRecommended = resourceBundle.getLocalizedString("man_manager_not_recommended", "not recommended");
+ 			StringBuffer buffer = new StringBuffer(label);
+ 			buffer.append(" - ").append(notRecommended);
+ 			return buffer.toString();
+ 		}
+ 		return label;
+	}
+	
+	protected Module getModuleGroupItem(Map sortedInstalledPom, String artifactId) {
+		return (Module) sortedInstalledPom.get(artifactId);
+	}
+	
 	public void submitForm(ActionEvent event) {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
+		submitAndSetModuleManager(event, ManagerConstants.ACTION_BACK_UPDATE);
+	}
+		
+	protected void submitAndSetModuleManager(ActionEvent event, String action) {
 		UIComponent component = event.getComponent();
 		UIComponent parentForm = component.getParent();
 		HtmlSelectManyListbox selectManyList = (HtmlSelectManyListbox) parentForm.findComponent("multiSelectListbox1");
@@ -179,10 +206,10 @@ public class UpdateListManager {
 		List errorMessages = dependencyMatrix.hasErrors() ? dependencyMatrix.getErrorMessages() : null;
 		pomSorter.setErrorMessages(errorMessages);
 		pomSorter.setNecessaryPoms(necessaryModules);
-		ModuleManager moduleManager = (ModuleManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_MODULE_MANAGER);
+		ModuleManager moduleManager = ManagerUtils.getModuleManager();
 		if (moduleManager != null) {
 			moduleManager.initializeDynamicContent();
-			moduleManager.setActionBackToUpdateModules();
+			moduleManager.setActionBack(action);
 		}
 	}
  
@@ -190,9 +217,8 @@ public class UpdateListManager {
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
 		// the value of a hidden input is validated because only in this way this method is called even if nothing has been selected.
 		// We could use the attribute "required" but this causes problems with the localization of the corresponding error message.
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		// get the value of the component we are really interested in....
-		UIComponent component = context.getViewRoot().findComponent(JSF_COMPONENT_ID);
+		UIComponent component = context.getViewRoot().findComponent(ManagerConstants.JSF_COMPONENT_ID_MULTI_SELECT_1);
 		Object componentValue = ((UIInput) component).getValue();
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
@@ -224,7 +250,7 @@ public class UpdateListManager {
         this.multiSelectListbox1 = hsml;
     }
 
-    private List multiSelectListbox1DefaultItems = new ArrayList();
+    protected List multiSelectListbox1DefaultItems = new ArrayList();
 
     public List getMultiSelectListbox1DefaultItems() {
         return multiSelectListbox1DefaultItems;
@@ -314,16 +340,15 @@ public class UpdateListManager {
     }
     
     public String button1_action() {
-    	return ACTION_BACK;
+    	return ManagerConstants.ACTION_BACK;
     }
     
     public String button2_action() {
-    	return ACTION_NEXT;
+    	return ManagerConstants.ACTION_NEXT;
     }    
     
-    
     public String button3_action() {
-    	return ACTION_CANCEL;
+    	return ManagerConstants.ACTION_CANCEL;
     }
 
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();

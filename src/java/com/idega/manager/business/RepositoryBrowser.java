@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.6 2005/01/10 14:31:55 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.7 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,16 +9,14 @@
  */
 package com.idega.manager.business;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,6 +26,7 @@ import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.authentication.AuthenticationException;
+import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
 import org.apache.maven.wagon.repository.Repository;
@@ -35,6 +34,7 @@ import org.doomdark.uuid.UUID;
 import org.doomdark.uuid.UUIDGenerator;
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RealPom;
+import com.idega.manager.data.RepositoryLogin;
 import com.idega.manager.util.ManagerUtils;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
@@ -42,10 +42,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RepositoryBrowser {
 	
@@ -55,8 +55,8 @@ public class RepositoryBrowser {
 	private final static char[] HTML_POM_START_PATTERN = "pom\">".toCharArray();
 	private final static char HTML_LINK_END_PATTERN = '<';
 	
-	public static RepositoryBrowser getInstanceForIdegaRepository()	{
-		return new RepositoryBrowser("http://repository.idega.com/maven");
+	public static RepositoryBrowser getInstanceForIdegaRepository(RepositoryLogin repositoryLogin)	{
+		return new RepositoryBrowser(repositoryLogin);
 	}
 	
 	static private Logger getLogger(){
@@ -67,23 +67,47 @@ public class RepositoryBrowser {
 	
 	private File workingDirectory;
 	
-	private String repository;
+	private RepositoryLogin repositoryLogin;
 	
 	private String cachedBundlesPomsURL = null;
 	private String cachedBundlesIwbarsURL = null;
 	// map of file names and files
 	private Map cachedDownloadedFiles = null;
 	
-	public RepositoryBrowser(String repository) {
-		this.repository = repository;
+	public RepositoryBrowser(RepositoryLogin repositoryLogin) {
+		this.repositoryLogin = repositoryLogin;
 	}
 	
-	public List getPomsScanningBundleArchivesFolder() throws IOException {
+	/** Returns names of poms that have a corresponding iwbar file.
+	 * 	Sometimes only the pom file exist but not the corresponding iwbar file and vice versa. 
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public List getPomsSynchronizingBundleArchivesFolderAndPomsFolder() throws IOException {
+		List iwbars = getPomsScanningBundleArchivesFolder();
+		List pomFiles = getPomsScanningPomsFolder();
+		List poms = new ArrayList(iwbars.size());
+		Iterator iterator = iwbars.iterator();
+		while (iterator.hasNext()) {
+			String fileNameWithoutExtension = (String) iterator.next();
+			if (pomFiles.contains(fileNameWithoutExtension)) {
+				// pom and corresponding jar file exist
+				ProxyPom pomProxy = ProxyPom.getInstanceOfGroupBundlesWithoutFileExtension(fileNameWithoutExtension, this);
+				if (! pomProxy.shouldBeIgnored()) {
+					poms.add(pomProxy);
+				}
+			}
+		}
+		return poms;
+	}
+	
+	private List getPomsScanningBundleArchivesFolder() throws IOException {
 		String urlAddress = getURLForBundlesArchives();
 		return getPomProxies(urlAddress, HTML_IWBAR_START_PATTERN);
 	}
 
-	public List getPomsScanningPomsFolder()	throws IOException {
+	private List getPomsScanningPomsFolder()	throws IOException {
 		String urlAddress = getURLForBundlesPoms();
 		return getPomProxies(urlAddress, HTML_POM_START_PATTERN);
 	}
@@ -157,6 +181,7 @@ public class RepositoryBrowser {
 	}
 	
 	private String getURL(String group, String type)  {
+		String repository = repositoryLogin.getRepository();
 		StringBuffer buffer = new StringBuffer(repository);
 		if (! repository.endsWith("/")) {
 			buffer.append('/');
@@ -193,7 +218,8 @@ public class RepositoryBrowser {
 		StringBuffer buffer = null;
 		try {
 			buffer = new StringBuffer();
-			inputStreamReader = getReader(urlAddress);
+			PasswordAuthentication passwordAuthentication = repositoryLogin.getPasswordAuthentication();
+			inputStreamReader = URLReadConnection.getReaderForURLWithAuthentication(urlAddress, passwordAuthentication);
 			int charInt;
 			while ((charInt = inputStreamReader.read()) != -1) {
 				char c = (char) charInt;
@@ -224,39 +250,49 @@ public class RepositoryBrowser {
 	
 	private List getPomProxies(String urlAddress, char[] startPatternChar) throws IOException {
 		InputStreamReader inputStreamReader = null;
-		StringBuffer buffer = null;
+		StringBuffer nameBuffer = null;
 		List poms = new ArrayList();
 		try {
-			inputStreamReader = getReader(urlAddress);
+			PasswordAuthentication passwordAuthentication = repositoryLogin.getPasswordAuthentication();
+			inputStreamReader = URLReadConnection.getReaderForURLWithAuthentication(urlAddress, passwordAuthentication);
 			int charInt;
 			int startPatternLength = startPatternChar.length;
 			int patternCounter = 0;
 			char patternChar =startPatternChar[0];
 			boolean read = false;
+			int readIndex = -1;
+			int dotIndex = 0;
 			while ((charInt = inputStreamReader.read()) != -1) {
 				char c = (char) charInt;
 				// are we reading a name of a file at the moment?
 				if (read) {
+					readIndex++;
 					// yes, we do.....
 					// is the end of the name reached?
 					if (c == HTML_LINK_END_PATTERN) {
 						// yes it is, store the name and reset the buffer and read variable
-						String fileName = buffer.toString();
-						ProxyPom pomProxy = ProxyPom.getInstanceOfGroupBundles(fileName, this);
-						poms.add(pomProxy);
-						buffer = null;
+						String fileName = nameBuffer.substring(0, dotIndex);
+						poms.add(fileName);
+						nameBuffer = null;
 						read = false;
+						dotIndex = 0;
+						readIndex = -1;
 					}
 					else {
-						// append character of name
-						buffer.append(c);
+						// do not append the extension of the name to the nameBuffer:
+						// store the very last index of a dot
+						if (c == '.') {
+							dotIndex = readIndex;
+						}
+						// append character of name to dotBuffer
+						nameBuffer.append(c);
 					}
 				}
 				// check if the start pattern fits
 				else if (c == patternChar) {
 					if (++patternCounter == startPatternLength) {
 						// startpattern discovered
-						buffer = new StringBuffer();
+						nameBuffer = new StringBuffer();
 						read = true;
 						patternCounter = 0;
 					}
@@ -291,14 +327,6 @@ public class RepositoryBrowser {
 		return poms;
 	}
 	
-	private InputStreamReader getReader(String urlAddress) throws MalformedURLException, IOException {
-		URL url = new URL(urlAddress);
-		URLConnection con = url.openConnection();
-		InputStream inputStream = con.getInputStream();
-		BufferedInputStream  buffInputStream = new BufferedInputStream(inputStream);
-		return new InputStreamReader(buffInputStream, "8859_1");
-	}
-	
 	private File downloadFile(String urlAddress, String fileName) throws IOException {
 		// caching of already downloaded files 
 		// (the calling objects are also caching the file but sometimes two different objects are asking for the
@@ -323,6 +351,8 @@ public class RepositoryBrowser {
 		try {
 			Wagon wagon = new LightweightHttpWagon();
 		    Repository localRepository = new Repository();
+		    AuthenticationInfo authenticationInfo = repositoryLogin.getAuthenticationInfo();
+		    localRepository.setAuthenticationInfo(authenticationInfo);
 		    localRepository.setUrl(urlAddress);
 		    if ( !destination.exists() ) {
 			        wagon.connect(localRepository);

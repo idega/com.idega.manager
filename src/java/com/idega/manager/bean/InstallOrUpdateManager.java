@@ -1,5 +1,5 @@
 /*
- * $Id: InstallOrUpdateManager.java,v 1.3 2005/01/19 18:24:29 thomas Exp $
+ * $Id: InstallOrUpdateManager.java,v 1.4 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,24 +20,20 @@ import javax.faces.component.html.HtmlSelectOneRadio;
 import javax.faces.model.SelectItem;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.business.PomSorter;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/19 18:24:29 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class InstallOrUpdateManager {
 	
-	private static final String JSF_VALUE_REFERENCE_INSTALL_LIST_MANAGER = "#{InstallListManager}";
-	private static final String JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER = "#{UpdateListManager}";
-	private static final String INSTALL_NEW_MODULES = "installNewModules";
-	private static final String UPDATE_MODULES = "updateModules";
-	
-	private ManagerUtils managerUtils = null;
+	private IWResourceBundle resourceBundle = null;
 	
 	private String outputText1Value;
 	private String outputText2Value;
@@ -52,7 +48,7 @@ public class InstallOrUpdateManager {
 	}
 	
 	private void initialize() {
-		managerUtils = ManagerUtils.getInstanceForCurrentContext();
+		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
@@ -64,27 +60,23 @@ public class InstallOrUpdateManager {
 	}
 	
 	private void initializeOutputText() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_mamager_choose","Choose one option");
 	}
 
 	private void initializeSubmitButtons() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
-	
 	private void initializeRadioButtons() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		String installNewModules = resourceBundle.getLocalizedString("man_install_new_modules", "Install new modules");
 		String updateModules = resourceBundle.getLocalizedString("man_update_installed_modules","Update installed modules");
 		radioButtonList1DefaultItems = new ArrayList(2);
-		radioButtonList1DefaultItems.add(new SelectItem(INSTALL_NEW_MODULES, installNewModules));
-		radioButtonList1DefaultItems.add( new SelectItem(UPDATE_MODULES, updateModules));
-		radioButtonList1.setValue(INSTALL_NEW_MODULES);
+		radioButtonList1DefaultItems.add(new SelectItem(ManagerConstants.ACTION_INSTALL_NEW_MODULES, installNewModules));
+		radioButtonList1DefaultItems.add( new SelectItem(ManagerConstants.ACTION_UPDATE_MODULES, updateModules));
+		radioButtonList1.setValue(ManagerConstants.ACTION_INSTALL_NEW_MODULES);
 	}
 	
 	public PomSorter getPomSorter() {
@@ -212,18 +204,22 @@ public class InstallOrUpdateManager {
     	
     public String button2_action() {
     	String action = (String) radioButtonList1.getValue();
-    	if (INSTALL_NEW_MODULES.equals(action)) {
-    		InstallListManager installListManager = (InstallListManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_INSTALL_LIST_MANAGER);
+    	if (ManagerConstants.ACTION_INSTALL_NEW_MODULES.equals(action)) {
+    		InstallListManager installListManager = ManagerUtils.getInstallListManager();
     		if (installListManager != null) {
     			installListManager.initializeDynamicContent();
     		}
     	}
-    	else if (UPDATE_MODULES.equals(action)) {
-    		UpdateListManager updateListManager = (UpdateListManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER);
+    	else if (ManagerConstants.ACTION_UPDATE_MODULES.equals(action)) {
+    		UpdateListManager updateListManager = ManagerUtils.getUpdateListManager();
     		if (updateListManager != null) {
     			updateListManager.initializeDynamicContent();
     		}
     	}
     	return action;
+    }
+    
+    public String button3_action() {
+    	return ManagerConstants.ACTION_CANCEL;
     }
 }

@@ -6,8 +6,8 @@
                 <meta content="no-cache" http-equiv="Cache-Control"/>
                 <meta content="no-cache" http-equiv="Pragma"/>
                 <title>InstallNewModuleListManager</title>
-                <link href="../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
                 <link href="../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
+                <link href="../../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
             </head>
             <body class="wf_body" style="-rave-layout: grid">
                 <h:form binding="#{InstallNewModuleListManager.form1}" id="form1" style="height: 592px; width: 857px">

@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.9 2005/01/10 14:31:55 thomas Exp $
+ * $Id: Dependency.java,v 1.10 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,16 +11,17 @@ package com.idega.manager.data;
 
 import java.io.File;
 import java.io.IOException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.StringHandler;
 import com.idega.xml.XMLElement;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Dependency implements Module  {
 	
@@ -142,5 +143,18 @@ public class Dependency implements Module  {
 	public int compare(Module module) {
 		// change algebraic sign of returned result
 		return - (module.compare(this));
+	}
+	
+	public String getCurrentVersionForLabel(IWResourceBundle resourcreBundle) {
+		return getCurrentVersion();
+	}
+	
+	public String getNameForLabel(IWResourceBundle resourceBundle) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(getArtifactId());
+		buffer.append(" (");
+		buffer.append(getGroupId());
+		buffer.append(")");
+		return buffer.toString();
 	}
 }

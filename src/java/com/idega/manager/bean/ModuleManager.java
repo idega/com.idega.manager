@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.15 2005/01/20 14:06:18 thomas Exp $
+ * $Id: ModuleManager.java,v 1.16 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,8 +10,11 @@
 package com.idega.manager.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.SortedMap;
 import javax.faces.application.Application;
 import javax.faces.component.UIColumn;
@@ -27,26 +30,21 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.business.ApplicationUpdater;
 import com.idega.manager.business.PomSorter;
 import com.idega.manager.data.Module;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
+import com.idega.util.datastructures.SortedByValueMap;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/20 14:06:18 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ModuleManager {
 	
-	private static final String ACTION_BACK_INSTALL = "backInstall";
-	private static final String ACTION_BACK_UPDATE = "backUpdate";
-	private static final String ACTION_CANCEL = "cancel";
-	
-	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
-
-
-	private ManagerUtils managerUtils = null;
+	private IWResourceBundle resourceBundle = null;
 	private PomSorter pomSorter = null;
 	
 	private String outputText1Value;
@@ -55,7 +53,7 @@ public class ModuleManager {
 	private String button2Label;
 	private String button3Label;
 	
-	private String actionBack = ACTION_BACK_UPDATE;
+	private String actionBack = ManagerConstants.ACTION_BACK_UPDATE;
 	private String actionNext = "";
 	private String actionNextChangeToNewValue = null;
 	
@@ -64,7 +62,7 @@ public class ModuleManager {
 	}
 	
 	private void initialize() {
-		managerUtils = ManagerUtils.getInstanceForCurrentContext();
+		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
@@ -72,27 +70,22 @@ public class ModuleManager {
 	
 	private void initializePomSorter() {
 		if (pomSorter == null) {
-			InstallOrUpdateManager installOrUpdateManager = (InstallOrUpdateManager) managerUtils.getValue(JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER);
-			if (installOrUpdateManager != null) {
-				pomSorter = installOrUpdateManager.getPomSorter();
-			}
+			pomSorter = ManagerUtils.getPomSorter();
 		}
 	}	
+	
 	private void initializeOutputText() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
 	}
 
 	private void initializeSubmitButtons() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	private void initializeDataTable1() {
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
 		String snapshot = resourceBundle.getLocalizedString("man_manager_snapshot", "Snapshot");
 		List rows = new ArrayList();
@@ -108,23 +101,26 @@ public class ModuleManager {
 			rows.add(firstRow);
 		}
 		else {
+			Map tableRows = new HashMap();
 			Iterator iterator = toBeInstalled.values().iterator();
 			while (iterator.hasNext()) {
 				Module module = (Module) iterator.next();
+				String name = module.getNameForLabel(resourceBundle);
+				String version = module.getCurrentVersionForLabel(resourceBundle);
 				String artifactId = module.getArtifactId();
-				String version = null;
-				if (module.isSnapshot()) {
-					version = snapshot;
-				}
-				else {
-					version = module.getCurrentVersion();
-				}
 				Module oldPom = (Module) sortedInstalledMap.get(artifactId);
-				String oldVersion = (oldPom == null) ? noPreviousVersionInstalled : oldPom.getCurrentVersion();
-				String[] row = {artifactId, version, oldVersion};
-				rows.add(row);
+				String oldVersion = (oldPom == null) ? noPreviousVersionInstalled : oldPom.getCurrentVersionForLabel(resourceBundle);
+				String[] row = {name, version, oldVersion};
+				tableRows.put(row, name);
 			}
-		}
+			Locale locale = resourceBundle.getLocale();
+			SortedByValueMap sortedMap = new SortedByValueMap(tableRows, locale);
+			Iterator valueIterator = sortedMap.keySet().iterator();
+			while (valueIterator.hasNext()) {
+				String[] row = (String[]) valueIterator.next();
+				rows.add(row);	
+			}
+		}			
 		dataTable1Model = new ListDataModel(rows);
 		// initialize columnNames
 		String module = resourceBundle.getLocalizedString("man_manager_module", "Module");
@@ -143,7 +139,6 @@ public class ModuleManager {
 		HtmlPanelGroup group = getGroupPanel1();
 		List list = group.getChildren();
 		list.clear();
-		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button2.setDisabled(false);
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
@@ -189,7 +184,7 @@ public class ModuleManager {
     }
     	
     private void  initializeHtmlDataTable(String[] columnNames) {
-    	Application application = managerUtils.getApplication();
+    	Application application = ManagerUtils.getInstanceForCurrentContext().getApplication();
     	try {
     		// First we remove columns from table
     		List list = dataTable1.getChildren();
@@ -255,13 +250,12 @@ public class ModuleManager {
 				initializeErrorMessages(errorMessages);
 			}
 			else {
-				IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
-				outputText2Value = resourceBundle.getLocalizedString("man_manager_successl","Modules have been successfully installed");
+				outputText2Value = resourceBundle.getLocalizedString("man_manager_success","Modules have been successfully installed");
 				button1.setDisabled(true);
 				button3.setDisabled(true);
 				pomSorter = null;
 				button2Label = resourceBundle.getLocalizedString("man_manager_finish","Finish");
-				actionNextChangeToNewValue = ACTION_CANCEL;
+				actionNextChangeToNewValue = ManagerConstants.ACTION_CANCEL;
 			}
 		}
 	}
@@ -346,14 +340,9 @@ public class ModuleManager {
     	return button3Label;
     }
     
-    public void setActionBackToInstallNewModules() {
-    	actionBack = ACTION_BACK_INSTALL;
+    public void setActionBack(String actionBack) {
+    	this.actionBack = actionBack;
     }
-    
-    public void setActionBackToUpdateModules() {
-    	actionBack = ACTION_BACK_UPDATE;
-    }
-    
     
     public String button1_action() {
     	return actionBack;
@@ -372,7 +361,7 @@ public class ModuleManager {
     
     
     public String button3_action() {
-    	return ACTION_CANCEL;
+    	return ManagerConstants.ACTION_CANCEL;
     }
     
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();

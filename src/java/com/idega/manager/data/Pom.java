@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.8 2005/01/10 14:31:55 thomas Exp $
+ * $Id: Pom.java,v 1.9 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public abstract class Pom implements Module {
 	
@@ -51,16 +51,16 @@ public abstract class Pom implements Module {
 	}
 	
 	public int compare(Pom aPom) {
-		if (isSnapshot() || aPom.isSnapshot()) {
+		if (isSnapshot() && aPom.isSnapshot()) {
 			IWTimestamp timestamp1 = getTimestamp();
 			IWTimestamp timestamp2 = aPom.getTimestamp();
-			if (timestamp1 == null) {
-				return 1;
-			}
-			if (timestamp2 == null) {
-				return -1;
-			}
 			return timestamp1.compareTo(timestamp2);
+		}
+		if (isSnapshot()) {
+			return 1;
+		}
+		if (aPom.isSnapshot()) {
+				return -1;
 		}
 		String version1 = getCurrentVersion();
 		String version2 = aPom.getCurrentVersion();

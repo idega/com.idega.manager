@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.7 2005/01/10 14:31:55 thomas Exp $
+ * $Id: ProxyPom.java,v 1.8 2005/02/23 18:02:17 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,12 +11,15 @@ package com.idega.manager.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.business.RepositoryBrowser;
 import com.idega.manager.util.ManagerConstants;
 import com.idega.util.IWTimestamp;
@@ -36,10 +39,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ProxyPom extends Pom {
 
@@ -78,25 +81,30 @@ public class ProxyPom extends Pom {
 	private boolean snapshot = false;
 	private IWTimestamp timestamp = null;
 	
-	boolean isInstalled = false;
+	boolean isInstalled = false; 
 	
 	private File bundleArchive = null;
 	
 	
-	public static ProxyPom getInstanceOfGroupBundles(String nameOfFile, RepositoryBrowser repositoryBrowser) {
-		return new ProxyPom(RealPom.BUNDLES_GROUP_ID, nameOfFile, repositoryBrowser);
+	public static ProxyPom getInstanceOfGroupBundlesWithoutFileExtension(String nameOfFileWithoutExtension, RepositoryBrowser repositoryBrowser) {
+		return new ProxyPom(RealPom.BUNDLES_GROUP_ID, nameOfFileWithoutExtension, repositoryBrowser);
+	}
+	
+	public static ProxyPom getInstanceOfGroupBundlesWithFileExtension(String nameOfFile, RepositoryBrowser repositoryBrowser) {
+		String nameOfFileWithoutExtension = StringHandler.cutExtension(nameOfFile);
+		return getInstanceOfGroupBundlesWithoutFileExtension(nameOfFileWithoutExtension, repositoryBrowser);
 	}
 	
 	
-	private ProxyPom(String groupId, String nameOfFile, RepositoryBrowser repositoryBrowser) {
+	private ProxyPom(String groupId, String nameOfFileWithoutExtension, RepositoryBrowser repositoryBrowser) {
 		this.groupId = groupId;
 		this.repositoryBrowser = repositoryBrowser;
-		initialize(nameOfFile);
+		initialize(nameOfFileWithoutExtension);
 	}
 		
 		
-	private void initialize(String nameOfFile) {
-		this.fileName = StringHandler.cutExtension(nameOfFile);
+	private void initialize(String nameOfFileWithoutExtension) {
+		this.fileName = nameOfFileWithoutExtension;
 		String[] partOfFileName = fileName.split(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
 		artifactId = partOfFileName[0];
 		String tempVersion = null; 
@@ -108,7 +116,7 @@ public class ProxyPom extends Pom {
 		}
 		// is it a snapshot?
 		// com.idega.content-SNAPSHOT.pom
-		if (RealPom.isSnapshot(tempVersion)) { 
+		if (RealPom.isSnapshot(tempVersion)) {
 			snapshot = true;
 			currentVersion = tempVersion;
 		}
@@ -164,8 +172,8 @@ public class ProxyPom extends Pom {
 				realSubject = RealPom.getPom(pomFile);
 			}
 			catch (IOException ex) {
-				getLogger().log(Level.WARNING, "[PomProxy] Could not download real subject: "+ getFileName() , ex);
 				realSubject = null;
+				getLogger().log(Level.WARNING, "[PomProxy] Could not download real subject: "+ getFileName() , ex);
 			}
 		}
 		return realSubject;
@@ -174,7 +182,7 @@ public class ProxyPom extends Pom {
 	public Pom getPom(DependencyPomBundle dependency) throws IOException {
 		StringBuffer buffer = constructFileName(dependency, POM_EXTENSION);
 		String pomFileName = repositoryBrowser.convertPomNameIfNecessary(buffer.toString());
-		return ProxyPom.getInstanceOfGroupBundles(pomFileName, repositoryBrowser);
+		return ProxyPom.getInstanceOfGroupBundlesWithFileExtension(pomFileName, repositoryBrowser);
 	}
 	
 	public File getBundleArchive(DependencyPomBundle dependency) throws IOException  {
@@ -232,7 +240,43 @@ public class ProxyPom extends Pom {
 		return false;
 	}
 	
-
+	// a proxy that points to a file
+	// like 
+	// com.idega.content-SNAPSHOT.pom
+	// should be ignored because there is
+	// a corresponding identical file with a
+	// a name that contains the timestamp.
+	public boolean shouldBeIgnored() {
+		return (snapshot && timestamp == null);
+	}
 	
+	public String getNameForLabel(IWResourceBundle resourceBundle) {
+		RealPom pom = getRealSubject();
+		if (pom == null) {
+			StringBuffer buffer = new StringBuffer();
+			String problem = resourceBundle.getLocalizedString("man_manager_could_not_ figure_out_name_for","Could not figure out name for");
+			buffer.append(problem);
+			buffer.append(": Id ");
+			buffer.append(getArtifactId()).append(" (").append(getGroupId()).append(")");
+			return buffer.toString();
+		}
+		return pom.getNameForLabel(resourceBundle);
+	}
 	
+	public String getCurrentVersionForLabel(IWResourceBundle resourceBundle) {
+		Locale locale = resourceBundle.getLocale();
+		StringBuffer buffer = new StringBuffer();
+		if (isSnapshot()) {
+			DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM , DateFormat.MEDIUM , locale);
+			buffer.append(resourceBundle.getLocalizedString("man_manager_build", "Build"));
+			buffer.append(" ");
+			buffer.append(dateFormat.format(timestamp.getDate()));
+		}
+		else {
+			buffer.append(resourceBundle.getLocalizedString("man_manager_version", "Version"));
+			buffer.append(" ");
+			buffer.append(getCurrentVersion());
+		}
+		return buffer.toString();
+	}
 }

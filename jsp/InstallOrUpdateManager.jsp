@@ -6,8 +6,8 @@
                 <meta content="no-cache" http-equiv="Cache-Control"/>
                 <meta content="no-cache" http-equiv="Pragma"/>
                 <title>InstallOrUpdateManager</title>
-                <link href="../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
                 <link href="../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
+                <link href="../../../idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css" rel="stylesheet" type="text/css"/>
            </head>
             <body class="wf_body" style="-rave-layout: grid">
                 <h:form binding="#{InstallOrUpdateManager.form1}" id="form1">
@@ -23,10 +23,12 @@
                     <h:commandButton binding="#{InstallOrUpdateManager.button1}" id="button1"  disabled="true"
                     	value="#{InstallOrUpdateManager.button1Label}"
                         style="height: 24px; left: 48px; top: 312px; position: absolute; width: 96px"/>
-                    <h:commandButton binding="#{InstallOrUpdateManager.button2}" id="button2" action="#{InstallOrUpdateManager.button2_action}"
+                    <h:commandButton binding="#{InstallOrUpdateManager.button2}" id="button2" 
+                    	action="#{InstallOrUpdateManager.button2_action}"
                     	value="#{InstallOrUpdateManager.button2Label}"
                         style="height: 24px; left: 168px; top: 312px; position: absolute; width: 96px"/>
-                    <h:commandButton binding="#{InstallOrUpdateManager.button3}" id="button3" disabled="true"
+                    <h:commandButton binding="#{InstallOrUpdateManager.button3}" id="button3" 
+                    	action="#{InstallOrUpdateManager.button3_action}"
                     	value="#{InstallOrUpdateManager.button3Label}"
                         style="height: 24px; left: 288px; top: 312px; position: absolute; width: 96px"/>
                 </h:form>
