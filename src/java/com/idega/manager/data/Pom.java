@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.7 2004/12/08 12:47:55 thomas Exp $
+ * $Id: Pom.java,v 1.8 2005/01/10 14:31:55 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public abstract class Pom implements Module {
 	
@@ -64,7 +64,20 @@ public abstract class Pom implements Module {
 		}
 		String version1 = getCurrentVersion();
 		String version2 = aPom.getCurrentVersion();
-		return StringHandler.compareVersions(version1, version2);
+		int result = StringHandler.compareVersions(version1, version2);
+		// if both are equal the installed one wins
+		if (result == 0) {
+			if (isInstalled() && aPom.isInstalled()) {
+				return 0;
+			}
+			if (isInstalled()) {
+				return 1;
+			}
+			if (aPom.isInstalled()) {
+				return -1;
+			}
+		}
+		return result;
 	}
 	
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.6 2005/01/07 11:03:35 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.7 2005/01/10 14:31:55 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -36,6 +36,8 @@ public class DependencyPomBundle extends Dependency {
 	
 	Pom pom = null;
 	
+	File bundleArchive = null;
+	
 	DependencyPomBundle() {
 		// use the class method of Dependency
 	}
@@ -48,7 +50,10 @@ public class DependencyPomBundle extends Dependency {
 	}
 	
 	public File getBundleArchive() throws IOException {
-		return getDependantPom().getBundleArchive(this);
+		if (bundleArchive == null) {
+			bundleArchive = getDependantPom().getBundleArchive(this);
+		}
+		return bundleArchive;
 	}
 	
 	
@@ -87,7 +92,20 @@ public class DependencyPomBundle extends Dependency {
 		}
 		String version1 = getCurrentVersion();
 		String version2 = dependencyPomBundle.getCurrentVersion();
-		return StringHandler.compareVersions(version1, version2);
+		int result = StringHandler.compareVersions(version1, version2);
+		// if both are equal the installed one wins
+		if (result == 0) {
+			if (isInstalled() && dependencyPomBundle.isInstalled()) {
+				return 0;
+			}
+			if (isInstalled()) {
+				return 1;
+			}
+			if (dependencyPomBundle.isInstalled()) {
+				return -1;
+			}
+		}
+		return result;
 	}
 	
 	public int compare(Pom aPom) {
@@ -104,7 +122,21 @@ public class DependencyPomBundle extends Dependency {
 		}
 		String version1 = getCurrentVersion();
 		String version2 = aPom.getCurrentVersion();
-		return StringHandler.compareVersions(version1, version2);
+		int result = StringHandler.compareVersions(version1, version2);
+		// if both are equal the installed one wins
+		if (result == 0) {
+			if (isInstalled() && aPom.isInstalled()) {
+				return 0;
+			}
+			if (isInstalled()) {
+				return 1;
+			}
+			if (aPom.isInstalled()) {
+				return -1;
+			}
+		}
+		return result;
+			
 	}
 	
 	

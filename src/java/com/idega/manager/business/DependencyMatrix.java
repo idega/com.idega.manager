@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.7 2005/01/07 11:03:35 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.8 2005/01/10 14:31:55 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.util.datastructures.HashMatrix;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class DependencyMatrix {
 	
@@ -95,7 +95,7 @@ public class DependencyMatrix {
 					toBeInstalled = module;
 				}
 			}
-			// install only module that are not installed and not included in other modules
+			// install only modules that are not installed and not included in other modules
 			if (! (toBeInstalled.isInstalled() || toBeInstalled.isIncluded())) {
 				tempToBeInstalledModules.add(toBeInstalled);
 			}

@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.8 2005/01/07 11:03:35 thomas Exp $
+ * $Id: Dependency.java,v 1.9 2005/01/10 14:31:55 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Dependency implements Module  {
 	
@@ -121,7 +121,21 @@ public class Dependency implements Module  {
 	public int compare(Dependency dependency)	{
 		String version1 = getCurrentVersion();
 		String version2 = dependency.getCurrentVersion();
-		return StringHandler.compareVersions(version1, version2);
+		int result = StringHandler.compareVersions(version1, version2);
+		// if both are equal the installed one wins
+		if (result == 0) {
+			if (isInstalled() && dependency.isInstalled()) {
+				return 0;
+			}
+			if (isInstalled()) {
+				return 1;
+			}
+			if (dependency.isInstalled()) {
+				return -1;
+			}
+		}
+		return result;
+		
 	}
 	
 	// you can only compare a dependency with another dependency

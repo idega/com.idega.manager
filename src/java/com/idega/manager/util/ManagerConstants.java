@@ -18,4 +18,6 @@ public class ManagerConstants {
 	public static final String ARTIFACT_ID_VERSION_SEPARATOR = "-";
 	
 	public static final String JAR_EXTENSION = "jar";
+	
+	public static final String BUNDLE_EXTENSION = "bundle";
 }

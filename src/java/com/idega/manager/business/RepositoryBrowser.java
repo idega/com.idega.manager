@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.6 2005/01/10 14:31:55 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,7 +18,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.maven.wagon.ConnectionException;
@@ -40,10 +42,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RepositoryBrowser {
 	
@@ -69,6 +71,8 @@ public class RepositoryBrowser {
 	
 	private String cachedBundlesPomsURL = null;
 	private String cachedBundlesIwbarsURL = null;
+	// map of file names and files
+	private Map cachedDownloadedFiles = null;
 	
 	public RepositoryBrowser(String repository) {
 		this.repository = repository;
@@ -296,6 +300,15 @@ public class RepositoryBrowser {
 	}
 	
 	private File downloadFile(String urlAddress, String fileName) throws IOException {
+		// caching of already downloaded files 
+		// (the calling objects are also caching the file but sometimes two different objects are asking for the
+		// same file)
+		if (cachedDownloadedFiles == null) {
+			cachedDownloadedFiles = new HashMap();
+		}
+		if (cachedDownloadedFiles.containsKey(fileName)) {
+			return (File) cachedDownloadedFiles.get(fileName);
+		}
 		File tempWorkingDirectory = getWorkingDirectory();
 		// clean the working directory
 		// set time to 60 minutes
@@ -336,6 +349,7 @@ public class RepositoryBrowser {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] Authorization problems: "+ urlAddress + fileName , ex);
 			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
 		}
+		cachedDownloadedFiles.put(fileName, destination);
 		return destination;
 	}
 	

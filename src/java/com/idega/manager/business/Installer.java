@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.5 2005/01/07 11:03:35 thomas Exp $
+ * $Id: Installer.java,v 1.6 2005/01/10 14:31:55 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,16 +22,18 @@ import com.idega.manager.data.RealPom;
 import com.idega.manager.util.IdegawebDirectoryStructure;
 import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
+import com.idega.util.BundleFileMerger;
 import com.idega.util.FacesConfigMerger;
 import com.idega.util.FileUtil;
+import com.idega.util.WebXmlMerger;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Installer {
 	
@@ -62,6 +64,28 @@ public class Installer {
 		}
 	}
 	
+	// from auxiliary folder
+	public void mergeBundles() throws IOException {
+		File bundlesFolder = idegawebDirectoryStructure.getBundlesRealPath();
+		Collection toBeInstalledModules = pomSorter.getToBeInstalledPoms().values();
+		Iterator moduleIterator = toBeInstalledModules.iterator();
+		while (moduleIterator.hasNext()) {
+			Module module = (Module) moduleIterator.next();
+			File moduleArchive = idegawebDirectoryStructure.getExtractedArchive(module);
+			String artifactId = module.getArtifactId();
+			StringBuffer buffer = new StringBuffer(artifactId);
+			buffer.append('.').append(ManagerConstants.BUNDLE_EXTENSION);
+			String bundleFolderName = buffer.toString();
+			// does an old version of the bundle exist?
+			File target = new File(bundlesFolder, bundleFolderName);
+			if (target.exists()) {
+				FileUtil.backup(target);
+				FileUtil.deleteContentOfFolder(target);
+			}
+			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleArchive, target);
+		}
+	}
+	
 	
 	
 	//from auxiliary folder
@@ -76,10 +100,11 @@ public class Installer {
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
 			File moduleTagLibrary = idegawebDirectoryStructure.getTagLibrary(module);
-			FileUtil.copyDirectoryRecursively(moduleTagLibrary, tagLibrary);
+			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleTagLibrary, tagLibrary);
 		}
 	}
 	
+	// do not use this method
 	// !!!! does not work because the tag libraries are not stored in the bundle folders !!!!!
 	private void cleanTagLibrary(File tagLibrary) {
 		List existingTagLibraries = FileUtil.getFilesInDirectory(tagLibrary); 
@@ -107,27 +132,42 @@ public class Installer {
 		}
 	}
 	
-	// from auxiliary folder
+	
+	//from auxiliary folder
+	public void mergeWebConfiguration() throws IOException {
+		File webXml = idegawebDirectoryStructure.getDeploymentDescriptor();
+		BundleFileMerger merger = new WebXmlMerger();
+		mergeConfiguration(merger, webXml);
+	}
+	
+	
 	public void mergeFacesConfiguration() throws IOException {
-		FacesConfigMerger facesConfigMerger = new FacesConfigMerger();
-		// do not remove existing modules!
-		facesConfigMerger.setIfRemoveOlderModules(false);		
 		File facesConfig = idegawebDirectoryStructure.getFacesConfig();
-		FileUtil.backup(facesConfig);
+		BundleFileMerger merger = new FacesConfigMerger();
+		mergeConfiguration(merger, facesConfig);
+	}
+	
+	
+	// from auxiliary folder
+	public void mergeConfiguration(BundleFileMerger merger, File fileInWebInf ) throws IOException {
+		// do not remove existing modules!
+		merger.setIfRemoveOlderModules(false);		
+
+		FileUtil.backup(fileInWebInf);
 		// set the target 
-		facesConfigMerger.setOutputFile(facesConfig);
+		merger.setOutputFile(fileInWebInf);
 		Iterator moduleIterator = pomSorter.getToBeInstalledPoms().values().iterator();
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
-			File sourceFile = idegawebDirectoryStructure.getFacesConfig(module);
-			// not every module has a faces-config.xml file
+			File sourceFile = idegawebDirectoryStructure.getCorrespondingFileFromWebInf(module, fileInWebInf);
+			// not every module has a config file
 			if (sourceFile.exists()) {
 				String artifactId = module.getArtifactId();
 				String version = module.getCurrentVersion();
-				facesConfigMerger.addMergeInSourceFile(sourceFile, artifactId, version);
+				merger.addMergeInSourceFile(sourceFile, artifactId, version);
 			}
 		}
-		facesConfigMerger.process();
+		merger.process();
 	}
 	
 	// from auxiliary folder
@@ -141,7 +181,7 @@ public class Installer {
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
 			File moduleLibrary = idegawebDirectoryStructure.getLibrary(module);
-			FileUtil.copyDirectoryRecursively(moduleLibrary, library);
+			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleLibrary, library);
 		}
 	}
 	
@@ -150,6 +190,8 @@ public class Installer {
 		Map necessaryPomsMap = pomSorter.getNecessaryPoms();
 		Collection necessaryPoms = necessaryPomsMap.values();
 		List necessaryFileNames = new ArrayList(necessaryPoms.size());
+		List notInstalledYet = new ArrayList();
+		List containedFileNames = new ArrayList();
 		Iterator iterator = necessaryPoms.iterator();
 		while (iterator.hasNext()) {
 			Module module = (Module) iterator.next();
@@ -173,7 +215,8 @@ public class Installer {
 			StringBuffer buffer = new StringBuffer(artifactId);
 			// sometimes the version is not set
 			
-			if (version !=null && version.length() != 0) {
+			// if the version is equal to SNAPSHOT do not add the current version (avoiding file names like com.idega.block.article-SNAPSHOT-SNAPSHOT)
+			if (version !=null && version.length() != 0 && ! version.equals(RealPom.SNAPSHOT)) {
 				buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
 				buffer.append(version);
 			}
@@ -186,6 +229,11 @@ public class Installer {
 			if (module.isInstalled()) {
 				necessaryFileNames.add(buffer.toString());
 			}
+			else {
+				// only for debugging
+				notInstalledYet.add(buffer.toString());
+			}
+				
 		}
 		List files = FileUtil.getFilesInDirectory(library);
 		Iterator filesIterator = files.iterator();
@@ -200,7 +248,15 @@ public class Installer {
 				file.delete();
 				deletedFiles.add(fileName);
 			}
+			else {
+				// only for debugging
+				containedFileNames.add(fileName);
+				necessaryFileNames.remove(fileName);
+			}
 		}
+		// only for debugging
+		containedFileNames.size();
+		notInstalledYet.size();
 		deletedFiles.size();
 	}
 }
