@@ -28,7 +28,7 @@ public class ManagerConstants {
 	public static final String IDEGA_REPOSITORY_URL = "http://repository.idega.com/maven/";    
 	
 	// JSF input references
-	public static final String JSF_COMPONENT_ID_MULTI_SELECT_1 = "_id0:form1:_id1:_id5:multiSelectListbox1";
+	public static final String JSF_COMPONENT_ID_MULTI_SELECT_1 = "form1:multiSelectListbox1";
 	
 	// for input login;
 	private static final String JSF_COMPONENT_ID_FORM = "loginManagerForm1";
