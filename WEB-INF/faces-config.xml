@@ -125,7 +125,7 @@
   		</navigation-case>
   		<navigation-case>
     	<from-outcome>cancel</from-outcome>
-    	<to-view-id>/workspace/</to-view-id>
+    	<to-view-id>/workspace/manager/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 
