@@ -93,27 +93,27 @@ public class ManagerViewManager implements Singleton {
 		
 		// update and install /step 2
 		DefaultViewNode installOrUpdateNode = new DefaultViewNode("installUpdate", loginNode);
-		installOrUpdateNode.setRendered(false);
+		installOrUpdateNode.setVisibleInMenus(false);
 		installOrUpdateNode.setJspUri(bundle.getJSPURI("InstallOrUpdateManager.jsp"));
 		
 		// update/step 3
 		DefaultViewNode updateNode = new DefaultViewNode("update", loginNode);
-		updateNode.setRendered(false);
+		updateNode.setVisibleInMenus(false);
 		updateNode.setJspUri(bundle.getJSPURI("UpdateListManager.jsp"));
 		
 		// install/step 3.1
 		DefaultViewNode newModulesNode = new DefaultViewNode("newModule", loginNode);
-		newModulesNode.setRendered(false);
+		newModulesNode.setVisibleInMenus(false);
 		newModulesNode.setJspUri(bundle.getJSPURI("InstallListManager.jsp"));
 		
 		// install/step 3.2
 		DefaultViewNode newModuleVersionNode = new DefaultViewNode("newModuleVersion", loginNode);
-		newModuleVersionNode.setRendered(false);
+		newModuleVersionNode.setVisibleInMenus(false);
 		newModuleVersionNode.setJspUri(bundle.getJSPURI("InstallNewModuleListManager.jsp"));
 		
 		// update and install /step 4
 		DefaultViewNode commitNode = new DefaultViewNode("commit", loginNode);
-		commitNode.setRendered(false);
+		commitNode.setVisibleInMenus(false);
 		commitNode.setJspUri(bundle.getJSPURI("ModuleManager.jsp"));
 	}
 }
