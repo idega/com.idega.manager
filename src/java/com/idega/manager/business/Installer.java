@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.8 2005/03/02 16:50:38 thomas Exp $
+ * $Id: Installer.java,v 1.9 2005/03/18 14:17:12 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package com.idega.manager.business;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +35,10 @@ import com.idega.util.logging.LogFile;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/02 16:50:38 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/18 14:17:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Installer {
 	
@@ -115,73 +116,116 @@ public class Installer {
 		}
 	}
 	
-	// do not use this method
-	// !!!! does not work because the tag libraries are not stored in the bundle folders !!!!!
-	private void cleanTagLibrary(File tagLibrary) {
-		List existingTagLibraries = FileUtil.getFilesInDirectory(tagLibrary); 
-		List filesToKeep = new ArrayList();
-		Collection toBeInstalledArtifactIds = pomSorter.getToBeInstalledPoms().keySet();
-		Map bundlesTagLibraries = pomSorter.getBundlesTagLibraries();
-		Iterator iterator = bundlesTagLibraries.keySet().iterator();
-		while (iterator.hasNext()) {
-			String artifactId = (String) iterator.next();
-			// do not keep the tag libraries from bundles that will be installed
-			if (! toBeInstalledArtifactIds.contains(artifactId)) {
-				List tlds = (List) bundlesTagLibraries.get(artifactId);
-				if (tlds != null) {
-					filesToKeep.addAll(tlds);
-				}
-			}
-		}
-		// delete files
-		Iterator deleteIterator = existingTagLibraries.iterator();
-		while (deleteIterator.hasNext()) {
-			File file = (File) deleteIterator.next();
-			if (! filesToKeep.contains(file)) {
-				file.delete();
-			}
-		}
-	}
+//	// do not use this method
+//	// !!!! does not work because the tag libraries are not stored in the bundle folders !!!!!
+//	private void cleanTagLibrary(File tagLibrary) {
+//		List existingTagLibraries = FileUtil.getFilesInDirectory(tagLibrary); 
+//		List filesToKeep = new ArrayList();
+//		Collection toBeInstalledArtifactIds = pomSorter.getToBeInstalledPoms().keySet();
+//		Map bundlesTagLibraries = pomSorter.getBundlesTagLibraries();
+//		Iterator iterator = bundlesTagLibraries.keySet().iterator();
+//		while (iterator.hasNext()) {
+//			String artifactId = (String) iterator.next();
+//			// do not keep the tag libraries from bundles that will be installed
+//			if (! toBeInstalledArtifactIds.contains(artifactId)) {
+//				List tlds = (List) bundlesTagLibraries.get(artifactId);
+//				if (tlds != null) {
+//					filesToKeep.addAll(tlds);
+//				}
+//			}
+//		}
+//		// delete files
+//		Iterator deleteIterator = existingTagLibraries.iterator();
+//		while (deleteIterator.hasNext()) {
+//			File file = (File) deleteIterator.next();
+//			if (! filesToKeep.contains(file)) {
+//				file.delete();
+//			}
+//		}
+//	}
 	
 	
 	//from auxiliary folder
 	public void mergeWebConfiguration() throws IOException {
 		File webXml = idegawebDirectoryStructure.getDeploymentDescriptor();
 		BundleFileMerger merger = new WebXmlMerger();
-		mergeConfiguration(merger, webXml);
+		mergeConfiguration(merger, webXml, true);
 		writeToLogger("Merging web configuration finished", null, null);
 	}
+	
 	
 	
 	public void mergeFacesConfiguration() throws IOException {
 		File facesConfig = idegawebDirectoryStructure.getFacesConfig();
 		BundleFileMerger merger = new FacesConfigMerger();
-		mergeConfiguration(merger, facesConfig);
+		mergeConfiguration(merger, facesConfig, false);
 		writeToLogger("Merging faces configuration finished", null, null);
 	}
 	
 	
 	// from auxiliary folder
-	public void mergeConfiguration(BundleFileMerger merger, File fileInWebInf ) throws IOException {
+	private void mergeConfiguration(final BundleFileMerger merger, final File fileInWebInf, boolean useExternalThread ) throws IOException {
 		// do not remove existing modules!
 		merger.setIfRemoveOlderModules(false);		
 		FileUtil.backupToFolder(fileInWebInf, getBackupDirectory());
 		// set the target 
-		merger.setOutputFile(fileInWebInf);
+		if (! useExternalThread) {
+			// the simple way: write directly to the file
+			mergeConfiguration(merger, fileInWebInf, fileInWebInf);
+		}
+		else 	{
+			// the complicated way: write to a temp file then copy the file to the original one but wait 20 seconds
+			// in this way, the application has enough time to finish the response
+			String mergedFileName = fileInWebInf.getName();
+			mergedFileName = StringHandler.concat(mergedFileName, "_merged");
+			final File mergedFile = new File(getBackupDirectory(), mergedFileName);
+			// seems to be a bug in merger (or is it a feature ?), source and output has to be the same
+			FileUtil.copyFile(fileInWebInf, mergedFile);
+			mergeConfiguration(merger, mergedFile, mergedFile);
+			Thread thread = new Thread() {
+				public void run() {
+			          try { 
+			          	System.out.println("[Installer] Start sleeping....");
+			          	sleep(20000);
+			          	System.out.println("[Installer] Stop sleeping...application will restart pretty soon");
+			          	try {
+			          		FileUtil.copyFile(mergedFile, fileInWebInf);
+			          	}
+			          	catch (FileNotFoundException ex) {
+			          		// do nothing
+			          		System.err.println("[[Installer] Could not copy new web.xml" + ex.getMessage());
+			          	}
+			          	catch (IOException ex) {
+			          		// do nothing
+			          		System.err.println("[[Installer] Could not copy new web.xml" + ex.getMessage());
+			          	}
+			          }
+			          catch ( InterruptedException e ) {
+			          	// do nothing
+			          }
+			    }
+			};
+			thread.start();	
+		}
+	}
+			
+	private void mergeConfiguration(BundleFileMerger merger, File sourceFile, File outputFile) throws IOException {
+		merger.setOutputFile(outputFile);
 		Iterator moduleIterator = pomSorter.getToBeInstalledPoms().values().iterator();
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
-			File sourceFile = idegawebDirectoryStructure.getCorrespondingFileFromWebInf(module, fileInWebInf);
+			File tempSourceFile = idegawebDirectoryStructure.getCorrespondingFileFromWebInf(module, sourceFile);
 			// not every module has a config file
-			if (sourceFile.exists()) {
+			if (tempSourceFile.exists()) {
 				String artifactId = module.getArtifactId();
 				String version = module.getCurrentVersion();
-				merger.addMergeInSourceFile(sourceFile, artifactId, version);
+				merger.addMergeInSourceFile(tempSourceFile, artifactId, version);
 			}
 		}
 		merger.process();
+
 	}
-	
+
 	// from auxiliary folder
 	public void mergeLibrary() throws IOException {
 		File library = idegawebDirectoryStructure.getLibrary();
