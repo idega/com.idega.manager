@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.6 2005/02/23 18:02:17 thomas Exp $
+ * $Id: RealPom.java,v 1.7 2005/03/02 16:51:30 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,7 +9,9 @@
  */
 package com.idega.manager.data;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,10 +28,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/02 16:51:30 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RealPom extends Pom {
 	
@@ -80,14 +82,30 @@ public class RealPom extends Pom {
 	public static RealPom getPom(File projectFile) throws IOException {
 		XMLData pomData = createXMLData(projectFile);
 		RealPom pom =  new RealPom(pomData, projectFile);
-		// get timestamp from corresponding MANIFEST_FILE  
-		File manifestFile = FileUtil.getFileRelativeToFile(projectFile, MANIFEST_PATH);
-		if (manifestFile.exists()) {
-			long dateValue = manifestFile.lastModified();
-			Date date = new Date(dateValue);
-			IWTimestamp timestamp = new IWTimestamp(date);
-			pom.setTimestamp(timestamp);
+		IWTimestamp timestamp = null;
+		// try to get timestamp from origin file
+		File originFile = FileUtil.getFileRelativeToFile(projectFile, ManagerConstants.ORIGIN_FILE);
+		if (originFile.exists()) {
+			BufferedReader fileReader = null;
+			try {
+				fileReader = new BufferedReader(new FileReader(originFile));
+				String orignFileName = fileReader.readLine();
+				timestamp = ProxyPom.getTimestampFromFileName(orignFileName);
+			}
+			finally {
+				fileReader.close();
+			}
 		}
+		if (timestamp == null) {
+			// failed?  try to get timestamp from corresponding MANIFEST_FILE  
+			File manifestFile = FileUtil.getFileRelativeToFile(projectFile, MANIFEST_PATH);
+			if (manifestFile.exists()) {
+				long dateValue = manifestFile.lastModified();
+				Date date = new Date(dateValue);
+				timestamp = new IWTimestamp(date);
+			}
+		}
+		pom.setTimestamp(timestamp);
 		return pom;
 	}
 	
@@ -256,10 +274,9 @@ public class RealPom extends Pom {
 	public String getNameForLabel(IWResourceBundle resourceBundle) {
 		String tempName = getRoot().getTextTrim(NAME);
 		String tempArtifactId = getRoot().getTextTrim(ARTIFACT_ID);
-		String id = resourceBundle.getLocalizedString("man_manager_id","Id");
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(tempName).append(", ");
-		buffer.append(id).append(": ").append(tempArtifactId);
+		buffer.append(tempName).append(" '");
+		buffer.append(tempArtifactId).append("'");
 		return buffer.toString();
 	}
 	

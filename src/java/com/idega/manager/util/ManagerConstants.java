@@ -21,6 +21,8 @@ public class ManagerConstants {
 	
 	public static final String BUNDLE_EXTENSION = "bundle";
 	
+	public static final String ORIGIN_FILE = "META-INF-ORIGIN";
+	
 	// for testing use this one: user is "joeuser" pasword: "a.b.C.D"
 	//public static final String IDEGA_REPOSITORY_URL =  "http://www.rahul.net/joeuser/";
 	public static final String IDEGA_REPOSITORY_URL = "http://repository.idega.com/maven/";    

@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.8 2005/02/23 18:02:17 thomas Exp $
+ * $Id: ProxyPom.java,v 1.9 2005/03/02 16:51:30 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/02 16:51:30 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ProxyPom extends Pom {
 
@@ -64,7 +64,43 @@ public class ProxyPom extends Pom {
 		return dateParser;
 	}
 	
-	static private Logger getLogger(){
+	/**
+	 * Returns timestamp from filename else null
+	 * 
+	 */
+	public static IWTimestamp getTimestampFromFileName(String fileNameWithExtension) {
+		String nameWithoutExtension = StringHandler.cutExtension(fileNameWithExtension);
+		String[] partOfFileName = splitFileName(nameWithoutExtension);
+		if (partOfFileName.length < 2) {
+			return null;
+		}
+		String version = partOfFileName[1];
+		if (RealPom.isSnapshot(version)) {
+			//	like:  com.idega.content-SNAPSHOT.pom
+			return null;
+		}
+		// like: com.idega.block.article-20041109.112340.pom   
+		return parseVersion(version);
+	}
+	
+	private static String[] splitFileName(String fileNameWithoutExtension) {
+		 return fileNameWithoutExtension.split(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+	}
+	
+	private static IWTimestamp parseVersion(String version) {
+		SimpleDateFormat parser = ProxyPom.getDateParser();
+		try {
+			Date date = parser.parse(version);
+			IWTimestamp timestamp = new IWTimestamp(date);
+			return timestamp;
+		}
+		catch (ParseException ex) {
+			// do nothing
+			return null;
+		}
+	}
+	
+	private static Logger getLogger(){
 		 return Logger.getLogger(ProxyPom.class.getName());
 	 }
 	
@@ -105,7 +141,7 @@ public class ProxyPom extends Pom {
 		
 	private void initialize(String nameOfFileWithoutExtension) {
 		this.fileName = nameOfFileWithoutExtension;
-		String[] partOfFileName = fileName.split(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+		String[] partOfFileName = ProxyPom.splitFileName(nameOfFileWithoutExtension);
 		artifactId = partOfFileName[0];
 		String tempVersion = null; 
 		if (partOfFileName.length < 2) {
@@ -124,16 +160,10 @@ public class ProxyPom extends Pom {
 			// is it a snapshot with a timestamp?
 			// com.idega.block.article-20041109.112340.pom
 			// parse timestamp
-			SimpleDateFormat parser = ProxyPom.getDateParser();
-			try {
-				Date date = parser.parse(tempVersion);
-				timestamp = new IWTimestamp(date);
+			timestamp = ProxyPom.parseVersion(tempVersion);
+			if (timestamp != null) {
 				currentVersion = "";
 				snapshot = true;
-			}
-			catch (ParseException ex) {
-				// do nothing
-				timestamp = null;
 			}
 		}
 		// is it a version?  
@@ -254,10 +284,8 @@ public class ProxyPom extends Pom {
 		RealPom pom = getRealSubject();
 		if (pom == null) {
 			StringBuffer buffer = new StringBuffer();
-			String problem = resourceBundle.getLocalizedString("man_manager_could_not_ figure_out_name_for","Could not figure out name for");
-			buffer.append(problem);
-			buffer.append(": Id ");
-			buffer.append(getArtifactId()).append(" (").append(getGroupId()).append(")");
+			buffer.append("'");
+			buffer.append(getArtifactId()).append("'");
 			return buffer.toString();
 		}
 		return pom.getNameForLabel(resourceBundle);

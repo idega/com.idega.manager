@@ -7,6 +7,7 @@
 package com.idega.manager.util;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,14 +118,29 @@ public class IdegawebDirectoryStructure {
 	}
 	
 	public File getExtractedArchive(Module module) throws IOException {
-		File temporaryInstallationFolder = module.getBundleArchive().getParentFile();
+		File bundleArchive = module.getBundleArchive();
+		File temporaryInstallationFolder = bundleArchive.getParentFile();
 		String artifactId = module.getArtifactId();
 		File extractedArchive = new File (temporaryInstallationFolder, artifactId);
 		if (! extractedArchive.exists()) {
 			extractedArchive.mkdir();
-			File bundleArchive = module.getBundleArchive();
 			ZipInstaller zipInstaller = new ZipInstaller();
 			zipInstaller.extract(bundleArchive, extractedArchive);
+			String bundleArchiveName = bundleArchive.getName();
+			// write the name of the source file into the origin file
+			File originFile = new File(extractedArchive, ManagerConstants.ORIGIN_FILE);
+			// check first if file exist to avoid an exception
+			if (! originFile.exists()) {
+				FileWriter writer = null;
+				try {
+					originFile.createNewFile();
+					writer = new FileWriter(originFile);
+					writer.write(bundleArchiveName);
+				}
+				finally {
+					writer.close();
+				}
+			}
 		}
 		return extractedArchive;
 	}
