@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.8 2005/01/10 14:31:55 thomas Exp $
+ * $Id: ModuleManager.java,v 1.9 2005/01/12 14:46:48 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -34,10 +35,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 14:31:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/12 14:46:48 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ModuleManager {
 	
@@ -182,6 +183,9 @@ public class ModuleManager {
 //     
 //    		ResultSetMetaData metaData = resultSet.getMetaData();
     		dataTable1.setVar("currentRow");
+    		
+    		// "currentRow" must be set in the corresponding JSP page!
+    		// this variable is used above by the method call dataTable1.getVar()
      
     		// In this loop we are going to add columns to table,
     		// and to make sure that all column are populated (table.getVar is taking care of that).
@@ -203,6 +207,8 @@ public class ModuleManager {
     			outText.setValueBinding("value", vb);
      
     			column = new UIColumn();
+    			Map map = column.getAttributes();
+    			//map.put("width","444px");
      
     			column.getChildren().add(outText);
     			column.setHeader(headerText);

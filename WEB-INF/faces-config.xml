@@ -29,21 +29,21 @@
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallOrUpdateManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>updateModules</from-outcome>
-    	<to-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/UpdateListManager.jsp</to-view-id>
+    	<to-view-id>/workspace/manager/update</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 		<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/UpdateListManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>moduleManager</from-outcome>
-    	<to-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/ModuleManager.jsp</to-view-id>
+    	<to-view-id>/workspace/manager/commit</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
   		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/ModuleManager.jsp</from-view-id>
   		<navigation-case>
     	<from-outcome>installManager</from-outcome>
-    	<to-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallManager.jsp</to-view-id>
+    	<to-view-id>/workspace/manager/install</to-view-id>
   		</navigation-case>
 	</navigation-rule>
 </faces-config>

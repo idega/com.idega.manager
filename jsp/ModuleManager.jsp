@@ -3,7 +3,7 @@
     <jsp:directive.page contentType="text/html;charset=ISO-8859-1" pageEncoding="UTF-8"/>
     <f:view>
         <html lang="en-US" xml:lang="en-US">
-            <head>
+			<head>
                 <meta content="no-cache" http-equiv="Cache-Control"/>
                 <meta content="no-cache" http-equiv="Pragma"/>
                 <title>ModuleManager Title</title>
@@ -15,8 +15,8 @@
                     value="#{ModuleManager.outputText1Value}"/>
                     <h:outputText binding="#{ModuleManager.outputText2}" id="outputText2" style="height: 24px; left: 48px; top: 96px; position: absolute; width: 216px"
                     value="#{ModuleManager.outputText2Value}"/>
-                       <h:dataTable binding="#{ModuleManager.dataTable1}" headerClass="list-header" id="dataTable1" rowClasses="list-row-even,list-row-odd"
-                        style="height: 150px; width: 400px; left: 48px; position: absolute" value="#{ModuleManager.dataTable1Model}" var="currentRow" width="432">
+                       <h:dataTable binding="#{ModuleManager.dataTable1}" headerClass="list-header" id="dataTable1" rowClasses="list-row-even,list-row-odd" border="2"
+                        style="height: 150px; left: 48px; top: 144px; position: absolute" value="#{ModuleManager.dataTable1Model}" var="currentRow">
                     </h:dataTable>
                     <h:commandButton binding="#{ModuleManager.button1}" id="button1"  
                        	value="#{ModuleManager.button1Label}"
