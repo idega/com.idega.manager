@@ -7,13 +7,15 @@
 package com.idega.manager.view;
 
 import javax.faces.context.FacesContext;
-
 import com.idega.core.view.ApplicationViewNode;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.repository.data.Instantiator;
+import com.idega.repository.data.Singleton;
+import com.idega.repository.data.SingletonRepository;
 
 /**
  * @author thomas
@@ -21,10 +23,24 @@ import com.idega.idegaweb.IWMainApplication;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class ManagerViewManager {
-	private static ManagerViewManager instance;
-	private static String MANAGER_ID="manager";
-	private static String BUNDLE_IDENTIFIER="com.idega.manager";
+public class ManagerViewManager implements Singleton {
+	
+	private static Instantiator instantiator = new Instantiator() {
+		public Object getInstance(Object parameter) {
+			IWMainApplication iwma = null;
+			if (parameter instanceof FacesContext) {
+				iwma = IWMainApplication.getIWMainApplication((FacesContext) parameter);
+			}
+			else {
+				iwma = (IWMainApplication) parameter;
+			}
+			return new ManagerViewManager(iwma);
+		}
+	};
+	
+	private static final String MANAGER_ID="manager";
+	private static final String BUNDLE_IDENTIFIER="com.idega.manager";
+	
 	private ViewNode managerRootNode;
 	private IWMainApplication iwma;
 	
@@ -33,15 +49,11 @@ public class ManagerViewManager {
 	}
 	
 	public static ManagerViewManager getInstance(IWMainApplication iwma){
-		if(instance==null){
-			instance = new ManagerViewManager(iwma);
-		}
-		return instance;
+		return (ManagerViewManager) SingletonRepository.getRepository().getInstance(ManagerViewManager.class, instantiator, iwma);
 	}
 	
 	public static ManagerViewManager getInstance(FacesContext context){
-		IWMainApplication iwma = IWMainApplication.getIWMainApplication(context);
-		return getInstance(iwma);
+		return (ManagerViewManager) SingletonRepository.getRepository().getInstance(ManagerViewManager.class, instantiator, context);
 	}
 	
 	public ViewManager getViewManager(){
