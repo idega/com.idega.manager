@@ -7,6 +7,8 @@
 package com.idega.manager.business;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import com.idega.util.logging.LogFile;
 
 
 /**
@@ -26,19 +28,37 @@ public class ApplicationUpdater {
 	}
 	
 	public boolean installModules() {
-		
 		Installer installer = Installer.getInstance(pomSorter);
+		LogFile logFile = null;
 		try {
-			installer.extractBundleArchives();
-		 	installer.mergeFacesConfiguration();
-			installer.mergeLibrary();
-			installer.mergeTagLibraries();
-			installer.mergeBundles();
-			installer.mergeWebConfiguration(); 
+			logFile = installer.getLogFile(); 
 		}
 		catch (IOException ex) {
 			errorMessage = ex.getMessage();
 			return false;
+		}
+		try {
+			logFile.log(Level.INFO,  "Extracting bundle archives...");
+			installer.extractBundleArchives();
+			logFile.log(Level.INFO, "...extracting bundle archives finished");
+		 	// not needed: installer.mergeFacesConfiguration();
+			logFile.log(Level.INFO, "Merging library...");
+			installer.mergeLibrary();
+			logFile.log(Level.INFO, "...merging library  finished");
+			// not needed: installer.mergeTagLibraries();
+			logFile.log(Level.INFO,  "Merging bundles...");
+			installer.mergeBundles();
+			logFile.log(Level.INFO, "...merging bundles finished");
+			logFile.log(Level.INFO,  "Merging web configuration...");
+			installer.mergeWebConfiguration(); 
+			logFile.log(Level.INFO, "...merging web configuration finished");
+		}
+		catch (IOException ex) {
+			errorMessage = ex.getMessage();
+			return false;
+		}
+		finally {
+			logFile. close();
 		}
 		return true;
 	}

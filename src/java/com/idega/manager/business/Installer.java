@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.7 2005/01/10 18:31:45 thomas Exp $
+ * $Id: Installer.java,v 1.8 2005/03/02 16:50:38 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -29,20 +29,22 @@ import com.idega.util.FacesConfigMerger;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.WebXmlMerger;
+import com.idega.util.logging.LogFile;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/10 18:31:45 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/02 16:50:38 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Installer {
 	
+	private LogFile logFile = null;
 	private File backupFolder = null;
 	
-	public static Installer getInstance(PomSorter pomSorter) {
+	public static Installer getInstance(PomSorter pomSorter){
 		Installer installer = new Installer();
 		installer.initialize(pomSorter);
 		return installer;
@@ -60,12 +62,13 @@ public class Installer {
 		idegawebDirectoryStructure = ManagerUtils.getInstanceForCurrentContext().getIdegawebDirectoryStructure();
 	}
 	
-	
 	public void extractBundleArchives() throws IOException {
 		Iterator iterator = pomSorter.getToBeInstalledPoms().values().iterator();
 		while (iterator.hasNext()) {
 			Module module = (Module) iterator.next();
 			idegawebDirectoryStructure.getExtractedArchive(module);
+			String artifactId = module.getArtifactId();
+			writeToLogger("Extracting bundle ", artifactId, " finished");
 		}
 	}
 	
@@ -88,6 +91,7 @@ public class Installer {
 				FileUtil.deleteContentOfFolder(target);
 			}
 			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleArchive, target);
+			writeToLogger("Merging bundle ", artifactId, " finished");
 		}
 	}
 	
@@ -106,6 +110,8 @@ public class Installer {
 			Module module = (Module) moduleIterator.next();
 			File moduleTagLibrary = idegawebDirectoryStructure.getTagLibrary(module);
 			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleTagLibrary, tagLibrary);
+			String artifactId = module.getArtifactId();
+			writeToLogger("Merging tag library ", artifactId, " finished");
 		}
 	}
 	
@@ -143,6 +149,7 @@ public class Installer {
 		File webXml = idegawebDirectoryStructure.getDeploymentDescriptor();
 		BundleFileMerger merger = new WebXmlMerger();
 		mergeConfiguration(merger, webXml);
+		writeToLogger("Merging web configuration finished", null, null);
 	}
 	
 	
@@ -150,6 +157,7 @@ public class Installer {
 		File facesConfig = idegawebDirectoryStructure.getFacesConfig();
 		BundleFileMerger merger = new FacesConfigMerger();
 		mergeConfiguration(merger, facesConfig);
+		writeToLogger("Merging faces configuration finished", null, null);
 	}
 	
 	
@@ -186,6 +194,8 @@ public class Installer {
 			Module module = (Module) moduleIterator.next();
 			File moduleLibrary = idegawebDirectoryStructure.getLibrary(module);
 			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleLibrary, library);
+			String artifactId = module.getArtifactId();
+			writeToLogger("Merging library ", artifactId, " finished");
 		}
 	}
 	
@@ -264,6 +274,16 @@ public class Installer {
 		deletedFiles.size();
 	}
 	
+	public LogFile getLogFile() throws IOException {
+		if (logFile == null) {
+			File tempBackupFolder = getBackupDirectory();
+			File logDestination = new File(tempBackupFolder, "install.log");
+			logFile = new LogFile(logDestination);
+		}
+		return logFile;
+	}
+	
+	
 	private File getBackupDirectory() {
 		if (backupFolder == null) {
 			File folder = idegawebDirectoryStructure.getBackupDirectory();
@@ -272,6 +292,17 @@ public class Installer {
 		return backupFolder;
 	}
 	
+	private void writeToLogger(String prefix, String main, String suffix) throws IOException {
+		LogFile tempLogFile = getLogFile();
+		StringBuffer logBuffer = new StringBuffer(prefix);
+		if (main != null) {
+			logBuffer.append(main);
+		}
+		if (suffix != null) {
+			logBuffer.append(suffix);
+		}
+		tempLogFile.logInfo(logBuffer.toString());
+	}
 	
 	private String getIdentifier() {
 		UUIDGenerator generator = UUIDGenerator.getInstance();
