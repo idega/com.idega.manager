@@ -1,3 +1,12 @@
+.managerLogin {
+	margin: 0;
+	display: block;
+	width: 6em;
+	text-align: right;
+	float: left;
+}
+
+
 .wf_body {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;

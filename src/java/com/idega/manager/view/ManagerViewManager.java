@@ -41,13 +41,12 @@ public class ManagerViewManager implements Singleton {
 		}
 	};
 	
-	private static final String MANAGER_ID="manager";
 	private static final String BUNDLE_IDENTIFIER="com.idega.manager";
 	
 	private ViewNode managerRootNode;
 	private IWMainApplication iwma;
 	
-	private ManagerViewManager(IWMainApplication iwma){
+	protected ManagerViewManager(IWMainApplication iwma){
 		this.iwma=iwma;
 	}
 	
@@ -73,9 +72,10 @@ public class ManagerViewManager implements Singleton {
 		return managerRootNode;
 	}
 	
-	public ViewNode initalizeManagerNode(IWBundle contentBundle){
+	public ViewNode initalizeManagerNode(IWBundle bundle){
 		ViewNode root = getViewManager().getWorkspaceRoot();
-		DefaultViewNode managerNode = new ApplicationViewNode(MANAGER_ID,root);
+		DefaultViewNode managerNode = new ApplicationViewNode("manager",root);
+		managerNode.setJspUri(bundle.getJSPURI("Manager.jsp"));
 		Collection roles = new ArrayList();
 		roles.add(StandardRoles.ROLE_KEY_ADMIN);
 		managerNode.setAuthorizedRoles(roles);
@@ -88,27 +88,32 @@ public class ManagerViewManager implements Singleton {
 		ViewNode contentNode = initalizeManagerNode(bundle);
 		
 		// login manager / step 1   
-		DefaultViewNode loginNode = new DefaultViewNode("Install", contentNode);
+		DefaultViewNode loginNode = new DefaultViewNode("install", contentNode);
 		loginNode.setJspUri(bundle.getJSPURI("LoginManager.jsp"));
 		
 		// update and install /step 2
-		DefaultViewNode installOrUpdateNode = new DefaultViewNode("InstallUpdate", loginNode);
+		DefaultViewNode installOrUpdateNode = new DefaultViewNode("installUpdate", loginNode);
+		installOrUpdateNode.setRendered(false);
 		installOrUpdateNode.setJspUri(bundle.getJSPURI("InstallOrUpdateManager.jsp"));
 		
 		// update/step 3
-		DefaultViewNode updateNode = new DefaultViewNode("Update", loginNode);
+		DefaultViewNode updateNode = new DefaultViewNode("update", loginNode);
+		updateNode.setRendered(false);
 		updateNode.setJspUri(bundle.getJSPURI("UpdateListManager.jsp"));
 		
 		// install/step 3.1
-		DefaultViewNode newModulesNode = new DefaultViewNode("NewModule", loginNode);
+		DefaultViewNode newModulesNode = new DefaultViewNode("newModule", loginNode);
+		newModulesNode.setRendered(false);
 		newModulesNode.setJspUri(bundle.getJSPURI("InstallListManager.jsp"));
 		
 		// install/step 3.2
-		DefaultViewNode newModuleVersionNode = new DefaultViewNode("NewModuleVersion", loginNode);
+		DefaultViewNode newModuleVersionNode = new DefaultViewNode("newModuleVersion", loginNode);
+		newModuleVersionNode.setRendered(false);
 		newModuleVersionNode.setJspUri(bundle.getJSPURI("InstallNewModuleListManager.jsp"));
 		
 		// update and install /step 4
-		DefaultViewNode commitNode = new DefaultViewNode("Commit", loginNode);
+		DefaultViewNode commitNode = new DefaultViewNode("commit", loginNode);
+		commitNode.setRendered(false);
 		commitNode.setJspUri(bundle.getJSPURI("ModuleManager.jsp"));
 	}
 }

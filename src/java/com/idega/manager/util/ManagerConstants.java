@@ -28,15 +28,16 @@ public class ManagerConstants {
 	public static final String IDEGA_REPOSITORY_URL = "http://repository.idega.com/maven/";    
 	
 	// JSF input references
-	public static final String JSF_COMPONENT_ID_MULTI_SELECT_1 = "form1:multiSelectListbox1";
+	public static final String JSF_COMPONENT_ID_MULTI_SELECT_1 = "_id0:form1:_id1:_id5:multiSelectListbox1";
 	
-	// for input login
+	// for input login;
+	private static final String JSF_COMPONENT_ID_FORM = "loginManagerForm1";
 	public static final String JSF_COMPONENT_ID_REPOSITORY = "textField1";
-	public static final String JSF_COMPONENT_ID_REPOSITORY_PATH = "form1:" + JSF_COMPONENT_ID_REPOSITORY;
+	public static final String JSF_COMPONENT_ID_REPOSITORY_PATH = JSF_COMPONENT_ID_FORM + ":" + JSF_COMPONENT_ID_REPOSITORY;
 	public static final String JSF_COMPONENT_ID_USERNAME = "textField2";
-	public static final String JSF_COMPONENT_ID_USERNAME_PATH = "form1:" + JSF_COMPONENT_ID_USERNAME;
+	public static final String JSF_COMPONENT_ID_USERNAME_PATH = JSF_COMPONENT_ID_FORM + ":" + JSF_COMPONENT_ID_USERNAME;
 	public static final String JSF_COMPONENT_ID_PASSWORD = "secretField1";
-	public static final String JSF_COMPONENT_ID_PASSWORD_PATH = "form1:" + JSF_COMPONENT_ID_PASSWORD;
+	public static final String JSF_COMPONENT_ID_PASSWORD_PATH = JSF_COMPONENT_ID_FORM + ":" + JSF_COMPONENT_ID_PASSWORD;
 	
 	// navigation rules
 	public static final String ACTION_NEXT = "next";
