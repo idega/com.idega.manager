@@ -16,17 +16,21 @@
                     <h:outputText binding="#{ModuleManager.outputText2}" id="outputText2" style="height: 24px; left: 48px; top: 96px; position: absolute; width: 216px"
                     value="#{ModuleManager.outputText2Value}"/>
                        <h:dataTable binding="#{ModuleManager.dataTable1}" headerClass="list-header" id="dataTable1" rowClasses="list-row-even,list-row-odd"
-                        style="height: 264px; left: 72px; top: 72px; position: absolute" value="#{ModuleManager.dataTable1Model}" var="currentRow" width="432">
+                        style="height: 150px; width: 400px; left: 48px; position: absolute" value="#{ModuleManager.dataTable1Model}" var="currentRow" width="432">
                     </h:dataTable>
                     <h:commandButton binding="#{ModuleManager.button1}" id="button1"  
                        	value="#{ModuleManager.button1Label}"
                         style="height: 24px; left: 48px; top: 312px; position: absolute; width: 96px"/>
-                    <h:commandButton binding="#{ModuleManager.button2}" id="button2" action="#{ModuleManager.button2_action}"
+                    <h:commandButton binding="#{ModuleManager.button2}" id="button2" 
+                    	actionListener="#{ModuleManager.submitForm}"
+                    	action="#{ModuleManager.button2_action}"
                     	value="#{ModuleManager.button2Label}"
                         style="height: 24px; left: 168px; top: 312px; position: absolute; width: 96px"/>
                     <h:commandButton binding="#{ModuleManager.button3}" id="button3"
                     	value="#{ModuleManager.button3Label}"
                         style="height: 24px; left: 288px; top: 312px; position: absolute; width: 96px"/>
+                    <h:messages showSummary="true"
+                    style="color: red; ffont-family: 'New Century Schoolbook', serif;   font-style: oblique;   text-decoration: overline" id="errors1"/>
                 </h:form>
             </body>
         </html>

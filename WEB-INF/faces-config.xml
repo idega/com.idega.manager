@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+
+<faces-config>
+	<managed-bean>
+		<managed-bean-name>InstallOrUpdateManager</managed-bean-name>
+		<managed-bean-class>com.idega.manager.bean.InstallOrUpdateManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>UpdateListManager</managed-bean-name>
+		<managed-bean-class>com.idega.manager.bean.UpdateListManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>ModuleManager</managed-bean-name>
+		<managed-bean-class>com.idega.manager.bean.ModuleManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>InstallManager</managed-bean-name>
+		<managed-bean-class>com.idega.manager.bean.InstallManager</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<navigation-rule>
+  		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallOrUpdateManager.jsp</from-view-id>
+  		<navigation-case>
+    	<from-outcome>updateModules</from-outcome>
+    	<to-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/UpdateListManager.jsp</to-view-id>
+  		</navigation-case>
+	</navigation-rule>
+		<navigation-rule>
+  		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/UpdateListManager.jsp</from-view-id>
+  		<navigation-case>
+    	<from-outcome>moduleManager</from-outcome>
+    	<to-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/ModuleManager.jsp</to-view-id>
+  		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+  		<from-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/ModuleManager.jsp</from-view-id>
+  		<navigation-case>
+    	<from-outcome>installManager</from-outcome>
+    	<to-view-id>/idegaweb/bundles/com.idega.manager.bundle/jsp/InstallManager.jsp</to-view-id>
+  		</navigation-case>
+	</navigation-rule>
+</faces-config>
