@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.12 2005/03/23 15:31:07 thomas Exp $
+ * $Id: Dependency.java,v 1.13 2005/03/31 15:47:38 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,16 +18,18 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/31 15:47:38 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class Dependency extends ModulePomImpl  {
 	
 	private static final String GROUP_ID = "groupId";
 	private static final String VERSION = "version";
 	private static final String JAR = "jar";
+	private static final String PROPERTIES = "properties";
+	private static final String INCLUDED_IN_BUNDLE = "idegaweb.bundle.include";
 	
 	public static Dependency getInstanceForElement(Pom dependant, XMLElement element) {
 		String tempGroupId = element.getTextTrim(GROUP_ID);
@@ -46,6 +48,14 @@ public class Dependency extends ModulePomImpl  {
 		}
 		String tempJarFileName = element.getTextTrim(JAR);
 		// note: in most cases this string will be null
+		XMLElement propertiesElement = element.getChild(PROPERTIES);
+		if (propertiesElement != null) {
+			String tempIncludedInBundle = propertiesElement.getTextTrim(INCLUDED_IN_BUNDLE);
+			if (tempIncludedInBundle != null) {
+				// note: Boolean.getBoolean(String) does not work properly
+				dependency.setIncludedInBundle((new Boolean(tempIncludedInBundle)).booleanValue());
+			}
+		}
 		dependency.setJarFileName(tempJarFileName);
 		dependency.setDependantPom(dependant);
 		dependency.setIsInstalled(dependant.isInstalled());
@@ -59,6 +69,8 @@ public class Dependency extends ModulePomImpl  {
 	String artifactId = null;
 	String version = null;
 	String jarFileName = null;
+	
+	boolean includedInBundle = false;
 	
 	boolean isInstalled = false;
 	
@@ -112,8 +124,7 @@ public class Dependency extends ModulePomImpl  {
 	public boolean isSnapshot() {
 		return false;
 	}
-	
-	
+
 	public int compare(Pom pom, VersionComparator versionComparator)	throws IOException{
 		// not supported, it has never the same group id
 		return -1;
@@ -167,5 +178,14 @@ public class Dependency extends ModulePomImpl  {
 	}
 	public void setJarFileName(String jarFileName) {
 		this.jarFileName = jarFileName;
+	}
+	public static String getINCLUDED_IN_BUNDLE() {
+		return INCLUDED_IN_BUNDLE;
+	}
+	public boolean isIncludedInBundle() {
+		return includedInBundle;
+	}
+	public void setIncludedInBundle(boolean includedInBundle) {
+		this.includedInBundle = includedInBundle;
 	}
 }
