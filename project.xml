@@ -4,12 +4,17 @@
   <extend>${base.project.dir}/base-project.xml</extend>
   <name>idegaWeb Manager</name>
   <artifactId>com.idega.manager</artifactId>
-  <currentVersion>0.1.0-SNAPSHOT</currentVersion>
+  <currentVersion>0.1.0</currentVersion>
   <inceptionYear>2004</inceptionYear>
   <shortDescription>Manager</shortDescription>
   <description>idegaWeb manager is a manager for updating and installing modules</description>
   <versions>
-  </versions>  
+    <version>
+      <id>0.1.0</id>
+      <name>0.1.0</name>
+      <tag>MANAGER_0_1_0</tag>
+    </version>
+   </versions>
   <developers>
     <developer>
       <id>tryggvil</id>
@@ -27,6 +32,18 @@
     </developer>
   </developers>
   <dependencies>
+      <dependency>
+      <groupId>bundles</groupId>
+      <artifactId>com.idega.core</artifactId>
+      <version>3.0.0</version>
+      <!--<version>SNAPSHOT</version>-->
+      <type>jar</type>
+      <url>http://www.idega.com/</url>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>  
+    
      <dependency>
       <groupId>maven</groupId>
       <artifactId>wagon-api</artifactId>
@@ -62,17 +79,6 @@
       <url>http://java.sun.com/j2ee/javaserverfaces/</url>
       <properties />
     </dependency>
-    <dependency>
-      <groupId>bundles</groupId>
-      <artifactId>com.idega.core</artifactId>
-     <!-- <version>1.9.1</version>-->
-      <version>SNAPSHOT</version>
-      <type>jar</type>
-      <url>http://www.idega.com/</url>
-      <properties>
-        <eclipse.dependency>true</eclipse.dependency>
-      </properties>
-    </dependency>  
     <dependency>
       <groupId>servletapi</groupId>
       <artifactId>servletapi</artifactId>
