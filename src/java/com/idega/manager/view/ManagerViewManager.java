@@ -6,7 +6,10 @@
  */
 package com.idega.manager.view;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.faces.context.FacesContext;
+import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.view.ApplicationViewNode;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewManager;
@@ -65,21 +68,24 @@ public class ManagerViewManager implements Singleton {
 		IWBundle iwb = iwma.getBundle(BUNDLE_IDENTIFIER);
 		//ViewNode content = root.getChild(CONTENT_ID);
 		if(managerRootNode==null){
-			managerRootNode = initalizeContentNode(iwb);
+			managerRootNode = initalizeManagerNode(iwb);
 		}
 		return managerRootNode;
 	}
 	
-	public ViewNode initalizeContentNode(IWBundle contentBundle){
+	public ViewNode initalizeManagerNode(IWBundle contentBundle){
 		ViewNode root = getViewManager().getWorkspaceRoot();
-		DefaultViewNode contentNode = new ApplicationViewNode(MANAGER_ID,root);
-		managerRootNode = contentNode;
+		DefaultViewNode managerNode = new ApplicationViewNode(MANAGER_ID,root);
+		Collection roles = new ArrayList();
+		roles.add(StandardRoles.ROLE_KEY_ADMIN);
+		managerNode.setAuthorizedRoles(roles);
+		managerRootNode = managerNode;
 		return managerRootNode;
 	}
 	
 	
 	public void initializeStandardNodes(IWBundle bundle){
-		ViewNode contentNode = initalizeContentNode(bundle);
+		ViewNode contentNode = initalizeManagerNode(bundle);
 		
 		// login manager / step 1   
 		DefaultViewNode loginNode = new DefaultViewNode("Install", contentNode);
