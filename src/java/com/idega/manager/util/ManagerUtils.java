@@ -1,5 +1,5 @@
 /*
- * $Id: ManagerUtils.java,v 1.6 2005/01/07 11:03:35 thomas Exp $
+ * $Id: ManagerUtils.java,v 1.7 2005/01/17 19:14:16 thomas Exp $
  * Created on Nov 5, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.presentation.IWContext;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ManagerUtils {
 	
@@ -35,7 +35,9 @@ public class ManagerUtils {
 	public static ManagerUtils getInstanceForCurrentContext() {
 		return new ManagerUtils();
 	}
-
+	
+	private FacesContext facesContext = null;
+	private Application application = null;
 	private IWContext context = null;
 	private IWBundle bundle = null;
 	private IWResourceBundle resourceBundle = null;
@@ -43,9 +45,22 @@ public class ManagerUtils {
 
 	
 	private ManagerUtils() {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
+		facesContext = FacesContext.getCurrentInstance();
+		application = facesContext.getApplication();
 		context = IWContext.getIWContext(facesContext);
 		idegawebDirectoryStructure = new IdegawebDirectoryStructure(context);
+	}
+	
+	public FacesContext getFacesContext() {
+		return facesContext;
+	}
+	
+	public IWContext getIWContext() {
+		return context;
+	}
+	
+	public Application getApplication() {
+		return application;
 	}
 	
 	public IWBundle getBundle() {
@@ -74,7 +89,8 @@ public class ManagerUtils {
 		return idegawebDirectoryStructure.getWorkingDirectory();
 	}
 	
-	public Object getValue(Application application, String valueRef) {
+	public Object getValue(String valueRef) {
+		Application application = context.getApplication();
 		ValueBinding binding = application.createValueBinding(valueRef);
 		return binding.getValue(context);
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: InstallOrUpdateManager.java,v 1.1 2004/11/19 17:05:42 thomas Exp $
+ * $Id: InstallOrUpdateManager.java,v 1.2 2005/01/17 19:14:16 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,22 +19,23 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectOneRadio;
 import javax.faces.model.SelectItem;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.manager.business.PomSorter;
 import com.idega.manager.util.ManagerUtils;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/19 17:05:42 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class InstallOrUpdateManager {
 	
 	private static final String INSTALL_NEW_MODULES = "installNewModules";
 	private static final String UPDATE_MODULES = "updateModules";
 	
-	private IWResourceBundle resourceBundle;
+	private ManagerUtils managerUtils = null;
 	
 	private String outputText1Value;
 	private String outputText2Value;
@@ -42,23 +43,32 @@ public class InstallOrUpdateManager {
 	private String button2Label;
 	private String button3Label;
 	
+	private PomSorter pomSorter = null;
+	
 	public InstallOrUpdateManager() {
 		initialize();
 	}
 	
 	private void initialize() {
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		managerUtils = ManagerUtils.getInstanceForCurrentContext();
+		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
 		initializeRadioButtons();
 	}
 	
+	private void initializePomSorter() {
+		pomSorter = new PomSorter();
+	}
+	
 	private void initializeOutputText() {
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_mamager_choose","Choose one option");
 	}
 
 	private void initializeSubmitButtons() {
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
@@ -66,12 +76,17 @@ public class InstallOrUpdateManager {
 	
 	
 	private void initializeRadioButtons() {
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		String installNewModules = resourceBundle.getLocalizedString("man_install_new_modules", "Install new modules");
 		String updateModules = resourceBundle.getLocalizedString("man_update_installed_modules","Update installed modules");
 		radioButtonList1DefaultItems = new ArrayList(2);
 		radioButtonList1DefaultItems.add(new SelectItem(INSTALL_NEW_MODULES, installNewModules));
 		radioButtonList1DefaultItems.add( new SelectItem(UPDATE_MODULES, updateModules));
 		radioButtonList1.setValue(INSTALL_NEW_MODULES);
+	}
+	
+	public PomSorter getPomSorter() {
+		return pomSorter;
 	}
 	
     private HtmlForm form1 = new HtmlForm();

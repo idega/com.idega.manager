@@ -70,18 +70,29 @@ public class ManagerViewManager {
 	public void initializeStandardNodes(IWBundle bundle){
 		ViewNode contentNode = initalizeContentNode(bundle);
 		
-		// step 2
+		// update/step 2
 		DefaultViewNode updateNode = new DefaultViewNode("update",contentNode);
 		updateNode.setJspUri(bundle.getJSPURI("UpdateListManager.jsp"));
 		
-		// step 3
+		// update/step 3
 		DefaultViewNode commitNode = new DefaultViewNode("commit",contentNode);
 		commitNode.setJspUri(bundle.getJSPURI("ModuleManager.jsp"));
 		
-		// step 4
+		// update/step 4
 		DefaultViewNode installNode = new DefaultViewNode("install",contentNode);
 		installNode.setJspUri(bundle.getJSPURI("InstallManager.jsp"));
-//		
+	
+		//install/step 2
+		DefaultViewNode newModulesNode = new DefaultViewNode("newModules",contentNode);
+		newModulesNode.setJspUri(bundle.getJSPURI("InstallListManager.jsp"));
+		
+		//install/step 3
+		DefaultViewNode newModuleVersionNode = new DefaultViewNode("newModuleVersion",contentNode);
+		newModuleVersionNode.setJspUri(bundle.getJSPURI("InstallNewModuleListManager.jsp"));
+		
+		
+		
+		
 //		DefaultViewNode searchNode = new DefaultViewNode("search",contentNode);
 //		searchNode.setJspUri(bundle.getJSPURI("search.jsp"));	
 //		

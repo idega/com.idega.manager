@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.10 2005/01/14 16:43:58 thomas Exp $
+ * $Id: ModuleManager.java,v 1.11 2005/01/17 19:14:16 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -35,10 +34,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/14 16:43:58 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ModuleManager {
 	
@@ -46,12 +45,10 @@ public class ModuleManager {
 	private static final String ACTION_BACK = "back";
 	private static final String ACTION_CANCEL = "cancel";
 	
-	private static final String JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER = "#{UpdateListManager}";
+	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
 	private static final String JSF_ID_REFERENCE_FORM1 = "form1";
 
-	private IWResourceBundle resourceBundle;
-	private FacesContext context = null;
-	private Application application = null;
+	private ManagerUtils managerUtils = null;
 	private PomSorter pomSorter = null;
 	
 	private String outputText1Value;
@@ -65,9 +62,7 @@ public class ModuleManager {
 	}
 	
 	private void initialize() {
-		context  = FacesContext.getCurrentInstance();
-		application = context.getApplication();
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		managerUtils = ManagerUtils.getInstanceForCurrentContext();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
@@ -76,26 +71,29 @@ public class ModuleManager {
 	
 	private void initializePomSorter() {
 		if (pomSorter == null) {
-			UpdateListManager updateListManager = (UpdateListManager) ManagerUtils.getInstanceForCurrentContext().getValue(application, JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER);
-			if (updateListManager != null) {
-				pomSorter = updateListManager.getPomSorter();
-				initializeErrorMessages(context, JSF_ID_REFERENCE_FORM1, pomSorter);
+			InstallOrUpdateManager installOrUpdateManager = (InstallOrUpdateManager) managerUtils.getValue(JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER);
+			if (installOrUpdateManager != null) {
+				pomSorter = installOrUpdateManager.getPomSorter();
 			}
 		}
-	}
-	
+	}	
 	private void initializeOutputText() {
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Update Manager");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install","Do you want to install the following updates?");
 	}
 
 	private void initializeSubmitButtons() {
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	public void initializeDataTable1() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		initializeErrorMessages(context, JSF_ID_REFERENCE_FORM1, pomSorter);
+		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
 		String snapshot = resourceBundle.getLocalizedString("man_manager_snapshot", "Snapshot");
 		List rows = new ArrayList();
@@ -171,6 +169,7 @@ public class ModuleManager {
     }
     	
     private void  initializeHtmlDataTable(String[] columnNames) {
+    	Application application = managerUtils.getApplication();
     	try {
     		// First we remove columns from table
     		List list = dataTable1.getChildren();

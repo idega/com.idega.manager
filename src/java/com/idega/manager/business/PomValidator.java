@@ -1,5 +1,5 @@
 /*
- * $Id: PomValidator.java,v 1.4 2005/01/07 11:03:35 thomas Exp $
+ * $Id: PomValidator.java,v 1.5 2005/01/17 19:14:16 thomas Exp $
  * Created on Nov 24, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,12 +24,24 @@ import com.idega.manager.data.Module;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PomValidator {
+	
+	public void validateSelectedModuleNames(FacesContext context, UIComponent toValidate, Object value, IWResourceBundle resourceBundle) {
+		// check if the user has chosen more than one version for the same artifact
+		String[] selectedValues = (String[]) value;
+		int length = selectedValues.length;
+		// if nothing has been chosen, that is the lenght is zero, set an message
+		if (length == 0) {
+			String errorMessage = resourceBundle.getLocalizedString("man_val_choose_at_most_one_version_per_module","Choose at least one module");
+			setErrorMessage(context, (UIInput) toValidate, errorMessage);
+		}
+	}
+
 	
 	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value, PomSorter pomSorter, IWResourceBundle resourceBundle) {
 		// check if the user has chosen more than one version for the same artifact
@@ -48,11 +60,15 @@ public class PomValidator {
 			go = set.add(artifactId);
 		}
 		if (! go) {
-			((UIInput) toValidate).setValid(false);
 			String errorMessage = resourceBundle.getLocalizedString("man_val_choose_at_most_one_version_per_module","Choose at most one version per module");
-			String id = toValidate.getClientId(context);
-			// e.g. id = "form1:multiSelectListbox1"
-			context.addMessage(id, new FacesMessage(errorMessage));
+			setErrorMessage(context, (UIInput) toValidate, errorMessage);
 		}
+	}
+	
+	private void setErrorMessage(FacesContext context, UIInput toValidate, String errorMessage) {
+		toValidate.setValid(false);
+		String id = toValidate.getClientId(context);
+		// e.g. id = "form1:multiSelectListbox1"
+		context.addMessage(id, new FacesMessage(errorMessage));
 	}
 }

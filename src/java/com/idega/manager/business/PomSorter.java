@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.8 2005/01/07 11:03:35 thomas Exp $
+ * $Id: PomSorter.java,v 1.9 2005/01/17 19:14:16 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class PomSorter {
 	
@@ -41,7 +41,10 @@ public class PomSorter {
 	SortedMap sortedInstalledPom = null;
 	
 	// key: artifactId String value (TreeSet of PomProxy) 
-	Map sortedRepositoryPom = null;
+	Map sortedRepositoryPomAvailableUpdates = null;
+	
+	// key: artifactId String value (TreeSet of PomProxy) 
+	SortedMap sortedRepositoryPomAvailableNewModules = null;
 	
 	// key: fileName String value: PomProxy
 	Map fileNameRepositoryPom = null;
@@ -54,8 +57,19 @@ public class PomSorter {
 	List errorMessages = null;
 	
 
-	public void initializeInstalledPomsAndAvailableUpdates() throws IOException {
-		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
+	public void initializeInstalledPomsAndAvailableUpdates() throws IOException { 
+		findInstalledPoms();
+		findAvailableUpdates();
+	}
+	
+	public void initializeInstalledPomsAndAvailableNewModules() throws IOException {
+		findInstalledPoms();
+		findAvailableNewModules();
+	}
+		
+		
+		
+	private void findInstalledPoms() {
 		LocalBundlesBrowser localBrowser = new LocalBundlesBrowser();
 		bundlesTagLibraries = localBrowser.getTagLibrariesOfInstalledModules();
 		List installedPoms = localBrowser.getPomOfInstalledModules();
@@ -66,22 +80,43 @@ public class PomSorter {
 			String artifactId = pom.getArtifactId();
 			sortedInstalledPom.put(artifactId, pom);
 		}
+	}
+		
+	private void findAvailableUpdates() throws IOException {
+		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
 		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
-		sortedRepositoryPom = new HashMap();
+		sortedRepositoryPomAvailableUpdates = new HashMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
 			ProxyPom proxy = (ProxyPom) allPomsIterator.next();
 			String artifactId = proxy.getArtifactId();
 			if (sortedInstalledPom.containsKey(artifactId)) {
 				RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
+				// fetch only poms that are newer than the installed ones
 				if (proxy.compare(pom) > 0) {
-					putPom(artifactId, proxy);
+					putPom(artifactId, proxy, sortedRepositoryPomAvailableUpdates);
 				}
 			}
 		}
 	}
 	
-	private void putPom(String key, ProxyPom value) {
+	
+	private void findAvailableNewModules() throws IOException {
+		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
+		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
+		sortedRepositoryPomAvailableNewModules = new TreeMap();
+		Iterator allPomsIterator = allPoms.iterator();
+		while (allPomsIterator.hasNext()) {
+			ProxyPom proxy = (ProxyPom) allPomsIterator.next();
+			String artifactId = proxy.getArtifactId();
+			if (! sortedInstalledPom.containsKey(artifactId)) {
+				putPom(artifactId, proxy, sortedRepositoryPomAvailableNewModules);
+			}
+		}
+	
+	}
+	
+	private void putPom(String key, ProxyPom value, Map pomMap) {
 		// first store in fileNameMap
 		if (fileNameRepositoryPom == null) {
 			fileNameRepositoryPom = new HashMap();
@@ -89,7 +124,7 @@ public class PomSorter {
 		String fileName = value.getFileName();
 		fileNameRepositoryPom.put(fileName, value);
 		// second store in sorted map
-		SortedSet pomSet = (SortedSet) sortedRepositoryPom.get(key);
+		SortedSet pomSet = (SortedSet) pomMap.get(key);
 		if (pomSet == null) {
 			Comparator comparator = new Comparator() {
 				
@@ -100,7 +135,7 @@ public class PomSorter {
 				}
 			};
 			 pomSet = new TreeSet(comparator);
-			 sortedRepositoryPom.put(key, pomSet);
+			 pomMap.put(key, pomSet);
 		}
 		pomSet.add(value);
 	}
@@ -116,9 +151,15 @@ public class PomSorter {
 	public SortedMap getSortedInstalledPoms() {
 		return sortedInstalledPom;
 	}
-	public Map getSortedRepositoryPoms() {
-		return sortedRepositoryPom;
+	
+	public Map getSortedRepositoryPomsOfAvailableUpdates() {
+		return sortedRepositoryPomAvailableUpdates;
 	}
+	
+	public Map getSortedRepositoryPomsOfAvailableNewModules() { 
+		return sortedRepositoryPomAvailableNewModules;
+	}
+	
 	
 	public SortedMap getToBeInstalledPoms() {
 		return toBeInstalledPoms;
