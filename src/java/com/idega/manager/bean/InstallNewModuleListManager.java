@@ -1,5 +1,5 @@
 /*
- * $Id: InstallNewModuleListManager.java,v 1.1 2005/01/17 19:14:16 thomas Exp $
+ * $Id: InstallNewModuleListManager.java,v 1.2 2005/01/18 18:20:40 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -39,10 +39,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/18 18:20:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class InstallNewModuleListManager {
 	
@@ -161,13 +161,14 @@ public class InstallNewModuleListManager {
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, resourceBundle);
 		List necessaryModules = dependencyMatrix.getListOfNecessaryModules();
-		if (dependencyMatrix.hasErrors()) {
-			pomSorter.setErrorMessages(dependencyMatrix.getErrorMessages());
-		}
+		// it is important to reset the error messages - that is to set to null - if there are not any
+		List errorMessages = dependencyMatrix.hasErrors() ? dependencyMatrix.getErrorMessages() : null;
+		pomSorter.setErrorMessages(errorMessages);
 		pomSorter.setNecessaryPoms(necessaryModules);
 		ModuleManager moduleManager = (ModuleManager) ManagerUtils.getInstanceForCurrentContext().getValue(JSF_VALUE_REFERENCE_MODULE_MANAGER);
 		if (moduleManager != null) {
-			moduleManager.initializeDataTable1();
+			moduleManager.initializeDynamicContent();
+			moduleManager.setActionBackToInstallNewModules();
 		}
 	}
 

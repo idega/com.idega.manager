@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.11 2005/01/17 19:14:16 thomas Exp $
+ * $Id: ModuleManager.java,v 1.12 2005/01/18 18:20:40 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,13 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import javax.faces.application.Application;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
-import javax.faces.context.FacesContext;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.el.ValueBinding;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
@@ -34,19 +33,20 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/18 18:20:40 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ModuleManager {
 	
 	private static final String ACTION_NEXT = "next";
-	private static final String ACTION_BACK = "back";
+	private static final String ACTION_BACK_INSTALL = "backInstall";
+	private static final String ACTION_BACK_UPDATE = "backUpdate";
 	private static final String ACTION_CANCEL = "cancel";
 	
 	private static final String JSF_VALUE_REFERENCE_INSTALL_OR_UPDATE_MANAGER = "#{InstallOrUpdateManager}";
-	private static final String JSF_ID_REFERENCE_FORM1 = "form1";
+
 
 	private ManagerUtils managerUtils = null;
 	private PomSorter pomSorter = null;
@@ -56,6 +56,8 @@ public class ModuleManager {
 	private String button1Label;
 	private String button2Label;
 	private String button3Label;
+	
+	private String actionBack = ACTION_BACK_UPDATE;
 	
 	public ModuleManager() {
 		initialize();
@@ -90,9 +92,7 @@ public class ModuleManager {
 		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
-	public void initializeDataTable1() {
-		FacesContext context = FacesContext.getCurrentInstance();
-		initializeErrorMessages(context, JSF_ID_REFERENCE_FORM1, pomSorter);
+	private void initializeDataTable1() {
 		IWResourceBundle resourceBundle = managerUtils.getResourceBundle();
 		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
 		String snapshot = resourceBundle.getLocalizedString("man_manager_snapshot", "Snapshot");
@@ -135,18 +135,30 @@ public class ModuleManager {
 		initializeHtmlDataTable(columnNames);
 	}	
 
-	private void initializeErrorMessages(FacesContext tempContext, String id, PomSorter tempPomSorter) {
-		List errorMessages = tempPomSorter.getErrorMessages();
+	private void initializeErrorMessages() {
+		HtmlPanelGroup group = getGroupPanel1();
+		List list = group.getChildren();
+		List errorMessages = pomSorter.getErrorMessages();
 		if (errorMessages == null) {
+			list.clear();
 			return;
 		}
 		Iterator iterator = errorMessages.iterator();
 		while (iterator.hasNext()) {
 			String errorMessage = (String) iterator.next();
-			tempContext.addMessage(id, new FacesMessage(errorMessage));
+			errorMessage = errorMessage + " <br/>";
+			HtmlOutputText error = new HtmlOutputText();
+			error.setValue(errorMessage);
+			error.setStyle("color: red");
+			error.setEscape(false);
+			list.add(error);
 		}
 	}
 	
+	public void initializeDynamicContent() {
+		initializeDataTable1();
+		initializeErrorMessages();
+	}
 	
 	private HtmlForm form1 = new HtmlForm();
 
@@ -304,7 +316,7 @@ public class ModuleManager {
     public void setOutputText2(HtmlOutputText hot) {
         this.outputText2 = hot;
     }
-
+    
     public String getOutputText1Value() {
     	return outputText1Value;
     }
@@ -324,8 +336,17 @@ public class ModuleManager {
     	return button3Label;
     }
     
+    public void setActionBackToInstallNewModules() {
+    	actionBack = ACTION_BACK_INSTALL;
+    }
+    
+    public void setActionBackToUpdateModules() {
+    	actionBack = ACTION_BACK_UPDATE;
+    }
+    
+    
     public String button1_action() {
-    	return ACTION_BACK;
+    	return actionBack;
     }
     
     public String button2_action() {
@@ -335,5 +356,15 @@ public class ModuleManager {
     
     public String button3_action() {
     	return ACTION_CANCEL;
+    }
+    
+    private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
+
+    public HtmlPanelGroup getGroupPanel1() {
+        return groupPanel1;
+    }
+
+    public void setGroupPanel1(HtmlPanelGroup hpg) {
+        this.groupPanel1 = hpg;
     }
 }
