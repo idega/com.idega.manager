@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.2 2004/12/02 18:06:57 thomas Exp $
+ * $Id: ModuleManager.java,v 1.3 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,6 +24,7 @@ import javax.faces.el.ValueBinding;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.manager.business.Installer;
 import com.idega.manager.business.PomSorter;
 import com.idega.manager.data.Module;
 import com.idega.manager.util.ManagerUtils;
@@ -31,10 +32,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ModuleManager {
 	
@@ -196,7 +197,11 @@ public class ModuleManager {
     }
 
 	public void submitForm(ActionEvent event) {
-		System.out.println("Weser");
+		if (pomSorter != null) {
+			List toBeInstalled = pomSorter.getToBeInstalledPoms();
+			Installer installer = Installer.getInstance(toBeInstalled);
+			installer.getBundleArchives();
+		}
 	}
     
     

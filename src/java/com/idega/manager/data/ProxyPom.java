@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
+ * $Id: ProxyPom.java,v 1.3 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,21 +23,32 @@ import com.idega.util.StringHandler;
 
 
 /**
+ * This class is a proxy for a real pom file.
+ * It is initialised with a filename with arbitrary extension, that is it can be
+ * initialised either
+ * with a file name referring to a pom file like com.idega.block.article-20041109.112340.pom
+ * or
+ * with a file name referring to a iwbar file like com.idega.block.article-20041109.112340.iwbar
+ * or
+ * with a file name without an extension like
+ * com.idega.block.article-20041109.112340
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ * In any case the reference to the real subject is resolved by pointing to the real pom file.
+ * 
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProxyPom extends Pom {
-	
 
 	// see examples: 
 	// com.idega.block.article-20041109.112340.pom
 	// com.idega.core-1.9.1.pom 
 	// com.idega.content-SNAPSHOT.pom
 	private static final String ARTIFACT_ID_VERSION_SEPARATOR = "-";
-	public static final String EXTENSION = ".pom";
+	public static final String POM_EXTENSION = ".pom";
+	public static final String IWBAR_EXTENSION = ".iwbar";
 	public static final String POM_TIMESTAMP_FORMAT = "yyyyMMdd.HHmmss";
 	
 	private static SimpleDateFormat dateParser = null;
@@ -56,6 +67,7 @@ public class ProxyPom extends Pom {
 	private RealPom realSubject = null;
 	private RepositoryBrowser repositoryBrowser = null;
 	
+	// Note : file name is stored without extension!
 	private String fileName = null;
 	
 	private String groupId = null;
@@ -81,7 +93,7 @@ public class ProxyPom extends Pom {
 		
 		
 	private void initialize(String nameOfFile) {
-		this.fileName = nameOfFile;
+		this.fileName = StringHandler.cutExtension(nameOfFile);
 		String[] partOfFileName = fileName.split(ARTIFACT_ID_VERSION_SEPARATOR);
 		artifactId = partOfFileName[0];
 		String tempVersion = null; 
@@ -89,7 +101,7 @@ public class ProxyPom extends Pom {
 			tempVersion = "no version available";
 		}
 		else {
-			tempVersion = StringHandler.cutExtension(partOfFileName[1]);
+			tempVersion = partOfFileName[1];
 		}
 		// is it a snapshot?
 		// com.idega.content-SNAPSHOT.pom
@@ -143,7 +155,8 @@ public class ProxyPom extends Pom {
 	
 	private RealPom getRealSubject() {
 		if (realSubject == null) {
-			File pomFile = repositoryBrowser.getPom(getFileName());
+			String fileNameWithPomExtension = StringHandler.concat(getFileName(), POM_EXTENSION);
+			File pomFile = repositoryBrowser.getPom(fileNameWithPomExtension);
 			try {
 				realSubject = RealPom.getPom(pomFile);
 			}
@@ -156,20 +169,28 @@ public class ProxyPom extends Pom {
 	}
 	
 	public Pom getPom(DependencyPomBundle dependency) throws IOException {
+		StringBuffer buffer = constructFileName(dependency, POM_EXTENSION);
+		String pomFileName = repositoryBrowser.convertPomNameIfNecessary(buffer.toString());
+		return ProxyPom.getInstanceOfGroupBundles(pomFileName, repositoryBrowser);
+	}
+	
+	public File getBundleArchive(DependencyPomBundle dependency)  {
+		StringBuffer buffer = constructFileName(dependency, IWBAR_EXTENSION);
+		return repositoryBrowser.getBundleArchive(buffer.toString());
+	}
+
+	private StringBuffer constructFileName(DependencyPomBundle dependency, String useExtension) { 		
 		String dependencyArtifactId = dependency.getArtifactId();
 		StringBuffer buffer = new StringBuffer(dependencyArtifactId);
 		buffer.append(ARTIFACT_ID_VERSION_SEPARATOR);
 		String version = dependency.getVersion();
 		version = RealPom.isSnapshot(version) ? RealPom.SNAPSHOT : version;
-		buffer.append(version).append(EXTENSION);
-		String pomFileName = repositoryBrowser.convertPomNameIfNecessary(buffer.toString());
-		ProxyPom proxy = ProxyPom.getInstanceOfGroupBundles(pomFileName, repositoryBrowser);
-		return proxy;
+		return buffer.append(version).append(useExtension);
 	}
 	
 	public List getDependencies() {
 		RealPom pom = getRealSubject();
-		return (pom == null) ? null : pom.getDependencies();
+		return (pom == null) ? null : pom.getDependencies(this);
 	}
 
 	
@@ -189,6 +210,12 @@ public class ProxyPom extends Pom {
 	
 	public Pom getPom() {
 		return this;
+	}
+	
+	public File getBundleArchive() {
+		String fileNameWithBundleArchiveExtension = StringHandler.concat(getFileName(), IWBAR_EXTENSION);
+		File bundleArchivFile = repositoryBrowser.getBundleArchive(fileNameWithBundleArchiveExtension);
+		return bundleArchivFile;
 	}
 	
 	public boolean isIncluded() {

@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.5 2004/12/02 13:43:14 thomas Exp $
+ * $Id: Pom.java,v 1.6 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package com.idega.manager.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import com.idega.util.IWTimestamp;
@@ -17,16 +18,18 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 13:43:14 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public abstract class Pom implements Module {
 	
 	public abstract List getDependencies();
 	
 	public abstract Pom getPom(DependencyPomBundle dependency) throws IOException;
+	
+	public abstract File getBundleArchive(DependencyPomBundle dependency);
 	
 	public abstract boolean isSnapshot();
 	

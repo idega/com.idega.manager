@@ -1,5 +1,5 @@
 /*
- * $Id: Module.java,v 1.3 2004/12/02 18:06:57 thomas Exp $
+ * $Id: Module.java,v 1.4 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,15 +9,16 @@
  */
 package com.idega.manager.data;
 
+import java.io.File;
 import java.io.IOException;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface Module {
 	
@@ -44,4 +45,6 @@ public interface Module {
 	String getCurrentVersion();
 	
 	Pom getPom() throws IOException;
+	
+	File getBundleArchive();
 }

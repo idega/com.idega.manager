@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.3 2004/12/02 18:06:57 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.4 2004/12/03 17:01:12 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package com.idega.manager.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,10 +19,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -45,6 +46,11 @@ public class DependencyPomBundle extends Dependency {
 		}
 		return pom;
 	}
+	
+	public File getBundleArchive() {
+		return getDependantPom().getBundleArchive(this);
+	}
+	
 	
 	public boolean isIncluded() {
 		return false;

@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
+ * $Id: RealPom.java,v 1.3 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RealPom extends Pom {
 	
@@ -163,13 +163,18 @@ public class RealPom extends Pom {
 	}
 
 	public List getDependencies() {
+		return getDependencies(this);
+	}
+	
+	
+	public List getDependencies(Pom dependant) {
 		if (dependencies == null) {
 			dependencies = new ArrayList();
 			List elements = getRoot().getChildrenRecursive(DEPENDENCY);
 			Iterator iterator = elements.iterator();
 			while (iterator.hasNext()) {
 				XMLElement element = (XMLElement) iterator.next();
-				Dependency dependency = Dependency.getInstanceForElement(this, element);
+				Dependency dependency = Dependency.getInstanceForElement(dependant, element);
 				dependencies.add(dependency);
 			}
 		}
@@ -185,6 +190,10 @@ public class RealPom extends Pom {
 		Pom pom = RealPom.getPom(dependencyProjectFile);
 		pom.setIsInstalled(isInstalled());
 		return pom;
+	}
+	
+	public File getBundleArchive(DependencyPomBundle dependency) {
+		return null;
 	}
 
 	public IWTimestamp getTimestamp() {
@@ -211,6 +220,10 @@ public class RealPom extends Pom {
 
 	public Pom getPom() {
 		return this;
+	}
+	
+	public File getBundleArchive() {
+		return null;	
 	}
 	
 	public boolean isIncluded() {

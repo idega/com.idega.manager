@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.5 2004/12/02 18:06:57 thomas Exp $
+ * $Id: Dependency.java,v 1.6 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package com.idega.manager.data;
 
+import java.io.File;
 import java.io.IOException;
 import com.idega.util.StringHandler;
 import com.idega.xml.XMLElement;
@@ -16,10 +17,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Dependency implements Module  {
 	
@@ -90,7 +91,11 @@ public class Dependency implements Module  {
 		return getVersion();
 	}
 	
-	public Pom getPom()	throws IOException {
+	public Pom getPom() throws IOException	{
+		return null;
+	}
+	
+	public File getBundleArchive()  {
 		return null;
 	}
 	

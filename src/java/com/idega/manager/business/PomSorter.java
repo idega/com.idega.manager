@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.3 2004/12/02 18:06:57 thomas Exp $
+ * $Id: PomSorter.java,v 1.4 2004/12/03 17:01:12 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PomSorter {
 	
@@ -53,7 +53,7 @@ public class PomSorter {
 			String artifactId = pom.getArtifactId();
 			sortedInstalledPom.put(artifactId, pom);
 		}
-		List allPoms = repositoryBrowser.getPoms();
+		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
 			ProxyPom proxy = (ProxyPom) allPomsIterator.next();

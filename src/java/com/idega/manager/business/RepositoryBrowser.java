@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.2 2004/12/01 19:24:21 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.3 2004/12/03 17:01:11 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/03 17:01:11 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RepositoryBrowser {
 	
@@ -62,13 +62,21 @@ public class RepositoryBrowser {
 	
 	private String repository;
 	
+	private String cachedBundlesPomsURL = null;
+	private String cachedBundlesIwbarsURL = null;
+	
 	public RepositoryBrowser(String repository) {
 		this.repository = repository;
 	}
+	
+	public List getPomsScanningBundleArchivesFolder() {
+		String urlAddress = getURLForBundlesArchives();
+		return getPomProxies(urlAddress, HTML_IWBAR_START_PATTERN);
+	}
 
-	public List getPoms()	{
-		String urlAddress = getURL("bundles","poms");
-		return getFileNames(urlAddress, HTML_POM_START_PATTERN);
+	public List getPomsScanningPomsFolder()	{
+		String urlAddress = getURLForBundlesPoms();
+		return getPomProxies(urlAddress, HTML_POM_START_PATTERN);
 	}
 	
 	
@@ -79,9 +87,10 @@ public class RepositoryBrowser {
 	 * "com.idega.content-20041117.164329.pom"
 	 */
 	public String convertPomNameIfNecessary(String pomName) {
-		String urlAddress = getURL("bundles", "poms");
+		String urlAddress = getURLForBundlesPoms();
 		return convertPomNameIfNecessary(urlAddress, pomName);
 	}
+	
 	
 	/* if pomName is a snapshot like "com.idega.content-SNAPSHOT.pom"
 	 * read the corresponding version from 
@@ -90,6 +99,15 @@ public class RepositoryBrowser {
 	 * "com.idega.content-20041117.164329.pom"
 	 */
 	private String convertPomNameIfNecessary(String urlAddress, String pomName) {
+		return convertNameIfNecessary(urlAddress, pomName, ProxyPom.POM_EXTENSION); 
+	}
+	
+	private String convertBundleArchiveNameIfNecessary(String urlAddress, String archiveName) {
+		return convertNameIfNecessary(urlAddress, archiveName, ProxyPom.IWBAR_EXTENSION);
+	}
+	
+	
+	private String convertNameIfNecessary(String urlAddress, String pomName, String useExtension) {
 		int index = pomName.indexOf(RealPom.SNAPSHOT);
 		// if pomName is a snapshot like "com.idega.content-SNAPSHOT.pom"
 		// read the corresponding version from 
@@ -109,19 +127,25 @@ public class RepositoryBrowser {
 			// create new file name
 			buffer = new StringBuffer(fileName);
 			buffer.append(version);
-			buffer.append(ProxyPom.EXTENSION);
-			// e.g. buffer = urlAddress + com.idega.content-20041117.164329.pom
+			buffer.append(useExtension);
+			// e.g. buffer = com.idega.content-20041117.164329.pom
 			pomName = buffer.toString();
 		}
 		return pomName;
 	}
 	
 	public File getPom(String pomName) {
-		String urlAddress = getURL("bundles", "poms");
+		String urlAddress = getURLForBundlesPoms();
 		pomName = convertPomNameIfNecessary(urlAddress, pomName);
 		return downloadFile(urlAddress, pomName);			
 	}
 	
+	public File getBundleArchive(String bundleArchiveName) {
+		String urlAddress = getURLForBundlesArchives();
+		bundleArchiveName = convertBundleArchiveNameIfNecessary(urlAddress, bundleArchiveName);
+		return downloadFile(urlAddress, bundleArchiveName);
+		
+	}
 	
 	private String getURL(String group, String type)  {
 		StringBuffer buffer = new StringBuffer(repository);
@@ -131,6 +155,20 @@ public class RepositoryBrowser {
 		buffer.append(group).append("/");
 		buffer.append(type).append("/");
 		return buffer.toString();
+	}
+	
+	private String getURLForBundlesArchives() {
+		if (cachedBundlesIwbarsURL == null) {
+			cachedBundlesIwbarsURL = getURL("bundles", "iwbars");
+		}
+		return cachedBundlesIwbarsURL;
+	}
+	
+	private String getURLForBundlesPoms() {
+		if (cachedBundlesPomsURL == null ) {
+			cachedBundlesPomsURL = getURL("bundles", "poms");
+		}
+		return cachedBundlesPomsURL;
 	}
 	
 	/** Use this only for very small content otherwise 
@@ -175,7 +213,7 @@ public class RepositoryBrowser {
 	
 	
 	
-	private List getFileNames(String urlAddress, char[] startPatternChar) {
+	private List getPomProxies(String urlAddress, char[] startPatternChar) {
 		InputStreamReader inputStreamReader = null;
 		StringBuffer buffer = null;
 		List poms = new ArrayList();
