@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.6 2004/12/02 18:06:57 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.7 2004/12/08 12:47:55 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package com.idega.manager.bean;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,10 +41,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class UpdateListManager {
 	
@@ -84,7 +85,15 @@ public class UpdateListManager {
 	private void initializeList() {
 		 multiSelectListbox1DefaultItems = new ArrayList();
 		 pomSorter = new PomSorter();
-		 pomSorter.initializeInstalledPomsAndAvailableUpdates();
+		 try {
+		 	pomSorter.initializeInstalledPomsAndAvailableUpdates();
+		 }
+		 catch (IOException ex) {
+		 	String errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
+		 	SelectItemGroup errorGroup = new SelectItemGroup(errorMessage, null, true,  new SelectItem[0]);
+		 	multiSelectListbox1DefaultItems.add(errorGroup);	
+		 	return;
+		 }
 		 SortedMap sortedInstalledPom = pomSorter.getSortedInstalledPoms();
 		 Map repositoryPom = pomSorter.getSortedRepositoryPoms();
 		 Iterator iterator = sortedInstalledPom.keySet().iterator();

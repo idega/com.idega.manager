@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.3 2004/12/06 18:11:45 thomas Exp $
+ * $Id: Installer.java,v 1.4 2004/12/08 12:47:55 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.manager.data.Module;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/06 18:11:45 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Installer {
 	
@@ -39,7 +39,7 @@ public class Installer {
 	}
 	
 	
-	public void getBundleArchives() {
+	public void getBundleArchives() throws IOException {
 		Iterator iterator = toBeInstalled.iterator();
 		while (iterator.hasNext()) {
 			Module module = (Module) iterator.next();
@@ -47,19 +47,13 @@ public class Installer {
 		}
 	}
 	
-	public void getBundleArchive(Module module)  {
+	public void getBundleArchive(Module module) throws IOException  {
 		File bundleArchive = module.getBundleArchive();
 		String folderName = module.getArtifactId();
 		File folder = new File(bundleArchive.getParentFile(), folderName);
 		folder.mkdir();
 		ZipInstaller zipInstaller = new ZipInstaller();
-		try {
-			zipInstaller.extract(bundleArchive, folder);
-		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		zipInstaller.extract(bundleArchive, folder);
 		bundleArchive.exists();
 	}
 	

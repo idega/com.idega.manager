@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.5 2004/12/03 17:36:49 thomas Exp $
+ * $Id: PomSorter.java,v 1.6 2004/12/08 12:47:55 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,8 @@
  */
 package com.idega.manager.business;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,10 +28,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:36:49 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PomSorter {
 	
@@ -42,12 +44,11 @@ public class PomSorter {
 	// 
 	SortedMap toBeInstalledPoms = null;
 	
-	public void initializeInstalledPomsAndAvailableUpdates() {
+	public void initializeInstalledPomsAndAvailableUpdates() throws IOException {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
-		sortedInstalledPom = new TreeMap();
-		sortedRepositoryPom = new HashMap();
 		LocalBundlesBrowser localBrowser = new LocalBundlesBrowser();
 		List installedPoms = localBrowser.getPomOfInstalledModules();
+		sortedInstalledPom = new TreeMap();
 		Iterator installedPomsIterator = installedPoms.iterator();
 		while (installedPomsIterator.hasNext()) {
 			RealPom pom = (RealPom) installedPomsIterator.next();
@@ -55,6 +56,7 @@ public class PomSorter {
 			sortedInstalledPom.put(artifactId, pom);
 		}
 		List allPoms = repositoryBrowser.getPomsScanningBundleArchivesFolder();
+		sortedRepositoryPom = new HashMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
 			ProxyPom proxy = (ProxyPom) allPomsIterator.next();

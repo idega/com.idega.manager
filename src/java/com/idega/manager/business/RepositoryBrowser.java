@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.4 2004/12/06 18:11:45 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/06 18:11:45 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RepositoryBrowser {
 	
@@ -74,12 +74,12 @@ public class RepositoryBrowser {
 		this.repository = repository;
 	}
 	
-	public List getPomsScanningBundleArchivesFolder() {
+	public List getPomsScanningBundleArchivesFolder() throws IOException {
 		String urlAddress = getURLForBundlesArchives();
 		return getPomProxies(urlAddress, HTML_IWBAR_START_PATTERN);
 	}
 
-	public List getPomsScanningPomsFolder()	{
+	public List getPomsScanningPomsFolder()	throws IOException {
 		String urlAddress = getURLForBundlesPoms();
 		return getPomProxies(urlAddress, HTML_POM_START_PATTERN);
 	}
@@ -91,7 +91,7 @@ public class RepositoryBrowser {
 	 * and download the corresponding file like
 	 * "com.idega.content-20041117.164329.pom"
 	 */
-	public String convertPomNameIfNecessary(String pomName) {
+	public String convertPomNameIfNecessary(String pomName) throws IOException {
 		String urlAddress = getURLForBundlesPoms();
 		return convertPomNameIfNecessary(urlAddress, pomName);
 	}
@@ -103,16 +103,16 @@ public class RepositoryBrowser {
 	 * and download the corresponding file like
 	 * "com.idega.content-20041117.164329.pom"
 	 */
-	private String convertPomNameIfNecessary(String urlAddress, String pomName) {
+	private String convertPomNameIfNecessary(String urlAddress, String pomName) throws IOException {
 		return convertNameIfNecessary(urlAddress, pomName, ProxyPom.POM_EXTENSION); 
 	}
 	
-	private String convertBundleArchiveNameIfNecessary(String urlAddress, String archiveName) {
+	private String convertBundleArchiveNameIfNecessary(String urlAddress, String archiveName) throws IOException {
 		return convertNameIfNecessary(urlAddress, archiveName, ProxyPom.IWBAR_EXTENSION);
 	}
 	
 	
-	private String convertNameIfNecessary(String urlAddress, String pomName, String useExtension) {
+	private String convertNameIfNecessary(String urlAddress, String pomName, String useExtension) throws IOException {
 		int index = pomName.indexOf(RealPom.SNAPSHOT);
 		// if pomName is a snapshot like "com.idega.content-SNAPSHOT.pom"
 		// read the corresponding version from 
@@ -139,13 +139,13 @@ public class RepositoryBrowser {
 		return pomName;
 	}
 	
-	public File getPom(String pomName) {
+	public File getPom(String pomName) throws IOException {
 		String urlAddress = getURLForBundlesPoms();
 		pomName = convertPomNameIfNecessary(urlAddress, pomName);
 		return downloadFile(urlAddress, pomName);			
 	}
 	
-	public File getBundleArchive(String bundleArchiveName) {
+	public File getBundleArchive(String bundleArchiveName) throws IOException {
 		String urlAddress = getURLForBundlesArchives();
 		bundleArchiveName = convertBundleArchiveNameIfNecessary(urlAddress, bundleArchiveName);
 		return downloadFile(urlAddress, bundleArchiveName);
@@ -182,8 +182,9 @@ public class RepositoryBrowser {
 	 * 
 	 * @param urlAddress
 	 * @return
+	 * @throws IOException
 	 */ 
-	private String getContent(String urlAddress) {
+	private String getContent(String urlAddress) throws IOException {
 		InputStreamReader inputStreamReader = null;
 		StringBuffer buffer = null;
 		try {
@@ -197,11 +198,11 @@ public class RepositoryBrowser {
 		}
 		catch (MalformedURLException e) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] URL is malformed: "+ urlAddress , e);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not connect to repository, most likely the URL is wrong");
 		}
 		catch (IOException e) {
 	       	getLogger().log(Level.WARNING, "[RepositoryBrowser] Could not open URL: "+ urlAddress , e);
-	       	return null;
+	       	throw new IOException("[RepositoryBorwser] Could not connect to repository, most likely the repository server is down");
 		}
 		finally  {
 			try {
@@ -217,8 +218,7 @@ public class RepositoryBrowser {
 	}
 	
 	
-	
-	private List getPomProxies(String urlAddress, char[] startPatternChar) {
+	private List getPomProxies(String urlAddress, char[] startPatternChar) throws IOException {
 		InputStreamReader inputStreamReader = null;
 		StringBuffer buffer = null;
 		List poms = new ArrayList();
@@ -268,11 +268,11 @@ public class RepositoryBrowser {
 		}
 		catch (MalformedURLException e) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] URL is malformed: "+ urlAddress , e);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not connect to repository, most likely the URL is wrong");
 		}
 		catch (IOException e) {
 	       	getLogger().log(Level.WARNING, "[RepositoryBrowser] Could not open URL: "+ urlAddress , e);
-	       	return null;
+	       	throw new IOException("[RepositoryBorwser] Could not connect to repository, most likely the repository server is down");
 		}
 		finally  {
 			try {
@@ -295,7 +295,7 @@ public class RepositoryBrowser {
 		return new InputStreamReader(buffInputStream, "8859_1");
 	}
 	
-	private File downloadFile(String urlAddress, String fileName) {
+	private File downloadFile(String urlAddress, String fileName) throws IOException {
 		File tempWorkingDirectory = getWorkingDirectory();
 		// clean the working directory
 		// set time to 60 minutes
@@ -318,23 +318,23 @@ public class RepositoryBrowser {
 		}
 		catch (TransferFailedException ex) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] Transfer failed: "+ urlAddress + fileName , ex);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
 		}
 		catch (ConnectionException ex) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] Connection problems: "+ urlAddress + fileName , ex);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
 		}
 		catch (AuthenticationException ex) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] Authentication problems: "+ urlAddress + fileName , ex);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
 		}
 		catch (ResourceDoesNotExistException ex) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] File does not exist: "+ urlAddress + fileName , ex);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
 		}
 		catch (AuthorizationException ex) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] Authorization problems: "+ urlAddress + fileName , ex);
-			return null;
+			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
 		}
 		return destination;
 	}

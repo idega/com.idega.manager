@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.4 2004/12/06 18:11:45 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.5 2004/12/08 12:48:18 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.datastructures.HashMatrix;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/06 18:11:45 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:48:18 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DependencyMatrix {
 	
@@ -133,7 +133,15 @@ public class DependencyMatrix {
 		String dependantKey = getKeyForDependant(dependant).toString();
 		String dependencyKeyForDependant = getKeyForDependency(dependant).toString();
 		moduleDependencies.put(dependencyKeyForDependant, dependantKey, dependant);
-		List dependencies = source.getDependencies();
+		List dependencies = null;
+		try {
+			 dependencies = source.getDependencies();
+		}
+		catch (IOException ex) {
+			String errorMessage = "[DependencyMatrix] Could not get dependencies of " + source.getArtifactId();
+			errorMessages.add(errorMessage);
+			return;
+		}
 		Iterator iterator = dependencies.iterator();
 		while (iterator.hasNext()) {
 			Dependency dependency = (Dependency) iterator.next();

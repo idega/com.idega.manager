@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.3 2004/12/03 17:01:12 thomas Exp $
+ * $Id: ProxyPom.java,v 1.4 2004/12/08 12:47:55 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ProxyPom extends Pom {
 
@@ -156,8 +156,8 @@ public class ProxyPom extends Pom {
 	private RealPom getRealSubject() {
 		if (realSubject == null) {
 			String fileNameWithPomExtension = StringHandler.concat(getFileName(), POM_EXTENSION);
-			File pomFile = repositoryBrowser.getPom(fileNameWithPomExtension);
 			try {
+				File pomFile = repositoryBrowser.getPom(fileNameWithPomExtension);
 				realSubject = RealPom.getPom(pomFile);
 			}
 			catch (IOException ex) {
@@ -174,7 +174,7 @@ public class ProxyPom extends Pom {
 		return ProxyPom.getInstanceOfGroupBundles(pomFileName, repositoryBrowser);
 	}
 	
-	public File getBundleArchive(DependencyPomBundle dependency)  {
+	public File getBundleArchive(DependencyPomBundle dependency) throws IOException  {
 		StringBuffer buffer = constructFileName(dependency, IWBAR_EXTENSION);
 		return repositoryBrowser.getBundleArchive(buffer.toString());
 	}
@@ -212,7 +212,7 @@ public class ProxyPom extends Pom {
 		return this;
 	}
 	
-	public File getBundleArchive() {
+	public File getBundleArchive() throws IOException {
 		String fileNameWithBundleArchiveExtension = StringHandler.concat(getFileName(), IWBAR_EXTENSION);
 		File bundleArchivFile = repositoryBrowser.getBundleArchive(fileNameWithBundleArchiveExtension);
 		return bundleArchivFile;

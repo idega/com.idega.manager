@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.4 2004/12/03 17:36:49 thomas Exp $
+ * $Id: ModuleManager.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package com.idega.manager.bean;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,10 +34,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:36:49 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ModuleManager {
 	
@@ -201,7 +202,12 @@ public class ModuleManager {
 		if (pomSorter != null) {
 			Collection toBeInstalled = pomSorter.getToBeInstalledPoms().values();
 			Installer installer = Installer.getInstance(toBeInstalled);
-			installer.getBundleArchives();
+			try {
+			 installer.getBundleArchives();
+			}
+			catch (IOException ex) {
+				// what next?
+			}
 		}
 	}
     

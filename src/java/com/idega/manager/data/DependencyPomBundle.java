@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.4 2004/12/03 17:01:12 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -47,7 +47,7 @@ public class DependencyPomBundle extends Dependency {
 		return pom;
 	}
 	
-	public File getBundleArchive() {
+	public File getBundleArchive() throws IOException {
 		return getDependantPom().getBundleArchive(this);
 	}
 	
