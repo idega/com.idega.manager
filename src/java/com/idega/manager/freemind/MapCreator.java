@@ -8,6 +8,7 @@ package com.idega.manager.freemind;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,10 +31,10 @@ import com.idega.xml.XMLElement;
  * <p>
  * TODO thomas Describe Type MapCreator
  * </p>
- *  Last modified: $Date: 2005/03/31 15:49:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/06 16:08:32 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MapCreator {
 	
@@ -42,6 +43,7 @@ public class MapCreator {
 	private Map artifactCounter = null;
 	private Map artifactVersion = null;
 	private Map artifactNode = null;
+	private List artifactPom = null;
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
@@ -69,6 +71,7 @@ public class MapCreator {
 		artifactCounter = new HashMap();
 		artifactVersion = new HashMap();
 		artifactNode = new HashMap();
+		artifactPom = new ArrayList();
 		File projectFile = new File(application, RealPom.POM_FILE);
 		if (projectFile.exists()) {
 			try {
@@ -112,12 +115,15 @@ public class MapCreator {
 			String version = dependency.getCurrentVersion();
 			StringBuffer buffer = new StringBuffer(dependencyArtifactId).append(" ").append(version);
 			if (dependency.isIncludedInBundle()) {
-				buffer.append(" ").append("INCLUDED");
+				buffer.append(" INCLUDED");
+			}
+			if (artifactPom.contains(dependencyArtifactId)) {
+				buffer.append(" -->");
 			}
 			XMLElement dependencyNode = new XMLElement("node");
-			dependencyNode.setAttribute("TEXT", buffer.toString());
 			dependencyNode.setAttribute("POSITION", "RIGHT");
 			dependencyNode.setAttribute("ID", currentId);
+			parentNode.addContent(dependencyNode);
 			// update map
 			if (artifactCounter.containsKey(dependencyArtifactId)) {
 				// create a link to the existing node
@@ -142,12 +148,13 @@ public class MapCreator {
 				artifactNode.put(dependencyArtifactId, dependencyNode);
 				Pom dependencyPom = dependency.getPom();
 				if (dependencyPom != null) {
+					artifactPom.add(dependencyArtifactId);
 					dependencyNode.setAttribute("FOLDED", "true");
 					dependencyNode.setAttribute("COLOR", "#990099");
 					createBranches(dependencyNode, dependencyPom);
 				}
 			}
-			parentNode.addContent(dependencyNode);
+			dependencyNode.setAttribute("TEXT", buffer.toString());
 		}
 	}
 
