@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.6 2005/01/07 11:03:35 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -68,7 +68,16 @@ public class DependencyPomBundle extends Dependency {
 	
 	public int compare(DependencyPomBundle dependencyPomBundle) {
 		if (isSnapshot() && dependencyPomBundle.isSnapshot()) {
-			return 0;
+			// snapShot that is not installed wins
+			if (isInstalled() && dependencyPomBundle.isInstalled()) {
+				return 0;
+			}
+			if (isInstalled()) {
+				// that is dependencyPomBundle is not installed
+				return -1;
+			}
+			// that is this is not installed
+			return 1;
 		}
 		else if (isSnapshot()) {
 			return 1;
@@ -101,7 +110,7 @@ public class DependencyPomBundle extends Dependency {
 	
 	public boolean isSnapshot() {
 		if (isSnapshot == null) {
-			String tempVersion = getVersion();
+			String tempVersion = getCurrentVersion();
 			isSnapshot = new Boolean(RealPom.isSnapshot(tempVersion));
 		}
 		return isSnapshot.booleanValue();

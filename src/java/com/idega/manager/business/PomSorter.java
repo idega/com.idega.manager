@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.7 2004/12/08 17:36:53 thomas Exp $
+ * $Id: PomSorter.java,v 1.8 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,27 +27,37 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class PomSorter {
 	
+	//key: artifactId String value: List of Files
+	Map bundlesTagLibraries = null;
+	
 	// key: artifactId String value: Pom 
 	SortedMap sortedInstalledPom = null;
+	
 	// key: artifactId String value (TreeSet of PomProxy) 
 	Map sortedRepositoryPom = null;
+	
 	// key: fileName String value: PomProxy
 	Map fileNameRepositoryPom = null;
+	
 	// 
 	SortedMap toBeInstalledPoms = null;
+	
+	Map necessaryPoms = null;
+	
 	List errorMessages = null;
 	
 
 	public void initializeInstalledPomsAndAvailableUpdates() throws IOException {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
 		LocalBundlesBrowser localBrowser = new LocalBundlesBrowser();
+		bundlesTagLibraries = localBrowser.getTagLibrariesOfInstalledModules();
 		List installedPoms = localBrowser.getPomOfInstalledModules();
 		sortedInstalledPom = new TreeMap();
 		Iterator installedPomsIterator = installedPoms.iterator();
@@ -95,6 +105,10 @@ public class PomSorter {
 		pomSet.add(value);
 	}
 		
+	public Map getBundlesTagLibraries() {
+		return bundlesTagLibraries;
+	}
+	
 	public Map getRepositoryPoms() {
 		return fileNameRepositoryPom;
 	}
@@ -110,13 +124,21 @@ public class PomSorter {
 		return toBeInstalledPoms;
 	}
 	
-	public void setToBeInstalledPoms(List toBeInstalledPoms) {
+	public Map getNecessaryPoms() {
+		return necessaryPoms;
+	}
+	
+	public void setNecessaryPoms(List necessaryPoms) {
 		this.toBeInstalledPoms = new TreeMap();
-		Iterator iterator = toBeInstalledPoms.iterator();
+		this.necessaryPoms = new HashMap();
+		Iterator iterator = necessaryPoms.iterator();
 		while (iterator.hasNext()) {
 			Module module = (Module) iterator.next();
 			String key = module.getArtifactId();
-			this.toBeInstalledPoms.put(key, module);
+			if (! (module.isInstalled() || module.isIncluded())) { 
+				this.toBeInstalledPoms.put(key, module);
+			}
+			this.necessaryPoms.put(key, module);
 		}
 	}
 

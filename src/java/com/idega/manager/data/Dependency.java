@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.7 2004/12/08 12:47:55 thomas Exp $
+ * $Id: Dependency.java,v 1.8 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Dependency implements Module  {
 	
@@ -38,11 +38,15 @@ public class Dependency implements Module  {
 		}
 		String tempArtifactId = element.getTextTrim(RealPom.ARTIFACT_ID);
 		String tempVersion = element.getTextTrim(VERSION);
+		// sometimes version is not set, set version to an empty string
+		if (tempVersion == null) {
+			tempVersion = ""; 
+		}
 		dependency.setDependantPom(dependant);
 		dependency.setIsInstalled(dependant.isInstalled());
 		dependency.setGroupId(tempGroupId);
 		dependency.setArtifactId(tempArtifactId);
-		dependency.setVersion(tempVersion);
+		dependency.setCurrentVersion(tempVersion);
 		return dependency;
 	}
 	
@@ -72,10 +76,10 @@ public class Dependency implements Module  {
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
-	public String getVersion() {
+	public String getCurrentVersion() {
 		return version;
 	}
-	public void setVersion(String version) {
+	public void setCurrentVersion(String version) {
 		this.version = version;
 	}
 
@@ -87,10 +91,6 @@ public class Dependency implements Module  {
 		this.isInstalled = isInstalled;
 	}
 
-	public String getCurrentVersion() {
-		return getVersion();
-	}
-	
 	public Pom getPom() throws IOException {
 		return null;
 	}

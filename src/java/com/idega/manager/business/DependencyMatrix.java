@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.6 2004/12/08 17:36:53 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.7 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.util.datastructures.HashMatrix;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DependencyMatrix {
 	
@@ -40,6 +40,9 @@ public class DependencyMatrix {
 	private Collection notInstalledModules = null;
 	private Collection installedModules = null;
 	
+	private List tempToBeInstalledModules = null;
+	private List tempNecessaryModules = null;
+	
 	
 	public static DependencyMatrix getInstance(Collection notInstalledModules, Collection installedModules, IWResourceBundle resourceBundle) {
 		DependencyMatrix dependencyMatrix = new DependencyMatrix();
@@ -49,17 +52,20 @@ public class DependencyMatrix {
 		return dependencyMatrix;
 	}
 	
-	public List getListOfModulesToBeInstalled() {
+	public List getListOfNecessaryModules() {
 		Collection tempNotInstalled = notInstalledModules;
 		Collection tempInstalled = installedModules;
-		List tempToBeInstalled = null;
+		tempToBeInstalledModules = null;
+		tempNecessaryModules = null;
 		boolean go = true;
+		// this loop removes modules that are obsolete to be installed 
+		// (e.g. another modules demands a newer version, the older version must not to be installed) 
 		while (go) {
 			initializeMatrix(tempNotInstalled, tempInstalled);
-			tempToBeInstalled = tryGetListOfModulesToBeInstalled();
-			go = tempNotInstalled.retainAll(tempToBeInstalled);
+			tryCalculateListOfModulesToBeInstalled();
+			go = tempNotInstalled.retainAll(tempToBeInstalledModules);
 		}
-		return tempToBeInstalled;
+		return tempNecessaryModules;
 	}
 			
 	public boolean hasErrors() {
@@ -70,17 +76,19 @@ public class DependencyMatrix {
 		return errorMessages;
 	}
 	
-	
-	private List tryGetListOfModulesToBeInstalled() {
-		List moduleList = new ArrayList();
+	private void tryCalculateListOfModulesToBeInstalled() {
+		tempToBeInstalledModules = new ArrayList();
+		tempNecessaryModules = new ArrayList();
 		// get a list of required modules
 		Iterator iterator = moduleDependencies.firstKeySet().iterator();
 		while (iterator.hasNext()) {
+			// x (also key) = dependencyKey
 			String key = (String) iterator.next();
 			Map map = moduleDependencies.get(key);
 			Iterator iteratorMap = map.keySet().iterator();
 			Module toBeInstalled = null;
 			while (iteratorMap.hasNext()) {
+				// y (also innerKey) = dependantKey
 				String innerKey = (String) iteratorMap.next();
 				Module module = (Module) map.get(innerKey);
 				if (toBeInstalled == null || (module.compare(toBeInstalled) > 0)) {
@@ -89,10 +97,10 @@ public class DependencyMatrix {
 			}
 			// install only module that are not installed and not included in other modules
 			if (! (toBeInstalled.isInstalled() || toBeInstalled.isIncluded())) {
-				moduleList.add(toBeInstalled);
+				tempToBeInstalledModules.add(toBeInstalled);
 			}
+			tempNecessaryModules.add(toBeInstalled);	
 		}
-		return moduleList;
 	}
 	
 	// e.g. returns "bundles_com.idega.block.article_installed"
@@ -110,7 +118,7 @@ public class DependencyMatrix {
 		String groupId = module.getGroupId();
 		String artifactId = module.getArtifactId();
 		StringBuffer buffer = new StringBuffer(groupId);
-		buffer.append(" _").append(artifactId);
+		buffer.append("_").append(artifactId);
 		return buffer;
 	}
 	
@@ -141,8 +149,12 @@ public class DependencyMatrix {
 	}
 	
 	private void addEntry(Pom dependant, Pom source, HashMatrix matrix) {
+		// e.g. dependantKey "bundles_com.idega.block.article_installed"
+		// e.g. dependantKey "bundles_com.idega.block.article"
 		String dependantKey = getKeyForDependant(dependant).toString();
+		// e.g. dependencyKeyForDependant "bundles_com.idega.block.article"
 		String dependencyKeyForDependant = getKeyForDependency(dependant).toString();
+		// x = dependencyKey, y = dependantKey
 		moduleDependencies.put(dependencyKeyForDependant, dependantKey, dependant);
 		List dependencies = null;
 		try {

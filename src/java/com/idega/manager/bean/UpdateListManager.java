@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.8 2004/12/08 17:36:52 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.9 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 17:36:52 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class UpdateListManager {
 	
@@ -141,11 +141,11 @@ public class UpdateListManager {
 		Collection installedModules = installedPoms.values();
 		Collection notInstalledModules = selectedPoms.values();
 		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, resourceBundle);
-		List toBeInstalled = dependencyMatrix.getListOfModulesToBeInstalled();
+		List necessaryModules = dependencyMatrix.getListOfNecessaryModules();
 		if (dependencyMatrix.hasErrors()) {
 			pomSorter.setErrorMessages(dependencyMatrix.getErrorMessages());
 		}
-		pomSorter.setToBeInstalledPoms(toBeInstalled);
+		pomSorter.setNecessaryPoms(necessaryModules);
 	}
  
 	
@@ -153,7 +153,8 @@ public class UpdateListManager {
 		if (pomValidator == null) {
 			pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModules(context, toValidate, value, resourceBundle);
+		PomSorter tempPomSorter = getPomSorter();
+		pomValidator.validateSelectedModules(context, toValidate, value, tempPomSorter , resourceBundle);
 	}
 	
    private HtmlForm form1 = new HtmlForm();

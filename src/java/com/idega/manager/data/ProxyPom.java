@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.5 2004/12/08 17:36:53 thomas Exp $
+ * $Id: ProxyPom.java,v 1.6 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.idega.manager.business.RepositoryBrowser;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringHandler;
 
@@ -35,10 +36,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ProxyPom extends Pom {
 
@@ -46,7 +47,7 @@ public class ProxyPom extends Pom {
 	// com.idega.block.article-20041109.112340.pom
 	// com.idega.core-1.9.1.pom 
 	// com.idega.content-SNAPSHOT.pom
-	private static final String ARTIFACT_ID_VERSION_SEPARATOR = "-";
+
 	public static final String POM_EXTENSION = ".pom";
 	public static final String IWBAR_EXTENSION = ".iwbar";
 	public static final String POM_TIMESTAMP_FORMAT = "yyyyMMdd.HHmmss";
@@ -94,7 +95,7 @@ public class ProxyPom extends Pom {
 		
 	private void initialize(String nameOfFile) {
 		this.fileName = StringHandler.cutExtension(nameOfFile);
-		String[] partOfFileName = fileName.split(ARTIFACT_ID_VERSION_SEPARATOR);
+		String[] partOfFileName = fileName.split(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
 		artifactId = partOfFileName[0];
 		String tempVersion = null; 
 		if (partOfFileName.length < 2) {
@@ -182,8 +183,8 @@ public class ProxyPom extends Pom {
 	private StringBuffer constructFileName(DependencyPomBundle dependency, String useExtension) { 		
 		String dependencyArtifactId = dependency.getArtifactId();
 		StringBuffer buffer = new StringBuffer(dependencyArtifactId);
-		buffer.append(ARTIFACT_ID_VERSION_SEPARATOR);
-		String version = dependency.getVersion();
+		buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+		String version = dependency.getCurrentVersion();
 		version = RealPom.isSnapshot(version) ? RealPom.SNAPSHOT : version;
 		return buffer.append(version).append(useExtension);
 	}

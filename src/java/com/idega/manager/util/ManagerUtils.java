@@ -1,5 +1,5 @@
 /*
- * $Id: ManagerUtils.java,v 1.5 2004/12/08 17:36:53 thomas Exp $
+ * $Id: ManagerUtils.java,v 1.6 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 5, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,41 +10,42 @@
 package com.idega.manager.util;
 
 import java.io.File;
+
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
+
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ManagerUtils {
 	
-	public static final String WORKING_DIRRECTORY = "auxiliaryManagerFolder";
+
 	public static final String BUNDLE_IDENTIFIER = "com.idega.manager";
 	
 	public static ManagerUtils getInstanceForCurrentContext() {
 		return new ManagerUtils();
 	}
-	
 
-	
-	private IWContext context;
+	private IWContext context = null;
 	private IWBundle bundle = null;
 	private IWResourceBundle resourceBundle = null;
-	private String bundlesRealPath = null;
+	private IdegawebDirectoryStructure idegawebDirectoryStructure;
+
 	
 	private ManagerUtils() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		context = IWContext.getIWContext(facesContext);
+		idegawebDirectoryStructure = new IdegawebDirectoryStructure(context);
 	}
 	
 	public IWBundle getBundle() {
@@ -61,34 +62,22 @@ public class ManagerUtils {
 		return resourceBundle;
 	}
 	
-	public String getBundlesRealPath()	{
-		if (bundlesRealPath == null) {
-			IWMainApplication mainApplication = context.getIWMainApplication();
-			bundlesRealPath = mainApplication.getBundlesRealPath();
-		}
-		return bundlesRealPath;
+	public IdegawebDirectoryStructure getIdegawebDirectoryStructure() {
+		return idegawebDirectoryStructure;
+	}
+	
+	public File getBundlesRealPath() {
+		return idegawebDirectoryStructure.getBundlesRealPath();
 	}
 	
 	public File getWorkingDirectory() {
-		IWMainApplication mainApplication = context.getIWMainApplication();
-		// get the idegaweb folder
-		String specialRealPath = mainApplication.getApplicationSpecialRealPath();
-		File  idegawebFolder = new File(specialRealPath);
-		File workingDir = new File(idegawebFolder, WORKING_DIRRECTORY);
-		if (! workingDir.exists()) {
-			workingDir.mkdir();
-		}
-		return workingDir;
-		
+		return idegawebDirectoryStructure.getWorkingDirectory();
 	}
 	
 	public Object getValue(Application application, String valueRef) {
 		ValueBinding binding = application.createValueBinding(valueRef);
 		return binding.getValue(context);
 	}
-	
-
-
 	
 	private void getBundleAndResourceBundle() {
 		bundle = context.getIWMainApplication().getBundle(BUNDLE_IDENTIFIER);

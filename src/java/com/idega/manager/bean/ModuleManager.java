@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.6 2004/12/08 17:36:53 thomas Exp $
+ * $Id: ModuleManager.java,v 1.7 2005/01/07 11:03:35 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,7 +11,6 @@ package com.idega.manager.bean;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -35,10 +34,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/01/07 11:03:35 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ModuleManager {
 	
@@ -218,10 +217,12 @@ public class ModuleManager {
 	public void submitForm(ActionEvent event) {
 		if (pomSorter != null) {
 			if (pomSorter.getErrorMessages() == null) {
-				Collection toBeInstalled = pomSorter.getToBeInstalledPoms().values();
-				Installer installer = Installer.getInstance(toBeInstalled);
 				try {
-					installer.getBundleArchives();
+					Installer installer = Installer.getInstance(pomSorter);
+					installer.extractBundleArchives();
+					installer.mergeFacesConfiguration();
+					installer.mergeLibrary();
+					installer.mergeTagLibraries();
 				}
 				catch (IOException ex) {
 					// what next?
