@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.1 2004/11/19 17:05:42 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.2 2004/11/26 17:19:09 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,27 +12,39 @@ package com.idega.manager.bean;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlSelectManyListbox;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.data.Pom;
+import com.idega.manager.business.PomSorter;
+import com.idega.manager.business.PomValidator;
+import com.idega.manager.data.RealPom;
+import com.idega.manager.data.ProxyPom;
 import com.idega.manager.util.ManagerUtils;
+import com.idega.util.IWTimestamp;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/19 17:05:42 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/11/26 17:19:09 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class UpdateListManager {
 	
 	private IWResourceBundle resourceBundle;
+	private PomValidator pomValidator = null;
+	private PomSorter pomSorter = null;
 	
 	private String outputText1Value;
 	private String outputText2Value;
@@ -64,20 +76,44 @@ public class UpdateListManager {
 	
 	private void initializeList() {
 		 multiSelectListbox1DefaultItems = new ArrayList();
-		 List list = ManagerUtils.getInstanceForCurrentContext().getPomOfInstalledModules();
-		 List ge = ManagerUtils.getInstanceForCurrentContext().getList();
-		 if (list == null) {
-		 	return;
-		 }
-		 Iterator iterator = list.iterator();
+		 pomSorter = new PomSorter();
+		 pomSorter.initializeInstalledPomsAndAvailableUpdates();
+		 SortedMap sortedInstalledPom = pomSorter.getSortedInstalledPoms();
+		 Map repositoryPom = pomSorter.getSortedRepositoryPoms();
+		 Iterator iterator = sortedInstalledPom.keySet().iterator();
 		 while (iterator.hasNext()) {
-		 	Pom pom = (Pom) iterator.next();
-		 	String artifactId = pom.getArtifactId();
+		 	String artifactId = (String) iterator.next();
+		 	SortedSet pomProxies = (SortedSet) repositoryPom.get(artifactId);
+		 	SelectItem[] items = null;
+		 	if (pomProxies == null) {
+		 		items = new SelectItem[0];
+		 	}
+		 	else {
+		 		Iterator pomProxiesIterator = pomProxies.iterator();
+		 		items = new SelectItem[pomProxies.size()];
+			 	int i = 0;
+			 	while (pomProxiesIterator.hasNext()) {
+			 		ProxyPom proxy = (ProxyPom) pomProxiesIterator.next();
+			 		// file is used as identifier
+			 		String fileName = proxy.getFileName();
+			 		IWTimestamp timestamp = proxy.getTimestamp();
+			 		String label = (timestamp == null) ? proxy.getCurrentVersion() : timestamp.toString(true);
+			 		items[i++] = new SelectItem(fileName, label);
+			 	}
+		 	}
+		 	RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
 		 	String currentVersion = pom.getCurrentVersion();
 		 	StringBuffer buffer = new StringBuffer();
 		 	buffer.append(artifactId).append(" ").append(currentVersion);
-			 multiSelectListbox1DefaultItems.add(new SelectItem(artifactId, buffer.toString()));		 	
+			 multiSelectListbox1DefaultItems.add(new SelectItemGroup(buffer.toString(), null, true, items));		 	
 		 }
+	}
+	
+	public void validateSelectedModules(FacesContext context, UIComponent toValidate, Object value) {
+		if (pomValidator == null) {
+			pomValidator = new PomValidator();
+		}
+		pomValidator.validateSelectedModules(context, toValidate, value, pomSorter, resourceBundle);
 	}
 	
    private HtmlForm form1 = new HtmlForm();
