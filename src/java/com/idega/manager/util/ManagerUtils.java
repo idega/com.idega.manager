@@ -1,5 +1,5 @@
 /*
- * $Id: ManagerUtils.java,v 1.4 2004/12/02 18:06:57 thomas Exp $
+ * $Id: ManagerUtils.java,v 1.5 2004/12/08 17:36:53 thomas Exp $
  * Created on Nov 5, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.presentation.IWContext;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/02 18:06:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ManagerUtils {
 	
@@ -86,6 +86,8 @@ public class ManagerUtils {
 		ValueBinding binding = application.createValueBinding(valueRef);
 		return binding.getValue(context);
 	}
+	
+
 
 	
 	private void getBundleAndResourceBundle() {

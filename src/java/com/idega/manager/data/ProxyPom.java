@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.4 2004/12/08 12:47:55 thomas Exp $
+ * $Id: ProxyPom.java,v 1.5 2004/12/08 17:36:53 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,10 +35,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ProxyPom extends Pom {
 
@@ -188,9 +188,13 @@ public class ProxyPom extends Pom {
 		return buffer.append(version).append(useExtension);
 	}
 	
-	public List getDependencies() {
+	public List getDependencies() throws IOException {
 		RealPom pom = getRealSubject();
-		return (pom == null) ? null : pom.getDependencies(this);
+		if (pom == null) { 
+			// in this case we really need the real subject
+			throw new IOException("[ProxyPom] Could not get my real subject. " + this.toString());
+		}	
+		return pom.getDependencies(this);
 	}
 
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.5 2004/12/08 12:47:55 thomas Exp $
+ * $Id: ModuleManager.java,v 1.6 2004/12/08 17:36:53 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import javax.faces.application.Application;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlDataTable;
@@ -34,14 +35,17 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ModuleManager {
 	
 	private static final String ACTION_INSTALL_MANAGER = "installManager";
+	
+	private static final String JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER = "#{UpdateListManager}";
+	private static final String JSF_ID_REFERENCE_FORM1 = "form1";
 	
 	private IWResourceBundle resourceBundle;
 	private FacesContext context = null;
@@ -70,9 +74,10 @@ public class ModuleManager {
 	
 	private void initializePomSorter() {
 		if (pomSorter == null) {
-			UpdateListManager updateListManager = (UpdateListManager) ManagerUtils.getInstanceForCurrentContext().getValue(application, "#{UpdateListManager}");
+			UpdateListManager updateListManager = (UpdateListManager) ManagerUtils.getInstanceForCurrentContext().getValue(application, JSF_VALUE_REFERENCE_UPDATE_LIST_MANAGER);
 			if (updateListManager != null) {
 				pomSorter = updateListManager.getPomSorter();
+				initializeErrorMessages(context, JSF_ID_REFERENCE_FORM1, pomSorter);
 			}
 		}
 	}
@@ -130,8 +135,20 @@ public class ModuleManager {
 		initializeHtmlDataTable(columnNames);
 	}	
 
+	private void initializeErrorMessages(FacesContext tempContext, String id, PomSorter tempPomSorter) {
+		List errorMessages = tempPomSorter.getErrorMessages();
+		if (errorMessages == null) {
+			return;
+		}
+		Iterator iterator = errorMessages.iterator();
+		while (iterator.hasNext()) {
+			String errorMessage = (String) iterator.next();
+			tempContext.addMessage(id, new FacesMessage(errorMessage));
+		}
+	}
 	
-   private HtmlForm form1 = new HtmlForm();
+	
+	private HtmlForm form1 = new HtmlForm();
 
     public HtmlForm getForm1() {
         return form1;
@@ -200,13 +217,15 @@ public class ModuleManager {
 
 	public void submitForm(ActionEvent event) {
 		if (pomSorter != null) {
-			Collection toBeInstalled = pomSorter.getToBeInstalledPoms().values();
-			Installer installer = Installer.getInstance(toBeInstalled);
-			try {
-			 installer.getBundleArchives();
-			}
-			catch (IOException ex) {
-				// what next?
+			if (pomSorter.getErrorMessages() == null) {
+				Collection toBeInstalled = pomSorter.getToBeInstalledPoms().values();
+				Installer installer = Installer.getInstance(toBeInstalled);
+				try {
+					installer.getBundleArchives();
+				}
+				catch (IOException ex) {
+					// what next?
+				}
 			}
 		}
 	}

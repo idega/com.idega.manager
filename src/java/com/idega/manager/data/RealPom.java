@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.3 2004/12/03 17:01:12 thomas Exp $
+ * $Id: RealPom.java,v 1.4 2004/12/08 17:36:53 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/03 17:01:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RealPom extends Pom {
 	
@@ -162,7 +162,7 @@ public class RealPom extends Pom {
 		return root;
 	}
 
-	public List getDependencies() {
+	public List getDependencies()  {
 		return getDependencies(this);
 	}
 	

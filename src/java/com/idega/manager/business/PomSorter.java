@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.6 2004/12/08 12:47:55 thomas Exp $
+ * $Id: PomSorter.java,v 1.7 2004/12/08 17:36:53 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,6 @@
 package com.idega.manager.business;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,10 +27,10 @@ import com.idega.manager.data.RealPom;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PomSorter {
 	
@@ -43,7 +42,9 @@ public class PomSorter {
 	Map fileNameRepositoryPom = null;
 	// 
 	SortedMap toBeInstalledPoms = null;
+	List errorMessages = null;
 	
+
 	public void initializeInstalledPomsAndAvailableUpdates() throws IOException {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository();
 		LocalBundlesBrowser localBrowser = new LocalBundlesBrowser();
@@ -117,5 +118,12 @@ public class PomSorter {
 			String key = module.getArtifactId();
 			this.toBeInstalledPoms.put(key, module);
 		}
+	}
+
+	public List getErrorMessages() {
+		return errorMessages;
+	}
+	public void setErrorMessages(List errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.5 2004/12/08 12:48:18 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.6 2004/12/08 17:36:53 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.data.Dependency;
 import com.idega.manager.data.Module;
 import com.idega.manager.data.Pom;
@@ -23,25 +24,28 @@ import com.idega.util.datastructures.HashMatrix;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:48:18 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:53 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DependencyMatrix {
 	
-	private List errorMessages = new ArrayList();
+	private IWResourceBundle resourceBundle = null;
 	
-	private HashMatrix moduleDependencies;
+	private List errorMessages = null;
+	
+	private HashMatrix moduleDependencies = null;
 	
 	private Collection notInstalledModules = null;
 	private Collection installedModules = null;
 	
 	
-	public static DependencyMatrix getInstance(Collection notInstalledModules, Collection installedModules) {
+	public static DependencyMatrix getInstance(Collection notInstalledModules, Collection installedModules, IWResourceBundle resourceBundle) {
 		DependencyMatrix dependencyMatrix = new DependencyMatrix();
 		dependencyMatrix.notInstalledModules = notInstalledModules;
 		dependencyMatrix.installedModules = installedModules;
+		dependencyMatrix.resourceBundle = resourceBundle;
 		return dependencyMatrix;
 	}
 	
@@ -58,7 +62,13 @@ public class DependencyMatrix {
 		return tempToBeInstalled;
 	}
 			
-			
+	public boolean hasErrors() {
+		return ! (errorMessages == null || errorMessages.isEmpty());
+	}
+	
+	public List getErrorMessages() {
+		return errorMessages;
+	}
 	
 	
 	private List tryGetListOfModulesToBeInstalled() {
@@ -112,6 +122,7 @@ public class DependencyMatrix {
 	}
 	
 	private void initializeMatrix(Collection tempNotInstalledModules, Collection tempInstalledModules) {
+		errorMessages = null;
 		addEntries(tempInstalledModules);
 		addEntries(tempNotInstalledModules);
 	}
@@ -138,8 +149,8 @@ public class DependencyMatrix {
 			 dependencies = source.getDependencies();
 		}
 		catch (IOException ex) {
-			String errorMessage = "[DependencyMatrix] Could not get dependencies of " + source.getArtifactId();
-			errorMessages.add(errorMessage);
+			String errorMessage = resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies of ") + source.getArtifactId();
+			addErrorMessage(errorMessage);
 			return;
 		}
 		Iterator iterator = dependencies.iterator();
@@ -152,14 +163,22 @@ public class DependencyMatrix {
 				dependencyPom  = dependency.getPom();
 			}
 			catch (IOException ex) {
-				String errorMessage = "[DependencyMatrix] Could not get dependencies of " + dependency.getArtifactId();
-				errorMessages.add(errorMessage);
+				String errorMessage = resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies of ") + dependency.getArtifactId();
+				addErrorMessage(errorMessage);
+
 			}
 			if (dependencyPom != null) {
 				// go further
 				addEntry(dependant, dependencyPom, matrix);					
 			}
 		}
+	}
+	
+	private void addErrorMessage(String errorMessage) {
+		if (errorMessages == null) {
+			errorMessages = new ArrayList();
+		}
+		errorMessages.add(errorMessage);
 	}
 	
 	

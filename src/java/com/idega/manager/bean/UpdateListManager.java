@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.7 2004/12/08 12:47:55 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.8 2004/12/08 17:36:52 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/08 12:47:55 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/08 17:36:52 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class UpdateListManager {
 	
@@ -73,7 +73,7 @@ public class UpdateListManager {
 	
 	private void initializeOutputText() {
 		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_mamager_choose","Choose one option");
+		outputText2Value = resourceBundle.getLocalizedString("man_manager_choose","Choose one option");
 	}
 
 	private void initializeSubmitButtons() {
@@ -140,8 +140,11 @@ public class UpdateListManager {
 		Map installedPoms = pomSorter.getSortedInstalledPoms();
 		Collection installedModules = installedPoms.values();
 		Collection notInstalledModules = selectedPoms.values();
-		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules);
+		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, resourceBundle);
 		List toBeInstalled = dependencyMatrix.getListOfModulesToBeInstalled();
+		if (dependencyMatrix.hasErrors()) {
+			pomSorter.setErrorMessages(dependencyMatrix.getErrorMessages());
+		}
 		pomSorter.setToBeInstalledPoms(toBeInstalled);
 	}
  
