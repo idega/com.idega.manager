@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <projectDescription>
-  <name>com.idega.manager</name>
-  <comment>idegaWeb manager is a manager for updating and installing modules</comment>
+  <name>Global Project</name>
+  <comment>
+  </comment>
   <projects>
-    <project>com.idega.core</project>
   </projects>
   <buildSpec>
     <buildCommand>

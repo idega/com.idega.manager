@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/jsf-api-1.0.jar"/>
-	<classpathentry kind="src" path="/com.idega.core"/>
-	<classpathentry sourcepath="/maven-wagon/wagon-providers/wagon-http-lightweight/src/main/java" kind="lib" path="/opt/eclipse/plugins/org.mevenide.ui_0.3.0/lib/wagon-http-lightweight-20040714.210443.jar"/>
-	<classpathentry sourcepath="/maven-wagon/wagon-provider-api/src/main/java" kind="lib" path="/opt/eclipse/plugins/org.mevenide.ui_0.3.0/lib/wagon-api-1.0-alpha-1.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+  </classpathentry>
+  <classpathentry kind="output" path="target/classes">
+  </classpathentry>
 </classpath>
