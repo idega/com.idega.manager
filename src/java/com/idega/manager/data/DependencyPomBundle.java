@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.1 2004/12/01 19:24:21 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.2 2004/12/02 11:43:03 thomas Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 11:43:03 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -47,7 +47,13 @@ public class DependencyPomBundle extends Dependency {
 	}
 	
 	public int compare(Module module) {
-		return 0;
+		// change algebraic sign of returned result
+		return - (module.compare(this));
+	}
+	
+	public int compare(Dependency dependency) {
+		// not supported, it has never the same group id
+		return -1;
 	}
 	
 	public int compare(DependencyPomBundle dependencyPomBundle) {

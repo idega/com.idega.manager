@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.3 2004/12/01 19:24:21 thomas Exp $
+ * $Id: Dependency.java,v 1.4 2004/12/02 11:43:03 thomas Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,10 +16,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 11:43:03 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Dependency implements Module  {
 	
@@ -98,6 +98,16 @@ public class Dependency implements Module  {
 		return true;
 	}
 	
+	public int compare(Pom pom)	{
+		// not supported, it has never the same group id
+		return -1;
+	}
+	
+	public int compare(DependencyPomBundle dependencyPomBundle) {
+		// not supported, it has never the same group id
+		return -1;
+	}
+	
 	public int compare(Dependency dependency)	{
 		String version1 = getCurrentVersion();
 		String version2 = dependency.getCurrentVersion();
@@ -106,6 +116,7 @@ public class Dependency implements Module  {
 	
 	// you can only compare a dependency with another dependency
 	public int compare(Module module) {
-		return 0;
+		// change algebraic sign of returned result
+		return - (module.compare(this));
 	}
 }

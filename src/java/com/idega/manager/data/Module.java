@@ -1,5 +1,5 @@
 /*
- * $Id: Module.java,v 1.1 2004/12/01 19:24:21 thomas Exp $
+ * $Id: Module.java,v 1.2 2004/12/02 11:43:03 thomas Exp $
  * Created on Nov 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,14 +14,20 @@ import java.io.IOException;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 11:43:03 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface Module {
 	
 	int compare(Module module);
+	
+	int compare(Dependency dependency);
+	
+	int compare(DependencyPomBundle dependencyPomBundle);
+	
+	int compare(Pom pom);
 	
 	boolean isIncluded();
 

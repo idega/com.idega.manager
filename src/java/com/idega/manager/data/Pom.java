@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.3 2004/12/01 19:24:21 thomas Exp $
+ * $Id: Pom.java,v 1.4 2004/12/02 11:43:03 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/01 19:24:21 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 11:43:03 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class Pom implements Module {
 	
@@ -33,7 +33,8 @@ public abstract class Pom implements Module {
 	public abstract IWTimestamp getTimestamp();
 	
 	public int compare(Module module) {
-		return 0;
+		// change the algebraic sign of the returned result
+		return -(module.compare(this));
 	}
 	
 	public int compare(DependencyPomBundle dependency) {
