@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.10 2005/03/23 15:31:07 thomas Exp $
+ * $Id: Installer.java,v 1.11 2005/04/05 16:14:29 thomas Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,10 @@ import com.idega.util.logging.LogFile;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/05 16:14:29 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Installer {
 	
@@ -249,7 +250,7 @@ public class Installer {
 		// build a list of necessary file names...
 		Map necessaryPomsMap = pomSorter.getNecessaryPoms();
 		Collection necessaryPoms = necessaryPomsMap.values();
-		List necessaryFileNames = new ArrayList(necessaryPoms.size());
+		Map necessaryFileNames = new HashMap(necessaryPoms.size());
 		List notInstalledYet = new ArrayList();
 		List containedFileNames = new ArrayList();
 		Iterator iterator = necessaryPoms.iterator();
@@ -261,7 +262,7 @@ public class Installer {
 				fileName = getJarFileName(module);
 			}
 			if (module.isInstalled()) {
-				necessaryFileNames.add(fileName);
+				necessaryFileNames.put(fileName, module.getArtifactId());
 			}
 			else {
 				// only for debugging
@@ -270,16 +271,14 @@ public class Installer {
 		}
 		List files = FileUtil.getFilesInDirectory(library);
 		Iterator filesIterator = files.iterator();
-		List deletedFiles = new ArrayList();
+		List toBeDeletedFiles = new ArrayList();
 		while (filesIterator.hasNext()) {
 			File file = (File) filesIterator.next();
 			String fileName = file.getName();
-			//fileName = RealPom.convertFileName(fileName);
 			// if not necessary delete it
-			if (! necessaryFileNames.contains(fileName)) {
+			if (! necessaryFileNames.containsKey(fileName)) {
 				// delete jar file 
-				file.delete();
-				deletedFiles.add(fileName);
+				toBeDeletedFiles.add(file);
 			}
 			else {
 				// only for debugging
@@ -287,10 +286,23 @@ public class Installer {
 				necessaryFileNames.remove(fileName);
 			}
 		}
+		// necessary files should be empty!
+		// but sometimes 
+		Iterator toBeDeletedIterator = toBeDeletedFiles.iterator();
+		while (toBeDeletedIterator.hasNext()) {
+			File file = (File) toBeDeletedIterator.next();
+			String fileName = file.getName();
+			String artifact = StringHandler.getFirstToken(fileName, "_-") ;
+			if (! necessaryFileNames.containsValue(artifact)) {
+				file.delete();
+			}
+		}
+			
 		// only for debugging
+			
 		containedFileNames.size();
 		notInstalledYet.size();
-		deletedFiles.size();
+		toBeDeletedFiles.size();
 	}
 	
 	private String getJarFileName(Module module) throws IOException {
