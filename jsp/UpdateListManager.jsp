@@ -33,7 +33,6 @@
                     </h:form>
                     <h:form>
                     <h:commandButton binding="#{UpdateListManager.button1}" id="button1"  
-                    	type="button"
                         action="#{UpdateListManager.button1_action}"
                        	value="#{UpdateListManager.button1Label}"
                         style="height: 24px; left: 48px; top: 312px; position: absolute; width: 96px"/>
