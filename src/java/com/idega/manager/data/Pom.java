@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.10 2005/03/16 17:49:40 thomas Exp $
+ * $Id: Pom.java,v 1.11 2005/03/18 14:16:36 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,12 +18,49 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/03/18 14:16:36 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public abstract class Pom implements Module {
+	 
+	static protected int compareModules(Module module1, Module module2, VersionComparator versionComparator) {
+		if (! ( module1.isSnapshot() || module2.isSnapshot()) ) {
+			// Case 2: both are not snapshots !!!!
+			String version1 =  module1.getCurrentVersion();
+			String version2 = module2.getCurrentVersion();
+			int result = versionComparator.compare(version1, version2);
+			// if both are equal the installed one wins
+			if (result == 0) {
+				if ( module1.isInstalled() && module2.isInstalled()) {
+					return 0;
+				}
+				if ( module1.isInstalled()) {
+					return 1;
+				}
+				if (module2.isInstalled()) {
+					return -1;
+				}
+			}
+			return result;
+		}
+		
+		// Case 3: only one of them are snapshots 
+		//  -------------  that is you can not compare them ---------------------
+		// or the result was zero
+		
+		// module that is not installed wins
+		if (  module1.isInstalled() && ! module2.isInstalled()) {
+			// that is: dependencyPomBundle is not installed
+			return -1;
+		}
+		if (!  module1.isInstalled() && module2.isInstalled()) {
+			// that is: this is not installed
+			return 1;
+		}
+		return 0;
+	}
 	
 	public abstract List getDependencies() throws IOException;
 	
@@ -57,46 +94,10 @@ public abstract class Pom implements Module {
 			return timestamp1.compareTo(timestamp2);
 		}
 		
-		return compareModule(aPom, versionComparator);
+		return Pom.compareModules(this, aPom, versionComparator);
 	}
 	
-	private int compareModule(Module module, VersionComparator versionComparator) {
 
-		if (! ( isSnapshot() || module.isSnapshot()) ) {
-			// Case 2: both are not snapshots !!!!
-			String version1 = getCurrentVersion();
-			String version2 = module.getCurrentVersion();
-			int result = versionComparator.compare(version1, version2);
-			// if both are equal the installed one wins
-			if (result == 0) {
-				if (isInstalled() && module.isInstalled()) {
-					return 0;
-				}
-				if (isInstalled()) {
-					return 1;
-				}
-				if (module.isInstalled()) {
-					return -1;
-				}
-			}
-			return result;
-		}
-		
-		// Case 3: only one of them are snapshots 
-		//  -------------  that is you can not compare them ---------------------
-		// or the result was zero
-		
-		// module that is not installed wins
-		if ( isInstalled() && ! module.isInstalled()) {
-			// that is: dependencyPomBundle is not installed
-			return -1;
-		}
-		if (! isInstalled() && module.isInstalled()) {
-			// that is: this is not installed
-			return 1;
-		}
-		return 0;
-	}
 	
 	
 }
