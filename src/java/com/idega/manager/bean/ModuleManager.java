@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.18 2005/03/09 15:19:04 thomas Exp $
+ * $Id: ModuleManager.java,v 1.19 2005/04/08 14:17:27 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,12 +36,14 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/08 14:17:27 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class ModuleManager {
+	
+	private static  int maxNumberOfShownErrorMessages = 5;
 	
 	private IWResourceBundle resourceBundle = null;
 	private PomSorter pomSorter = null;
@@ -141,11 +143,20 @@ public class ModuleManager {
 		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
 		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
 		if (errorMessages != null) {
-			outputText2Value = resourceBundle.getLocalizedString("man_manager_successl","Problems occurred, you can not proceed");
+			outputText2Value = resourceBundle.getLocalizedString("man_manager_success","Problems occurred, you can not proceed");
 			button2.setDisabled(true);
 			Iterator iterator = errorMessages.iterator();
-			while (iterator.hasNext()) {
-				String errorMessage = (String) iterator.next();
+			boolean go = true;
+			int i = 0;
+			while (iterator.hasNext() && go) {
+				String errorMessage = null;
+				if (i++ == maxNumberOfShownErrorMessages) {
+					go = false;
+					errorMessage = resourceBundle.getLocalizedString("man_manager_more_problems", "more problems...");
+				}
+				else {
+					errorMessage = (String) iterator.next();
+				}
 				errorMessage = errorMessage + " <br/>";
 				HtmlOutputText error = new HtmlOutputText();
 				error.setValue(errorMessage);
