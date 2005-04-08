@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.7 2005/02/23 18:02:17 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.8 2005/04/08 14:17:01 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:17 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/08 14:17:01 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RepositoryBrowser {
 	
@@ -348,8 +348,9 @@ public class RepositoryBrowser {
 			myFolder.mkdir();
 		}
 	    File destination = new File(myFolder, fileName);
+	    Wagon wagon = null;
 		try {
-			Wagon wagon = new LightweightHttpWagon();
+			wagon = new LightweightHttpWagon();
 		    Repository localRepository = new Repository();
 		    AuthenticationInfo authenticationInfo = repositoryLogin.getAuthenticationInfo();
 		    localRepository.setAuthenticationInfo(authenticationInfo);
@@ -378,6 +379,16 @@ public class RepositoryBrowser {
 		catch (AuthorizationException ex) {
 			getLogger().log(Level.WARNING, "[RepositoryBrowser] Authorization problems: "+ urlAddress + fileName , ex);
 			throw new IOException("[RepositoryBrowser] Could not download file. " + fileName);
+		}
+		finally {
+			try {
+				if (wagon != null) {
+					wagon.disconnect();
+				}
+			}
+			catch (ConnectionException ex) {
+				getLogger().log(Level.WARNING, "[RepositoryBrowser] Disconnection problems: "+ urlAddress + fileName , ex);
+			}
 		}
 		cachedDownloadedFiles.put(fileName, destination);
 		return destination;

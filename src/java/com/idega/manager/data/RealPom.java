@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.9 2005/03/31 15:48:50 thomas Exp $
+ * $Id: RealPom.java,v 1.10 2005/04/08 14:16:15 thomas Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/31 15:48:50 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/08 14:16:15 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RealPom extends Pom {
 	
@@ -149,7 +149,14 @@ public class RealPom extends Pom {
 				timestamp = getTimestampFromFileName(orignFileName);
 			}
 			finally {
-				fileReader.close();
+			  	try {
+			  		if (fileReader != null) {
+			  			fileReader.close();
+			  		}
+			  	}
+			  	catch (IOException io) {
+					// do not hide an existing exception
+			  	}
 			}
 		}
 		if (timestamp == null) {
