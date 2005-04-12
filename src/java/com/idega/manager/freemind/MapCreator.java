@@ -31,10 +31,10 @@ import com.idega.xml.XMLElement;
  * <p>
  * TODO thomas Describe Type MapCreator
  * </p>
- *  Last modified: $Date: 2005/04/06 16:08:32 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/12 10:24:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MapCreator {
 	
@@ -44,6 +44,7 @@ public class MapCreator {
 	private Map artifactVersion = null;
 	private Map artifactNode = null;
 	private List artifactPom = null;
+	private List artifactIsIncluded = null;
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
@@ -72,6 +73,7 @@ public class MapCreator {
 		artifactVersion = new HashMap();
 		artifactNode = new HashMap();
 		artifactPom = new ArrayList();
+		artifactIsIncluded = new ArrayList();
 		File projectFile = new File(application, RealPom.POM_FILE);
 		if (projectFile.exists()) {
 			try {
@@ -115,7 +117,13 @@ public class MapCreator {
 			String version = dependency.getCurrentVersion();
 			StringBuffer buffer = new StringBuffer(dependencyArtifactId).append(" ").append(version);
 			if (dependency.isIncludedInBundle()) {
-				buffer.append(" INCLUDED");
+				if (artifactIsIncluded.contains(dependencyArtifactId)) {
+					buffer.append(" INCLUDED AGAIN");
+				}
+				else {
+					artifactIsIncluded.add(dependencyArtifactId);
+					buffer.append(" INCLUDED");
+				}
 			}
 			if (artifactPom.contains(dependencyArtifactId)) {
 				buffer.append(" -->");
