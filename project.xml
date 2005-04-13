@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
-  <extend>${base.project.dir}/base-project.xml</extend>
+  <extend>${base.project.dir}/base-dependencies.xml</extend>
   <name>idegaWeb Manager</name>
   <artifactId>com.idega.manager</artifactId>
   <currentVersion>0.2.0-SNAPSHOT</currentVersion>
@@ -75,22 +75,6 @@
       <version>1.1</version>
       <type>jar</type>
       <url>http://www.doomdark.org/doomdark/proj/jug/</url>
-    </dependency>
-    <dependency>
-      <groupId>myfaces</groupId>
-        <artifactId>myfaces-jsf-api</artifactId>
-        <version>1.0.7</version>
-      <type>jar</type>
-      <url>http://java.sun.com/j2ee/javaserverfaces/</url>
-      <properties />
-    </dependency>
-    <dependency>
-      <groupId>servletapi</groupId>
-      <artifactId>servletapi</artifactId>
-      <version>2.4</version>
-      <type>jar</type>
-      <url>http://java.sun.com/products/servlet/docs.html</url>
-      <properties/>
     </dependency>
     </dependencies>
   <build>
