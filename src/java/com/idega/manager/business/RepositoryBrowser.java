@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.8 2005/04/08 14:17:01 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.9 2005/04/14 14:01:00 thomas Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,17 +42,17 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/08 14:17:01 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/14 14:01:00 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RepositoryBrowser {
 	
 	private final static String SNAPSHOT_VERSION_SUFFIX = "snapshot-version";
 	
-	private final static char[] HTML_IWBAR_START_PATTERN = "iwbar\">".toCharArray();
-	private final static char[] HTML_POM_START_PATTERN = "pom\">".toCharArray();
+	private final static char[] HTML_IWBAR_START_PATTERN = "r\">".toCharArray();  //"iwbar\">".toCharArray();
+	private final static char[] HTML_POM_START_PATTERN = "m\">".toCharArray(); //"pom\">".toCharArray();
 	private final static char HTML_LINK_END_PATTERN = '<';
 	
 	public static RepositoryBrowser getInstanceForIdegaRepository(RepositoryLogin repositoryLogin)	{
@@ -84,20 +84,21 @@ public class RepositoryBrowser {
 	 * @return
 	 * @throws IOException
 	 */
-	public List getPomsSynchronizingBundleArchivesFolderAndPomsFolder() throws IOException {
+	public List getSimplePomProxiesFromBundleArchivesFolder() throws IOException {
 		List iwbars = getPomsScanningBundleArchivesFolder();
-		List pomFiles = getPomsScanningPomsFolder();
+//		List pomFiles = getPomsScanningPomsFolder();
 		List poms = new ArrayList(iwbars.size());
 		Iterator iterator = iwbars.iterator();
 		while (iterator.hasNext()) {
-			String fileNameWithoutExtension = (String) iterator.next();
-			if (pomFiles.contains(fileNameWithoutExtension)) {
-				// pom and corresponding jar file exist
-				ProxyPom pomProxy = ProxyPom.getInstanceOfGroupBundlesWithoutFileExtension(fileNameWithoutExtension, this);
-				if (! pomProxy.shouldBeIgnored()) {
-					poms.add(pomProxy);
-				}
-			}
+			StringBuffer fileNameWithoutExtension = (StringBuffer) iterator.next();
+			// pom and corresponding jar file exist
+			String[] simplePomProxy = ProxyPom.getSimpleProxyPom(fileNameWithoutExtension);
+			poms.add(simplePomProxy);
+			//ProxyPom pomProxy = ProxyPom.getInstanceOfGroupBundlesWithoutFileExtension(fileNameWithoutExtension, this);
+//				if (! pomProxy.shouldBeIgnored()) {
+//					poms.add(pomProxy);
+//				}
+//			}
 		}
 		return poms;
 	}
@@ -107,7 +108,7 @@ public class RepositoryBrowser {
 		return getPomProxies(urlAddress, HTML_IWBAR_START_PATTERN);
 	}
 
-	private List getPomsScanningPomsFolder()	throws IOException {
+	public List getPomsScanningPomsFolder()	throws IOException {
 		String urlAddress = getURLForBundlesPoms();
 		return getPomProxies(urlAddress, HTML_POM_START_PATTERN);
 	}
@@ -271,8 +272,8 @@ public class RepositoryBrowser {
 					// is the end of the name reached?
 					if (c == HTML_LINK_END_PATTERN) {
 						// yes it is, store the name and reset the buffer and read variable
-						String fileName = nameBuffer.substring(0, dotIndex);
-						poms.add(fileName);
+						nameBuffer = nameBuffer.delete(dotIndex, nameBuffer.length());
+						poms.add(nameBuffer);
 						nameBuffer = null;
 						read = false;
 						dotIndex = 0;

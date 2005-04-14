@@ -1,5 +1,5 @@
 /*
- * $Id: InstallNewModuleListManager.java,v 1.5 2005/03/16 17:49:40 thomas Exp $
+ * $Id: InstallNewModuleListManager.java,v 1.6 2005/04/14 14:01:01 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,20 +11,23 @@ package com.idega.manager.bean;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.faces.event.ActionEvent;
 import com.idega.manager.data.Module;
+import com.idega.manager.data.SimpleProxyPomList;
 import com.idega.manager.util.ManagerConstants;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class InstallNewModuleListManager extends UpdateListManager {
 	
@@ -45,7 +48,14 @@ public class InstallNewModuleListManager extends UpdateListManager {
 		 	return;
 		 }
 		 multiSelectListbox1DefaultItems = new ArrayList();
-		 Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableNewModules();
+		 Map repositoryPom = new HashMap();
+		 Map sortedSimpleProxyList = pomSorter.getSortedSimpleProxyList();
+		 Iterator iterator = selectedModules.iterator();
+		 while (iterator.hasNext()) {
+		 	String artifactId = (String) iterator.next();
+		 	SimpleProxyPomList simpleProxyPomList = (SimpleProxyPomList) sortedSimpleProxyList.get(artifactId);
+		 	pomSorter.addSimpleProxyPomList(artifactId, simpleProxyPomList, repositoryPom);
+		 }
 		 // sort
 		 Collections.sort(selectedModules);
 		 fillList(selectedModules, repositoryPom, repositoryPom);

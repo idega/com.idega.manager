@@ -1,5 +1,5 @@
 /*
- * $Id: InstallListManager.java,v 1.4 2005/03/09 15:19:04 thomas Exp $
+ * $Id: InstallListManager.java,v 1.5 2005/04/14 14:01:01 thomas Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,6 +33,7 @@ import com.idega.manager.business.PomSorter;
 import com.idega.manager.business.PomValidator;
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.data.SimpleProxyPomList;
 import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
 import com.idega.util.datastructures.SortedByValueMap;
@@ -40,10 +41,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class InstallListManager {
 	
@@ -111,16 +112,18 @@ public class InstallListManager {
 			return;
 		}
 		 
-		 Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableNewModules();
+		 Map repositoryPom = pomSorter.getSortedSimpleProxyList();
 		 Map listItems = new HashMap();
 		 Iterator iterator = repositoryPom.keySet().iterator();
 		 while (iterator.hasNext()) {
 		 	String artifactId = (String) iterator.next();
-		 	Set pomSet = (Set) repositoryPom.get(artifactId);
-		 	ProxyPom proxyPom = (ProxyPom) pomSet.iterator().next();
-		 	String name = proxyPom.getNameForLabel(resourceBundle);
-		 	SelectItem item = new SelectItem(artifactId, name);
-	 	 	listItems.put(item, name);
+		 	SimpleProxyPomList simpleProxyPomList = (SimpleProxyPomList) repositoryPom.get(artifactId);
+		 	if (! simpleProxyPomList.isEmpty()) {
+		 		ProxyPom proxyPom = simpleProxyPomList.getRepresentative();
+		 		String name = proxyPom.getNameForLabel(resourceBundle);
+			 	SelectItem item = new SelectItem(artifactId, name);
+		 	 	listItems.put(item, name);
+		 	}
 	 	}
 		Locale locale = resourceBundle.getLocale();
 		SortedByValueMap sortedMap = new SortedByValueMap(listItems, locale);

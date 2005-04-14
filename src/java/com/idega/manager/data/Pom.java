@@ -1,5 +1,5 @@
 /*
- * $Id: Pom.java,v 1.12 2005/03/23 15:31:07 thomas Exp $
+ * $Id: Pom.java,v 1.13 2005/04/14 14:01:01 thomas Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public abstract class Pom extends ModulePomImpl {
 	
@@ -83,33 +83,43 @@ public abstract class Pom extends ModulePomImpl {
 	protected IWTimestamp getTimestampFromFileName(String fileNameWithExtension) {
 		String nameWithoutExtension = StringHandler.cutExtension(fileNameWithExtension);
 		String[] partOfFileName = splitFileName(nameWithoutExtension);
-		if (partOfFileName.length < 2) {
+		try {
+			String version = partOfFileName[1];
+			if (RealPom.isSnapshot(version)) {
+				//	like:  com.idega.content-SNAPSHOT.pom
+				return null;
+			}
+			// like: com.idega.block.article-20041109.112340.pom   
+			return parseVersion(version);
+		}
+		// usually does not happen
+		catch (ArrayIndexOutOfBoundsException ex) {
 			return null;
 		}
-		String version = partOfFileName[1];
-		if (RealPom.isSnapshot(version)) {
-			//	like:  com.idega.content-SNAPSHOT.pom
-			return null;
-		}
-		// like: com.idega.block.article-20041109.112340.pom   
-		return parseVersion(version);
 	}
 	
-	protected String[] splitFileName(String fileNameWithoutExtension) {
+	protected static String[] splitFileName(StringBuffer fileNameWithoutExtension) {
 		// myfaces-1.0.5 -> myfaces, 1.0.5
 		// jaxen-1.0-FCS-full -> jaxen, 1.0-FCS-full
 		int index = fileNameWithoutExtension.indexOf(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
-		String name = fileNameWithoutExtension.substring(0, index);
-		index++;
-		if (fileNameWithoutExtension.length() >  index) {
+		try {
+			String name = fileNameWithoutExtension.substring(0, index);
+			index++;
 			String version = fileNameWithoutExtension.substring(index, fileNameWithoutExtension.length());
 			String[] result = {name, version} ;
 			return result;
 		}
-		String[] result = {name};
-		return result;
+		// usually does not happen
+		catch (StringIndexOutOfBoundsException ex) {
+			String[] result = {fileNameWithoutExtension.toString()};
+			return result;
+		}
 	}
-
+	
+	protected String[] splitFileName(String fileNameWithoutExtension) {
+		return Pom.splitFileName(new StringBuffer(fileNameWithoutExtension));
+	}
+	
 	protected static IWTimestamp parseVersion(String version) {
 		SimpleDateFormat parser = Pom.getDateParser();
 		try {

@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.11 2005/03/23 15:31:07 thomas Exp $
+ * $Id: ProxyPom.java,v 1.12 2005/04/14 14:01:01 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ProxyPom extends Pom {
 
@@ -72,6 +72,14 @@ public class ProxyPom extends Pom {
 	
 	private File bundleArchive = null;
 	
+	// better performance
+	public static String[] getSimpleProxyPom(StringBuffer nameOfFileWithoutExtension) {
+		return Pom.splitFileName(nameOfFileWithoutExtension);
+	}
+	
+	public static ProxyPom getInstanceOfGroupBundlesForSimpleProxyPom(String[] simpleProxyPom, RepositoryBrowser repositoryBrowser) {
+		return new ProxyPom(RealPom.BUNDLES_GROUP_ID, simpleProxyPom, repositoryBrowser);
+	}
 	
 	public static ProxyPom getInstanceOfGroupBundlesWithoutFileExtension(String nameOfFileWithoutExtension, RepositoryBrowser repositoryBrowser) {
 		return new ProxyPom(RealPom.BUNDLES_GROUP_ID, nameOfFileWithoutExtension, repositoryBrowser);
@@ -82,24 +90,39 @@ public class ProxyPom extends Pom {
 		return getInstanceOfGroupBundlesWithoutFileExtension(nameOfFileWithoutExtension, repositoryBrowser);
 	}
 	
+	private ProxyPom(String groupId, String[] primitiveProxyPom, RepositoryBrowser repositoryBrowser) {
+		this.groupId = groupId;
+		this.repositoryBrowser = repositoryBrowser;
+		initialize(primitiveProxyPom);
+	}
+	
 	
 	private ProxyPom(String groupId, String nameOfFileWithoutExtension, RepositoryBrowser repositoryBrowser) {
 		this.groupId = groupId;
 		this.repositoryBrowser = repositoryBrowser;
-		initialize(nameOfFileWithoutExtension);
+		this.fileName = nameOfFileWithoutExtension;
+		String[] primitiveProxyPom = splitFileName(nameOfFileWithoutExtension);
+		initialize(primitiveProxyPom);
 	}
 		
-		
-	private void initialize(String nameOfFileWithoutExtension) {
-		this.fileName = nameOfFileWithoutExtension;
-		String[] partOfFileName = splitFileName(nameOfFileWithoutExtension);
-		artifactId = partOfFileName[0];
+	private void initialize(String[] primitiveProxyPom) {
+		artifactId = primitiveProxyPom[0];
 		String tempVersion = null; 
-		if (partOfFileName.length < 2) {
-			tempVersion = "no version available";
+		try {
+			tempVersion = primitiveProxyPom[1];
+			if (fileName == null) {
+				StringBuffer buffer = new StringBuffer(primitiveProxyPom[0]);
+				buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
+				buffer.append(primitiveProxyPom[1]);
+				fileName = buffer.toString();
+			}
 		}
-		else {
-			tempVersion = partOfFileName[1];
+		// usually does not happen
+		catch (ArrayIndexOutOfBoundsException ex) {
+			tempVersion = "no version available";
+			if (fileName == null) {
+				fileName = primitiveProxyPom[0];
+			}
 		}
 		// is it a snapshot?
 		// com.idega.content-SNAPSHOT.pom

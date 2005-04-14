@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.13 2005/03/16 17:49:41 thomas Exp $
+ * $Id: PomSorter.java,v 1.14 2005/04/14 14:01:00 thomas Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,43 +24,67 @@ import com.idega.manager.data.Pom;
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RealPom;
 import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.data.SimpleProxyPomList;
 import com.idega.manager.util.VersionComparator;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:41 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/14 14:01:00 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class PomSorter {
 
-	//key: artifactId String value: List of Files
-	Map bundlesTagLibraries = null;
-	
-	// key: artifactId String value: Pom 
+	// map of installed bundles
+	// key: artifactId (String) value: Pom (RealPom)
 	SortedMap sortedInstalledPom = null;
-	
-	// key: artifactId String value (TreeSet of PomProxy) 
+		
+	// map of sets of available updates for already installed modules
+	// read from the iwbar folder in the repository
+	// key: artifactId (String) value: SortedSet of Pom (TreeSet of ProxyPom) 
 	Map sortedRepositoryPomAvailableUpdates = null;
 	
-	// key: artifactId String value (TreeSet of PomProxy) 
-	SortedMap sortedRepositoryPomAvailableNewModules = null;
+	// map of lists of available new modules (not yet installed)
+	// read from the iwbar folder in the repository
+	// for performance reasons "simple PomProxies" are stored, that are just String[2] arrays. 
+	// key: artifactId (String) value: List of simple ProxyPom (SimpleProxyList, that contains simple ProxyPoms])
+	Map sortedSimpleProxyList = null;
 	
-	// key: fileName String value: PomProxy
+	// this list is used by the isValid() method.
+	// A valid pom has an existing pom.file in the pom folder in the repository and
+	// also an existing iwbar file in the iwbar folder in the repository.
+	// for performance reason StringBuffer, not Strings, are stored
+	// value: file name of a pom from the pom folder in the repository (StringBuffer)
+	List pomFileNames = null;
+	
+	// this look up list is used by the beans to get the corresponding ProxyPom 
+	// by using the file name as identifier
+	// key: fileName (String) value: pom (ProxyPom)
 	Map fileNameRepositoryPom = null;
 	
-	// 
-	SortedMap toBeInstalledPoms = null;
-	
+	// this list stores the necessary poms.
+	// PomSorter works just as a container. The necessary poms are
+	// not calculated within this class.
+	// values: modules (Module)
 	Map necessaryPoms = null;
 	
+	// this list is a subset of the list "necessaryPoms". It contains the modules that
+	// have to be downloaded from the repository. The rest of the modules in the list
+	// "necessaryPoms" are either already installed or included in other modules.
+	SortedMap toBeInstalledPoms = null;
+	
+	// just a list of error messages
 	List errorMessages = null;
 	
 	// version comparator works with caches, that is 
 	// a reused comparator works faster when dealing with the same versions again
 	VersionComparator usedVersionComparator = null;
+	
+//  Not used at the moment
+//	//key: artifactId String value: List of Files
+//	Map bundlesTagLibraries = null;
 	
 	public void initializeInstalledPomsAndAvailableUpdates(RepositoryLogin repositoryLogin) throws IOException {
 		VersionComparator versionComparator = getUsedVersionComparator();
@@ -69,16 +93,28 @@ public class PomSorter {
 	}
 	
 	public void initializeInstalledPomsAndAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
-		VersionComparator versionComparator = getUsedVersionComparator();
 		findInstalledPoms();
-		findAvailableNewModules(repositoryLogin, versionComparator);
+		findAvailableNewModules(repositoryLogin);
 	}
-		
-		
-		
+	
+	public void addSimpleProxyPomList(String key, SimpleProxyPomList simpleProxyPomList, Map pomMap) {
+		VersionComparator versionComparator = getUsedVersionComparator();
+		// iterator over list
+		Iterator iterator = simpleProxyPomList.getSimpleProxies().iterator();
+		RepositoryBrowser repositoryBrowser = simpleProxyPomList.getRepositoryBrowser(); 
+		while (iterator.hasNext()) {
+			String[] simpleProxyPom = (String[]) iterator.next();
+			ProxyPom proxyPom = ProxyPom.getInstanceOfGroupBundlesForSimpleProxyPom(simpleProxyPom, repositoryBrowser);
+			if (isValid(proxyPom)) {
+				putPom(key, proxyPom, pomMap, versionComparator);
+			}
+		}
+	}
+	
 	private void findInstalledPoms() {
 		LocalBundlesBrowser localBrowser = new LocalBundlesBrowser();
-		bundlesTagLibraries = localBrowser.getTagLibrariesOfInstalledModules();
+		// not used at the moment
+		//bundlesTagLibraries = localBrowser.getTagLibrariesOfInstalledModules();
 		List installedPoms = localBrowser.getPomOfInstalledModules();
 		sortedInstalledPom = new TreeMap();
 		Iterator installedPomsIterator = installedPoms.iterator();
@@ -90,40 +126,69 @@ public class PomSorter {
 	}
 		
 	private void findAvailableUpdates(RepositoryLogin repositoryLogin, VersionComparator versionComparator) throws IOException {
-		//if (true) throw new IOException("test");
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
-		List allPoms = repositoryBrowser.getPomsSynchronizingBundleArchivesFolderAndPomsFolder();
+		List allPoms = getAllPomsFromRepository(repositoryBrowser);
 		sortedRepositoryPomAvailableUpdates = new HashMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
-			ProxyPom proxy = (ProxyPom) allPomsIterator.next();
-			String artifactId = proxy.getArtifactId();
-			if (sortedInstalledPom.containsKey(artifactId)) {
-				RealPom pom = (RealPom) sortedInstalledPom.get(artifactId);
+			String[] simpleProxyPom = (String[]) allPomsIterator.next();
+			// simpleProxyPom[0] contains the artifactId
+			if (sortedInstalledPom.containsKey(simpleProxyPom[0])) {
+				RealPom pom = (RealPom) sortedInstalledPom.get(simpleProxyPom[0]);
 				// fetch only poms that are newer than the installed ones
 				// and fetch additionally versions if the installed one is a snapshot
-				if (proxy.compare(pom, versionComparator) > 0 || (pom.isSnapshot() && ! proxy.isSnapshot())) {
-					putPom(artifactId, proxy, sortedRepositoryPomAvailableUpdates, versionComparator);
+				// convert to a ProxyPom
+				ProxyPom proxy = ProxyPom.getInstanceOfGroupBundlesForSimpleProxyPom(simpleProxyPom, repositoryBrowser);
+				if ( (isValid(proxy)) &&
+					(proxy.compare(pom, versionComparator) > 0 || (pom.isSnapshot() && ! proxy.isSnapshot()))) {
+					putPom(simpleProxyPom[0], proxy, sortedRepositoryPomAvailableUpdates, versionComparator);
 				}
 			}
 		}
 	}
 	
 	
-	private void findAvailableNewModules(RepositoryLogin repositoryLogin, VersionComparator versionComparator) throws IOException {
-		//if (true) throw new IOException("test");
+	private void findAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
-		List allPoms= repositoryBrowser.getPomsSynchronizingBundleArchivesFolderAndPomsFolder();
-		sortedRepositoryPomAvailableNewModules = new TreeMap();
+		List allPoms= getAllPomsFromRepository(repositoryBrowser);
+		sortedSimpleProxyList = new TreeMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
-			ProxyPom proxy = (ProxyPom) allPomsIterator.next();
-			String artifactId = proxy.getArtifactId();
-			if (! sortedInstalledPom.containsKey(artifactId)) {
-				putPom(artifactId, proxy, sortedRepositoryPomAvailableNewModules, versionComparator);
+			String[] simpleProxyPom = (String[]) allPomsIterator.next();
+			// simpleProxyPom[0] contains the artifactId
+			if (! sortedInstalledPom.containsKey(simpleProxyPom[0])) {
+				putPrimitiveProxyPom(simpleProxyPom[0], simpleProxyPom, sortedSimpleProxyList, repositoryBrowser);
 			}
 		}
+	}
 	
+	private boolean isValid(ProxyPom proxyPom) {
+		if (proxyPom.shouldBeIgnored()) {
+			return false;
+		}
+		String fileName = proxyPom.getFileName();
+		Iterator iterator = pomFileNames.iterator();
+		while (iterator.hasNext()) {
+			StringBuffer buffer = (StringBuffer) iterator.next();
+			if (fileName.contentEquals(buffer)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private List getAllPomsFromRepository(RepositoryBrowser repositoryBrowser) throws IOException {
+		pomFileNames = repositoryBrowser.getPomsScanningPomsFolder();
+		return repositoryBrowser.getSimplePomProxiesFromBundleArchivesFolder();
+	}
+	
+	private void putPrimitiveProxyPom(String artifactId, String[] simpleProxyPom, Map aMap, RepositoryBrowser repositoryBrowser) {
+		SimpleProxyPomList simpleProxyPomList = (SimpleProxyPomList) aMap.get(artifactId);
+		if (simpleProxyPomList == null) {
+			simpleProxyPomList = new SimpleProxyPomList(repositoryBrowser);
+			aMap.put(artifactId, simpleProxyPomList);
+		}
+		simpleProxyPomList.add(simpleProxyPom);
 	}
 	
 	private void putPom(String key, ProxyPom value, Map pomMap, final VersionComparator versionComparator) {
@@ -149,10 +214,11 @@ public class PomSorter {
 		}
 		pomSet.add(value);
 	}
-		
-	public Map getBundlesTagLibraries() {
-		return bundlesTagLibraries;
-	}
+	
+//	Not used at the moment	
+//	public Map getBundlesTagLibraries() {
+//		return bundlesTagLibraries;
+//	}
 	
 	public Map getRepositoryPoms() {
 		return fileNameRepositoryPom;
@@ -166,10 +232,10 @@ public class PomSorter {
 		return sortedRepositoryPomAvailableUpdates;
 	}
 	
-	public Map getSortedRepositoryPomsOfAvailableNewModules() { 
-		return sortedRepositoryPomAvailableNewModules;
-	}
 	
+	public Map getSortedSimpleProxyList() {
+		return sortedSimpleProxyList;
+	}
 	
 	public SortedMap getToBeInstalledPoms() {
 		return toBeInstalledPoms;
