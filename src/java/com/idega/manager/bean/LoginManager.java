@@ -1,5 +1,5 @@
 /*
- * $Id: LoginManager.java,v 1.3 2005/03/09 15:19:04 thomas Exp $
+ * $Id: LoginManager.java,v 1.4 2005/04/15 16:24:36 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -46,10 +46,10 @@ import com.idega.manager.util.ManagerUtils;
  * 4. ModuleManager
  * 
  * 
- *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/04/15 16:24:36 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class LoginManager {
 	
@@ -110,7 +110,9 @@ public class LoginManager {
 		UIInput passwordInput = (UIInput) parentForm.findComponent(ManagerConstants.JSF_COMPONENT_ID_PASSWORD);
 		String repositoryURL = (String) repositoryURLInput.getValue();
 		String userName = (String) usernameInput.getValue();
+		userName = (userName == null) ? "" : userName; 
 		String password = (String) passwordInput.getValue();
+		password = (password == null) ? "" : password;
 		repositoryLogin = RepositoryLogin.getInstanceWithAuthentication(repositoryURL, userName, password);
 	}
 		

@@ -37,8 +37,8 @@ public class UserPasswordValidator {
 		String errorMessage = null;
 		try {
 			URL repositoryURL = new URL(repositoryURLValueString);
-			String user = (String) componentUserValue;
-			String password = (String) componentPasswordValue;
+			String user = (String) ((componentUserValue == null) ? "" : componentUserValue);
+			String password = (String) ((componentPasswordValue == null) ? "" : componentPasswordValue);
 			PasswordAuthentication userPassword = new PasswordAuthentication(user, password.toCharArray());
 			String error = URLReadConnection.authenticationValid(repositoryURL , userPassword);
 			if (error == null) {
