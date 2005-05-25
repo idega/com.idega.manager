@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import com.idega.manager.data.ApplicationRealPom;
@@ -31,10 +33,10 @@ import com.idega.xml.XMLElement;
  * <p>
  * TODO thomas Describe Type MapCreator
  * </p>
- *  Last modified: $Date: 2005/04/12 10:24:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/05/25 15:30:56 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MapCreator {
 	
@@ -45,8 +47,10 @@ public class MapCreator {
 	private Map artifactNode = null;
 	private List artifactPom = null;
 	private List artifactIsIncluded = null;
+	private Set artifactIsNotIncluded = null;
 
 	public static void main(String[] args) {
+		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.show();
@@ -74,6 +78,7 @@ public class MapCreator {
 		artifactNode = new HashMap();
 		artifactPom = new ArrayList();
 		artifactIsIncluded = new ArrayList();
+		artifactIsNotIncluded = new HashSet();
 		File projectFile = new File(application, RealPom.POM_FILE);
 		if (projectFile.exists()) {
 			try {
@@ -88,13 +93,14 @@ public class MapCreator {
 				node.setAttribute("TEXT", artifactId);
 				// root is set
 				createBranches(node, pom);
+				createNotIncludedNode(node);
 				root.addContent(node);
 				File output = new File(workspace, outputName);
 				output.createNewFile();
 				data.writeToFile(output);
 			}
 			catch (IOException ex) {
-				System.err.println("Could not open "+ projectFile.getName());
+				System.err.println("Could not open "+ projectFile.getPath());
 			}
 		}
 	}
@@ -121,9 +127,18 @@ public class MapCreator {
 					buffer.append(" INCLUDED AGAIN");
 				}
 				else {
+					if (artifactIsNotIncluded.contains(dependencyArtifactId)) {
+						artifactIsNotIncluded.remove(dependencyArtifactId);
+					}
 					artifactIsIncluded.add(dependencyArtifactId);
 					buffer.append(" INCLUDED");
 				}
+			}
+			else if ((! artifactIsIncluded.contains(dependencyArtifactId)) && 
+					(! dependencyArtifactId.startsWith("com.idega")) &&
+					(! dependencyArtifactId.startsWith("se.idega")) && 
+					(! dependencyArtifactId.startsWith("is.idega"))) {
+				artifactIsNotIncluded.add(dependencyArtifactId);
 			}
 			if (artifactPom.contains(dependencyArtifactId)) {
 				buffer.append(" -->");
@@ -163,6 +178,21 @@ public class MapCreator {
 				}
 			}
 			dependencyNode.setAttribute("TEXT", buffer.toString());
+		}
+	}
+	
+	private void createNotIncludedNode(XMLElement parentNode) {
+		XMLElement dependencyNode = new XMLElement("node");
+		dependencyNode.setAttribute("POSITION", "RIGHT");
+		dependencyNode.setAttribute("TEXT", "not included modules");
+		parentNode.addContent(dependencyNode);
+		Iterator iterator = artifactIsNotIncluded.iterator();
+		while (iterator.hasNext()) {
+			String dependencyArtifactId = (String) iterator.next();
+			XMLElement node = new XMLElement("node");
+			node.setAttribute("POSITION", "RIGHT");
+			node.setAttribute("TEXT", dependencyArtifactId);
+			dependencyNode.addContent(node);
 		}
 	}
 
