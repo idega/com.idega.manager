@@ -12,6 +12,7 @@ import javax.faces.context.FacesContext;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.view.ApplicationViewNode;
 import com.idega.core.view.DefaultViewNode;
+import com.idega.core.view.KeyboardShortcut;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
@@ -76,6 +77,8 @@ public class ManagerViewManager implements Singleton {
 		ViewNode root = getViewManager().getWorkspaceRoot();
 		DefaultViewNode managerNode = new ApplicationViewNode("manager",root);
 		managerNode.setJspUri(bundle.getJSPURI("Manager.jsp"));
+		managerNode.setKeyboardShortcut(new KeyboardShortcut("6"));
+		
 		Collection roles = new ArrayList();
 		roles.add(StandardRoles.ROLE_KEY_ADMIN);
 		managerNode.setAuthorizedRoles(roles);
