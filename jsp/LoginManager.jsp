@@ -8,7 +8,7 @@
     <f:view>
 		<ws:page>
         	<h:form id="loginManagerForm1">
-            <wf:wfblock>
+            <wf:wfblock title="#{localizedStrings['com.idega.manager']['install_update']}">
                 
                 <wf:container>
                     <h:outputText binding="#{LoginManager.outputText1}" id="outputText1" value="#{LoginManager.outputText1Value}"/>

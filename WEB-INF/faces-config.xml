@@ -128,5 +128,12 @@
     	<to-view-id>/workspace/manager/</to-view-id>
   		</navigation-case>
 	</navigation-rule>
+	
+	<managed-bean>
+		<managed-bean-name>SystemSettings</managed-bean-name>
+		<managed-bean-class>com.idega.manager.bean.SystemSettings</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
 
 </faces-config>

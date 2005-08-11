@@ -1,0 +1,16 @@
+install_update=install_update
+mainDomainName=mainDomainName
+mainDomainUrl=mainDomainUrl
+man_install_new_modules=Install new modules
+man_mamager_choose=Choose one option
+man_manager_back=Back
+man_manager_cancel=Cancel
+man_manager_header=Module Manager
+man_manager_login=Login
+man_manager_next=Next
+man_password=Password
+man_repository=Repository
+man_update_installed_modules=Update installed modules
+man_user_name=User
+save=save
+systemsettings=systemsettings

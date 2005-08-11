@@ -93,6 +93,7 @@ public class ManagerViewManager implements Singleton {
 		// login manager / step 1   
 		DefaultViewNode loginNode = new DefaultViewNode("install", contentNode);
 		loginNode.setJspUri(bundle.getJSPURI("LoginManager.jsp"));
+		loginNode.setName("#{localizedStrings['com.idega.manager']['install_update']}");
 		
 		// update and install /step 2
 		DefaultViewNode installOrUpdateNode = new DefaultViewNode("installUpdate", loginNode);
@@ -118,6 +119,12 @@ public class ManagerViewManager implements Singleton {
 		DefaultViewNode commitNode = new DefaultViewNode("commit", loginNode);
 		commitNode.setVisibleInMenus(false);
 		commitNode.setJspUri(bundle.getJSPURI("ModuleManager.jsp"));
+		
+		// server settings   
+		DefaultViewNode serverSettings = new DefaultViewNode("systemsettings", contentNode);
+		serverSettings.setJspUri(bundle.getJSPURI("systemSettings.jsp"));
+		serverSettings.setName("#{localizedStrings['com.idega.manager']['systemsettings']}");
+		
 	}
 }
 
