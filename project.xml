@@ -69,7 +69,7 @@
     <dependency>
       <groupId>maven</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
-      <version>1.0-alpha-1-SNAPSHOT</version>
+      <version>20040714.210443</version>
       <type>jar</type>
       <url>http://maven.apache.org/</url>
       <properties>
