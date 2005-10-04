@@ -1,5 +1,5 @@
 /*
- * $Id: InstallListManager.java,v 1.5 2005/04/14 14:01:01 thomas Exp $
+ * $Id: InstallListManager.java,v 1.6 2005/10/04 11:49:42 gimmi Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
@@ -41,10 +40,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/10/04 11:49:42 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class InstallListManager {
 	
