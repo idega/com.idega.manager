@@ -1,5 +1,5 @@
 /*
- * $Id: SystemSettings.java,v 1.1 2005/08/11 18:56:43 tryggvil Exp $
+ * $Id: SystemSettings.java,v 1.2 2005/11/28 17:17:25 tryggvil Exp $
  * Created on 29.7.2005 in project com.idega.manager
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,15 +20,16 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * Managed bean to use to manipulate server properties
  * </p>
- *  Last modified: $Date: 2005/08/11 18:56:43 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/11/28 17:17:25 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SystemSettings {
 
 	private String mainDomainName;
 	private String mainDomainUrl;
+	private String mainDomainServerName;
 	private IWMainApplication iwma;
 	
 	/**
@@ -40,7 +41,6 @@ public class SystemSettings {
 		loadData();
 	}
 
-	
 	/**
 	 * <p>
 	 * Load the data from persistence
@@ -50,6 +50,7 @@ public class SystemSettings {
 		ICDomain domain = getIwma().getIWApplicationContext().getDomain();
 		setMainDomainName(domain.getDomainName());
 		setMainDomainUrl(domain.getURL());
+		setMainDomainServerName(domain.getServerName());
 	}
 	
 	protected ICDomainHome getDomainHome(){
@@ -112,8 +113,40 @@ public class SystemSettings {
 	public void store(){
 		ICDomain domain = getIwma().getIWApplicationContext().getDomain();
 		domain.setDomainName(getMainDomainName());
-		domain.setURL(getMainDomainUrl());
+		//String mainDomainName = getMainDomainName();
+		String mainDomainUrl = getMainDomainUrl();
+		if(mainDomainUrl!=null && !mainDomainUrl.equals("")){
+			domain.setURL(mainDomainUrl);
+		}
+		else{
+			domain.setURL(null);
+		}
+		String mainDomainServerName = getMainDomainServerName();
+		if(mainDomainServerName!=null && !mainDomainServerName.equals("")){
+			domain.setServerName(mainDomainServerName);
+		}
+		else{
+			domain.setServerName(null);
+		}
 		domain.store();
+	}
+
+
+	
+	/**
+	 * @return Returns the mainDomainServerName.
+	 */
+	public String getMainDomainServerName() {
+		return mainDomainServerName;
+	}
+
+
+	
+	/**
+	 * @param mainDomainServerName The mainDomainServerName to set.
+	 */
+	public void setMainDomainServerName(String mainDomainServerName) {
+		this.mainDomainServerName = mainDomainServerName;
 	}
 	
 }
