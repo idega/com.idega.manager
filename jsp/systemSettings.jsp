@@ -9,22 +9,25 @@
 		<ws:page id="systemsettingspage">
 		<h:form id="systemsettingsform" > <!-- acceptCharset="UTF-8" -->
 			<wf:wfblock id="serverpropertiesblock" title="#{localizedStrings['com.idega.manager']['systemsettings']}">
-			<wf:container styleClass="wf_formitem" >
-				<h:outputLabel for="mainDomainName" id="mainDomainNameLabel" value="#{localizedStrings['com.idega.manager']['mainDomainName']}"/>
-				<h:inputText value="#{SystemSettings.mainDomainName}" id="mainDomainName"/>
-			</wf:container>
-		
-			<wf:container styleClass="wf_formitem" >
-				<h:outputLabel for="mainDomainUrl" id="mainDomainUrlLabel" value="#{localizedStrings['com.idega.manager']['mainDomainUrl']}"/>
-				<h:inputText value="#{SystemSettings.mainDomainUrl}" id="mainDomainUrl"/>
-			</wf:container>
-		
-			<wf:container styleClass="wf_formitem" >
-				<h:outputLabel for="mainDomainServerName" id="mainDomainServerNameLabel" value="#{localizedStrings['com.idega.manager']['mainDomainServerName']}"/>
-				<h:inputText value="#{SystemSettings.mainDomainServerName}" id="mainDomainServerName"/>
-			</wf:container>
+				<wf:container styleClass="formitem" >
+					<h:outputLabel for="mainDomainName" id="mainDomainNameLabel" value="#{localizedStrings['com.idega.manager']['mainDomainName']}"/>
+					<h:inputText value="#{SystemSettings.mainDomainName}" id="mainDomainName"/>
+				</wf:container>
 			
-			<h:commandButton id="serverproperties_store" action="#{SystemSettings.store}" value="#{localizedStrings['com.idega.manager']['save']}"/>
+				<wf:container styleClass="formitem" >
+					<h:outputLabel for="mainDomainUrl" id="mainDomainUrlLabel" value="#{localizedStrings['com.idega.manager']['mainDomainUrl']}"/>
+					<h:inputText value="#{SystemSettings.mainDomainUrl}" id="mainDomainUrl"/>
+				</wf:container>
+			
+				<wf:container styleClass="formitem" >
+					<h:outputLabel for="mainDomainServerName" id="mainDomainServerNameLabel" value="#{localizedStrings['com.idega.manager']['mainDomainServerName']}"/>
+					<h:inputText value="#{SystemSettings.mainDomainServerName}" id="mainDomainServerName"/>
+				</wf:container>
+				<f:facet name="footer">
+	              	<wf:container styleClass="buttons">
+						<h:commandButton id="serverproperties_store" action="#{SystemSettings.store}" value="#{localizedStrings['com.idega.manager']['save']}"/>
+					</wf:container>
+                </f:facet>
 			</wf:wfblock>
 		</h:form>
 		</ws:page>

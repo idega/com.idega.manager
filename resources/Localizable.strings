@@ -1,6 +1,8 @@
 install_update=install_update
-mainDomainName=mainDomainName
-mainDomainUrl=mainDomainUrl
+mainDomainName=Domain Name
+mainDomainServerName=Server Name
+mainDomainUrl=Domain Url
+man_forbidden=Access to forbidden
 man_install_new_modules=Install new modules
 man_mamager_choose=Choose one option
 man_manager_back=Back

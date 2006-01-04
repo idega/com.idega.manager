@@ -10,22 +10,29 @@
         	<h:form id="loginManagerForm1">
             <wf:wfblock title="#{localizedStrings['com.idega.manager']['install_update']}">
                 
-                <wf:container>
-                    <h:outputText binding="#{LoginManager.outputText1}" id="outputText1" value="#{LoginManager.outputText1Value}"/>
-                </wf:container>
+              <f:facet name="header">
+              	<wf:container styleClass="wizardheader">
+
+	                <wf:container styleClass="name">
+	                    <h:outputText binding="#{LoginManager.outputText2}" 
+	                    	id="outputText2" 
+	                    	value="#{LoginManager.outputText2Value}"/>
+					</wf:container>
+				
                 
-                <wf:container>
-                    <h:outputText binding="#{LoginManager.outputText2}" 
-                    	id="outputText2" 
-                    	value="#{LoginManager.outputText2Value}"/>
-                    <h:messages 
+	                <wf:container styleClass="description">
+	                    <h:outputText binding="#{LoginManager.outputText1}" id="outputText1" value="#{LoginManager.outputText1Value}"/>
+	                </wf:container>
+
+				</wf:container>
+			  </f:facet>
+				
+				<h:messages styleClass="wf_messages"
                     	showSummary="false" 
                     	showDetail="true"
-            			style="color: red; font-family: 'New Century Schoolbook', serif;   font-style: oblique;   text-decoration: overline" 
-            			id="errors1"/>
-				</wf:container>
+            			id="messages1"/>
 				
-				<wf:container styleClass="wf_formitem" >
+				<wf:container styleClass="formitem" >
                     <h:outputLabel for="textField1" 
                     	styleClass="managerLogin"
                     	binding="#{LoginManager.outputText3}" 
@@ -36,7 +43,7 @@
                    		id="textField1"/>
 				</wf:container>
 				
-				<wf:container styleClass="wf_formitem">
+				<wf:container styleClass="formitem">
                    	<h:outputLabel for="textField2" 
                    		styleClass="managerLogin"
                    		binding="#{LoginManager.outputText4}" 
@@ -47,7 +54,7 @@
                    		id="textField2"/>
 				</wf:container>
 				
-				<wf:container styleClass="wf_formitem">
+				<wf:container styleClass="formitem">
                    	<h:outputLabel for="secretField1" 
                    		styleClass="managerLogin"
                    		binding="#{LoginManager.outputText5}" 
@@ -59,7 +66,10 @@
 				</wf:container>
 				
 	            	<h:inputHidden value="noSelection" validator="#{LoginManager.validateUserPassword}"/>
-                    
+              
+              
+              <f:facet name="footer">
+              	<wf:container styleClass="buttons">
                    	<h:commandButton binding="#{LoginManager.button1}" id="button1"  
                    		disabled="true"
                     	value="#{LoginManager.button1Label}"/>
@@ -73,7 +83,8 @@
                     	immediate="true"
                     	action="#{LoginManager.button3_action}"
                     	value="#{LoginManager.button3Label}"/>
-                
+                	</wf:container>
+                </f:facet>
             </wf:wfblock>
             </h:form>
 		</ws:page>
