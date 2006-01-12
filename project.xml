@@ -4,8 +4,8 @@
   <extend>${base.project.dir}/base-dependencies.xml</extend>
   <name>idegaWeb Manager</name>
   <artifactId>com.idega.manager</artifactId>
-  <currentVersion>1.0</currentVersion>
-  <!--currentVersion>1.0.1-SNAPSHOT</currentVersion-->
+  <!--currentVersion>1.0</currentVersion-->
+  <currentVersion>1.0.1-SNAPSHOT</currentVersion>
 
   <inceptionYear>2004</inceptionYear>
   <shortDescription>Manager</shortDescription>
@@ -52,11 +52,8 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--HELPER-->
-
-      <version>3.0.6</version>
-      <!--HELPER-->
-      <!--HELPERversion>SNAPSHOT</versionHELPER-->
+      <!--version>3.0.6</version-->
+      <version>SNAPSHOT</version>
 
       <type>jar</type>
       <url>http://www.idega.com/</url>
@@ -90,6 +87,22 @@
       <version>1.1</version>
       <type>jar</type>
       <url>http://www.doomdark.org/doomdark/proj/jug/</url>
+    </dependency>
+    <dependency>
+      <groupId>jug</groupId>
+      <artifactId>jug</artifactId>
+      <version>1.1</version>
+      <type>jar</type>
+      <url>http://www.doomdark.org/doomdark/proj/jug/</url>
+    </dependency>
+    <dependency>
+      <groupId>ehcache</groupId>
+      <artifactId>ehcache-constructs</artifactId>
+      <version>0.6</version>
+      <type>jar</type>
+      <url>http://ehcache.sourceforge.net/</url>
+      <properties>
+      </properties>
     </dependency>
   </dependencies>
   <build>
