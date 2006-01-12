@@ -1,3 +1,5 @@
+cachesettings=cachesettings
+enable_global_page_cache=enable_global_page_cache
 install_update=install_update
 mainDomainName=Domain Name
 mainDomainServerName=Server Name

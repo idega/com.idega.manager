@@ -124,7 +124,10 @@ public class ManagerViewManager implements Singleton {
 		DefaultViewNode serverSettings = new DefaultViewNode("systemsettings", contentNode);
 		serverSettings.setJspUri(bundle.getJSPURI("systemSettings.jsp"));
 		serverSettings.setName("#{localizedStrings['com.idega.manager']['systemsettings']}");
-		
+		// cache settings   
+		DefaultViewNode cacheSettings = new DefaultViewNode("cachesettings", serverSettings);
+		cacheSettings.setJspUri(bundle.getJSPURI("cacheSettings.jsp"));
+		cacheSettings.setName("#{localizedStrings['com.idega.manager']['cachesettings']}");
 	}
 }
 
