@@ -13,12 +13,12 @@
 					<h:outputLabel for="mainDomainName" id="mainDomainNameLabel" value="#{localizedStrings['com.idega.manager']['mainDomainName']}"/>
 					<h:inputText value="#{SystemSettings.mainDomainName}" id="mainDomainName"/>
 				</wf:container>
-			
+			    <!--
 				<wf:container styleClass="formitem" >
 					<h:outputLabel for="mainDomainUrl" id="mainDomainUrlLabel" value="#{localizedStrings['com.idega.manager']['mainDomainUrl']}"/>
 					<h:inputText value="#{SystemSettings.mainDomainUrl}" id="mainDomainUrl"/>
 				</wf:container>
-			
+				-->
 				<wf:container styleClass="formitem" >
 					<h:outputLabel for="mainDomainServerName" id="mainDomainServerNameLabel" value="#{localizedStrings['com.idega.manager']['mainDomainServerName']}"/>
 					<h:inputText value="#{SystemSettings.mainDomainServerName}" id="mainDomainServerName"/>
