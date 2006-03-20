@@ -1,5 +1,5 @@
 /*
- * $Id: SystemSettings.java,v 1.3 2006/03/20 12:12:44 tryggvil Exp $
+ * $Id: SystemSettings.java,v 1.4 2006/03/20 12:23:00 tryggvil Exp $
  * Created on 29.7.2005 in project com.idega.manager
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * Managed bean to use to manipulate server properties
  * </p>
- *  Last modified: $Date: 2006/03/20 12:12:44 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/03/20 12:23:00 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SystemSettings {
 
@@ -118,14 +118,14 @@ public class SystemSettings {
 			cachedDomain.setDomainName(getMainDomainName());
 			realDomain.setDomainName(getMainDomainName());
 			//String mainDomainName = getMainDomainName();
-			String mainDomainUrl = getMainDomainUrl();
+			/*String mainDomainUrl = getMainDomainUrl();
 			if(mainDomainUrl!=null && !mainDomainUrl.equals("")){
 				cachedDomain.setURL(mainDomainUrl);
 				realDomain.setURL(mainDomainUrl);
 			}
 			else{
 				cachedDomain.setURL(null);
-			}
+			}*/
 			String mainDomainServerName = getMainDomainServerName();
 			if(mainDomainServerName!=null && !mainDomainServerName.equals("")){
 				cachedDomain.setServerName(mainDomainServerName);
