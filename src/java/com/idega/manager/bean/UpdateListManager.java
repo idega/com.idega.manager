@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.17 2005/03/16 17:49:40 thomas Exp $
+ * $Id: UpdateListManager.java,v 1.18 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -46,10 +46,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class UpdateListManager {
 	
@@ -68,45 +68,45 @@ public class UpdateListManager {
 	}
 	
 	protected void initialize() {
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		this.resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
 	}
 
 	protected void initializePomSorter() {
-		if (pomSorter == null) {
-			pomSorter = ManagerUtils.getPomSorter();
+		if (this.pomSorter == null) {
+			this.pomSorter = ManagerUtils.getPomSorter();
 		}
 	}
 	
 	protected void initializeOutputText() {
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_select _updates","Select updates");
+		this.outputText1Value = this.resourceBundle.getLocalizedString("man_manager_header", "Manager");
+		this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_select _updates","Select updates");
 	}
 
 	protected void initializeSubmitButtons() {
-		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
-		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
+		this.button1Label = this.resourceBundle.getLocalizedString("man_manager_back","Back");
+		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Next");
+		this.button3Label = this.resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	protected void initializeList() {
-		multiSelectListbox1DefaultItems = new ArrayList();
+		this.multiSelectListbox1DefaultItems = new ArrayList();
 		String errorMessage = null;
 		try {
 			RepositoryLogin repositoryLogin = ManagerUtils.getRepositoryLogin();
-			pomSorter.initializeInstalledPomsAndAvailableUpdates(repositoryLogin);
+			this.pomSorter.initializeInstalledPomsAndAvailableUpdates(repositoryLogin);
 		}
 		catch (IOException ex) {
-			errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
+			errorMessage = this.resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
 		}
 		HtmlPanelGroup group = getGroupPanel1();
 		List list = group.getChildren();
 		list.clear();
-		button2.setDisabled(false);
+		this.button2.setDisabled(false);
 		if (errorMessage != null) {
-			button2.setDisabled(true);
+			this.button2.setDisabled(true);
 			errorMessage = errorMessage + " <br/>";
 			HtmlOutputText error = new HtmlOutputText();
 			error.setValue(errorMessage);
@@ -116,8 +116,8 @@ public class UpdateListManager {
 			return;
 		}
 	 	
-		SortedMap sortedInstalledPom = pomSorter.getSortedInstalledPoms();
-		Map repositoryPom = pomSorter.getSortedRepositoryPomsOfAvailableUpdates();
+		SortedMap sortedInstalledPom = this.pomSorter.getSortedInstalledPoms();
+		Map repositoryPom = this.pomSorter.getSortedRepositoryPomsOfAvailableUpdates();
 		fillList(sortedInstalledPom.keySet(), repositoryPom, sortedInstalledPom);
 	}
 		
@@ -145,18 +145,18 @@ public class UpdateListManager {
 			 	listItems.put(itemGroup, label);
 		 	}
 		}
-		Locale locale = resourceBundle.getLocale();
+		Locale locale = this.resourceBundle.getLocale();
 		SortedByValueMap sortedMap = new SortedByValueMap(listItems, locale);
 		Iterator valueIterator = sortedMap.keySet().iterator();
 		while (valueIterator.hasNext()) {
 			SelectItemGroup selectItemGroup = (SelectItemGroup) valueIterator.next();
-			multiSelectListbox1DefaultItems.add(selectItemGroup);		 	
+			this.multiSelectListbox1DefaultItems.add(selectItemGroup);		 	
 		}
 	}
 	
 	protected String getLabelForItemGroup(Module groupModule) {
-	 	String pomName = groupModule.getNameForLabel(resourceBundle);
-	 	String pomVersion = groupModule.getCurrentVersionForLabel(resourceBundle);
+	 	String pomName = groupModule.getNameForLabel(this.resourceBundle);
+	 	String pomVersion = groupModule.getCurrentVersionForLabel(this.resourceBundle);
 	 	StringBuffer buffer = new StringBuffer();
 	 	buffer.append(pomName);
 	 	buffer.append(", ");
@@ -166,10 +166,10 @@ public class UpdateListManager {
 	
 	
 	protected String getLabelForItem(Module groupModule, Module itemModule) {
- 		String label = itemModule.getCurrentVersionForLabel(resourceBundle);
+ 		String label = itemModule.getCurrentVersionForLabel(this.resourceBundle);
 		// if the installed version is a snapshot do not recommend to install a stable version and vice versa
  		if (groupModule.isSnapshot() ^ itemModule.isSnapshot()) {
- 			String notRecommended = resourceBundle.getLocalizedString("man_manager_not_recommended", "not recommended");
+ 			String notRecommended = this.resourceBundle.getLocalizedString("man_manager_not_recommended", "not recommended");
  			StringBuffer buffer = new StringBuffer(label);
  			buffer.append(" - ").append(notRecommended);
  			return buffer.toString();
@@ -190,23 +190,23 @@ public class UpdateListManager {
 		UIComponent parentForm = component.getParent();
 		HtmlSelectManyListbox selectManyList = (HtmlSelectManyListbox) parentForm.findComponent("multiSelectListbox1");
 		Object[] selectedValues = selectManyList.getSelectedValues();
-		Map repositoryPoms = pomSorter.getRepositoryPoms();
+		Map repositoryPoms = this.pomSorter.getRepositoryPoms();
 		Map selectedPoms = new HashMap();
 		for (int i = 0; i < selectedValues.length; i++) {
 			Pom pom = (Pom) repositoryPoms.get(selectedValues[i]);
 			String artifactId = pom.getArtifactId();
 			selectedPoms.put(artifactId, pom);
 		}
-		Map installedPoms = pomSorter.getSortedInstalledPoms();
+		Map installedPoms = this.pomSorter.getSortedInstalledPoms();
 		Collection installedModules = installedPoms.values();
 		Collection notInstalledModules = selectedPoms.values();
-		VersionComparator versionComparator = pomSorter.getUsedVersionComparator();
-		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, resourceBundle);
+		VersionComparator versionComparator = this.pomSorter.getUsedVersionComparator();
+		DependencyMatrix dependencyMatrix = DependencyMatrix.getInstance(notInstalledModules, installedModules, this.resourceBundle);
 		List necessaryModules = dependencyMatrix.getListOfNecessaryModules(versionComparator);
 		// it is important to reset the error messages - that is to set to null - if there are not any
 		List errorMessages = dependencyMatrix.hasErrors() ? dependencyMatrix.getErrorMessages() : null;
-		pomSorter.setErrorMessages(errorMessages);
-		pomSorter.setNecessaryPoms(necessaryModules);
+		this.pomSorter.setErrorMessages(errorMessages);
+		this.pomSorter.setNecessaryPoms(necessaryModules);
 		ModuleManager moduleManager = ManagerUtils.getModuleManager();
 		if (moduleManager != null) {
 			moduleManager.initializeDynamicContent();
@@ -221,10 +221,10 @@ public class UpdateListManager {
 		// get the value of the component we are really interested in....
 		UIComponent component = context.getViewRoot().findComponent(ManagerConstants.JSF_COMPONENT_ID_MULTI_SELECT_1);
 		Object componentValue = ((UIInput) component).getValue();
-		if (pomValidator == null) {
-			pomValidator = new PomValidator();
+		if (this.pomValidator == null) {
+			this.pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModules(context, toValidate, componentValue, pomSorter , resourceBundle);
+		this.pomValidator.validateSelectedModules(context, toValidate, componentValue, this.pomSorter , this.resourceBundle);
 	}
 
 	public void initializeDynamicContent() {
@@ -234,7 +234,7 @@ public class UpdateListManager {
     private HtmlSelectManyListbox multiSelectListbox1 = new HtmlSelectManyListbox();
 
     public HtmlSelectManyListbox getMultiSelectListbox1() {
-        return multiSelectListbox1;
+        return this.multiSelectListbox1;
     }
 
     public void setMultiSelectListbox1(HtmlSelectManyListbox hsml) {
@@ -244,7 +244,7 @@ public class UpdateListManager {
     protected List multiSelectListbox1DefaultItems = new ArrayList();
 
     public List getMultiSelectListbox1DefaultItems() {
-        return multiSelectListbox1DefaultItems;
+        return this.multiSelectListbox1DefaultItems;
     }
 
     public void setMultiSelectListbox1DefaultItems(List dsia) {
@@ -254,7 +254,7 @@ public class UpdateListManager {
     private UISelectItems multiSelectListbox1SelectItems = new UISelectItems();
 
     public UISelectItems getMultiSelectListbox1SelectItems() {
-        return multiSelectListbox1SelectItems;
+        return this.multiSelectListbox1SelectItems;
     }
 
     public void setMultiSelectListbox1SelectItems(UISelectItems uisi) {
@@ -264,7 +264,7 @@ public class UpdateListManager {
     private HtmlCommandButton button1 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton1() {
-        return button1;
+        return this.button1;
     }
 
     public void setButton1(HtmlCommandButton hcb) {
@@ -274,7 +274,7 @@ public class UpdateListManager {
     private HtmlCommandButton button2 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton2() {
-        return button2;
+        return this.button2;
     }
 
     public void setButton2(HtmlCommandButton hcb) {
@@ -284,7 +284,7 @@ public class UpdateListManager {
     private HtmlCommandButton button3 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton3() {
-        return button3;
+        return this.button3;
     }
 
     public void setButton3(HtmlCommandButton hcb) {
@@ -294,7 +294,7 @@ public class UpdateListManager {
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
-        return outputText1;
+        return this.outputText1;
     }
 
     public void setOutputText1(HtmlOutputText hot) {
@@ -304,7 +304,7 @@ public class UpdateListManager {
     private HtmlOutputText outputText2 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText2() {
-        return outputText2;
+        return this.outputText2;
     }
 
     public void setOutputText2(HtmlOutputText hot) {
@@ -312,22 +312,22 @@ public class UpdateListManager {
     }
 
     public String getOutputText1Value() {
-    	return outputText1Value;
+    	return this.outputText1Value;
     }
  
     public String getOutputText2Value() {
-    	return outputText2Value;
+    	return this.outputText2Value;
     }    
     
     public String getButton1Label() {
-    	return button1Label;
+    	return this.button1Label;
     }
     
     public String getButton2Label() {
-    	return button2Label;
+    	return this.button2Label;
     }
     public String getButton3Label() {
-    	return button3Label;
+    	return this.button3Label;
     }
     
     public String button1_action() {
@@ -345,7 +345,7 @@ public class UpdateListManager {
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
 
     public HtmlPanelGroup getGroupPanel1() {
-        return groupPanel1;
+        return this.groupPanel1;
     }
 
     public void setGroupPanel1(HtmlPanelGroup hpg) {

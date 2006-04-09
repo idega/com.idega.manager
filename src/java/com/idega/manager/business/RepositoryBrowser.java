@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.9 2005/04/14 14:01:00 thomas Exp $
+ * $Id: RepositoryBrowser.java,v 1.10 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/14 14:01:00 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RepositoryBrowser {
 	
@@ -182,7 +182,7 @@ public class RepositoryBrowser {
 	}
 	
 	private String getURL(String group, String type)  {
-		String repository = repositoryLogin.getRepository();
+		String repository = this.repositoryLogin.getRepository();
 		StringBuffer buffer = new StringBuffer(repository);
 		if (! repository.endsWith("/")) {
 			buffer.append('/');
@@ -193,17 +193,17 @@ public class RepositoryBrowser {
 	}
 	
 	private String getURLForBundlesArchives() {
-		if (cachedBundlesIwbarsURL == null) {
-			cachedBundlesIwbarsURL = getURL("bundles", "iwbars");
+		if (this.cachedBundlesIwbarsURL == null) {
+			this.cachedBundlesIwbarsURL = getURL("bundles", "iwbars");
 		}
-		return cachedBundlesIwbarsURL;
+		return this.cachedBundlesIwbarsURL;
 	}
 	
 	private String getURLForBundlesPoms() {
-		if (cachedBundlesPomsURL == null ) {
-			cachedBundlesPomsURL = getURL("bundles", "poms");
+		if (this.cachedBundlesPomsURL == null ) {
+			this.cachedBundlesPomsURL = getURL("bundles", "poms");
 		}
-		return cachedBundlesPomsURL;
+		return this.cachedBundlesPomsURL;
 	}
 	
 	/** Use this only for very small content otherwise 
@@ -219,7 +219,7 @@ public class RepositoryBrowser {
 		StringBuffer buffer = null;
 		try {
 			buffer = new StringBuffer();
-			PasswordAuthentication passwordAuthentication = repositoryLogin.getPasswordAuthentication();
+			PasswordAuthentication passwordAuthentication = this.repositoryLogin.getPasswordAuthentication();
 			inputStreamReader = URLReadConnection.getReaderForURLWithAuthentication(urlAddress, passwordAuthentication);
 			int charInt;
 			while ((charInt = inputStreamReader.read()) != -1) {
@@ -254,7 +254,7 @@ public class RepositoryBrowser {
 		StringBuffer nameBuffer = null;
 		List poms = new ArrayList();
 		try {
-			PasswordAuthentication passwordAuthentication = repositoryLogin.getPasswordAuthentication();
+			PasswordAuthentication passwordAuthentication = this.repositoryLogin.getPasswordAuthentication();
 			inputStreamReader = URLReadConnection.getReaderForURLWithAuthentication(urlAddress, passwordAuthentication);
 			int charInt;
 			int startPatternLength = startPatternChar.length;
@@ -332,11 +332,11 @@ public class RepositoryBrowser {
 		// caching of already downloaded files 
 		// (the calling objects are also caching the file but sometimes two different objects are asking for the
 		// same file)
-		if (cachedDownloadedFiles == null) {
-			cachedDownloadedFiles = new HashMap();
+		if (this.cachedDownloadedFiles == null) {
+			this.cachedDownloadedFiles = new HashMap();
 		}
-		if (cachedDownloadedFiles.containsKey(fileName)) {
-			return (File) cachedDownloadedFiles.get(fileName);
+		if (this.cachedDownloadedFiles.containsKey(fileName)) {
+			return (File) this.cachedDownloadedFiles.get(fileName);
 		}
 		File tempWorkingDirectory = getWorkingDirectory();
 		// clean the working directory
@@ -353,7 +353,7 @@ public class RepositoryBrowser {
 		try {
 			wagon = new LightweightHttpWagon();
 		    Repository localRepository = new Repository();
-		    AuthenticationInfo authenticationInfo = repositoryLogin.getAuthenticationInfo();
+		    AuthenticationInfo authenticationInfo = this.repositoryLogin.getAuthenticationInfo();
 		    localRepository.setAuthenticationInfo(authenticationInfo);
 		    localRepository.setUrl(urlAddress);
 		    if ( !destination.exists() ) {
@@ -391,29 +391,29 @@ public class RepositoryBrowser {
 				getLogger().log(Level.WARNING, "[RepositoryBrowser] Disconnection problems: "+ urlAddress + fileName , ex);
 			}
 		}
-		cachedDownloadedFiles.put(fileName, destination);
+		this.cachedDownloadedFiles.put(fileName, destination);
 		return destination;
 	}
 	
 
 	
 	private File getWorkingDirectory() {
-		if (workingDirectory == null) {
-			workingDirectory = ManagerUtils.getInstanceForCurrentContext().getWorkingDirectory();
+		if (this.workingDirectory == null) {
+			this.workingDirectory = ManagerUtils.getInstanceForCurrentContext().getWorkingDirectory();
 		}
-		return workingDirectory;
+		return this.workingDirectory;
 	}
 	
 	
 	
 	private String getIdentifer() {
-		if (identifier == null) {
+		if (this.identifier == null) {
 			UUIDGenerator generator = UUIDGenerator.getInstance();
 			UUID uuid = generator.generateRandomBasedUUID();
-			identifier = uuid.toString();
-			identifier = StringHandler.remove(identifier, "-");
+			this.identifier = uuid.toString();
+			this.identifier = StringHandler.remove(this.identifier, "-");
 		}
-		return identifier;
+		return this.identifier;
 	}
 	
 	

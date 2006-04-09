@@ -1,5 +1,5 @@
 /*
- * $Id: InstallOrUpdateManager.java,v 1.5 2005/03/09 15:19:04 thomas Exp $
+ * $Id: InstallOrUpdateManager.java,v 1.6 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.manager.util.ManagerUtils;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/09 15:19:04 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class InstallOrUpdateManager {
 	
@@ -47,7 +47,7 @@ public class InstallOrUpdateManager {
 	}
 	
 	private void initialize() {
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		this.resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
@@ -55,37 +55,37 @@ public class InstallOrUpdateManager {
 	}
 	
 	private void initializePomSorter() {
-		pomSorter = new PomSorter();
+		this.pomSorter = new PomSorter();
 	}
 	
 	private void initializeOutputText() {
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_mamager_choose","Choose one option");
+		this.outputText1Value = this.resourceBundle.getLocalizedString("man_manager_header", "Manager");
+		this.outputText2Value = this.resourceBundle.getLocalizedString("man_mamager_choose","Choose one option");
 	}
 
 	private void initializeSubmitButtons() {
-		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
-		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
+		this.button1Label = this.resourceBundle.getLocalizedString("man_manager_back","Back");
+		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Next");
+		this.button3Label = this.resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	private void initializeRadioButtons() {
-		String installNewModules = resourceBundle.getLocalizedString("man_install_new_modules", "Install new modules");
-		String updateModules = resourceBundle.getLocalizedString("man_update_installed_modules","Update installed modules");
-		radioButtonList1DefaultItems = new ArrayList(2);
-		radioButtonList1DefaultItems.add(new SelectItem(ManagerConstants.ACTION_INSTALL_NEW_MODULES, installNewModules));
-		radioButtonList1DefaultItems.add( new SelectItem(ManagerConstants.ACTION_UPDATE_MODULES, updateModules));
-		radioButtonList1.setValue(ManagerConstants.ACTION_INSTALL_NEW_MODULES);
+		String installNewModules = this.resourceBundle.getLocalizedString("man_install_new_modules", "Install new modules");
+		String updateModules = this.resourceBundle.getLocalizedString("man_update_installed_modules","Update installed modules");
+		this.radioButtonList1DefaultItems = new ArrayList(2);
+		this.radioButtonList1DefaultItems.add(new SelectItem(ManagerConstants.ACTION_INSTALL_NEW_MODULES, installNewModules));
+		this.radioButtonList1DefaultItems.add( new SelectItem(ManagerConstants.ACTION_UPDATE_MODULES, updateModules));
+		this.radioButtonList1.setValue(ManagerConstants.ACTION_INSTALL_NEW_MODULES);
 	}
 	
 	public PomSorter getPomSorter() {
-		return pomSorter;
+		return this.pomSorter;
 	}
 	
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
-        return outputText1;
+        return this.outputText1;
     }
 
     public void setOutputText1(HtmlOutputText hot) {
@@ -95,7 +95,7 @@ public class InstallOrUpdateManager {
     private HtmlOutputText outputText2 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText2() {
-        return outputText2;
+        return this.outputText2;
     }
 
     public void setOutputText2(HtmlOutputText hot) {
@@ -105,7 +105,7 @@ public class InstallOrUpdateManager {
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
 
     public HtmlPanelGroup getGroupPanel1() {
-        return groupPanel1;
+        return this.groupPanel1;
     }
 
     public void setGroupPanel1(HtmlPanelGroup hpg) {
@@ -115,7 +115,7 @@ public class InstallOrUpdateManager {
     private HtmlSelectOneRadio radioButtonList1 = new HtmlSelectOneRadio();
 
     public HtmlSelectOneRadio getRadioButtonList1() {
-        return radioButtonList1;
+        return this.radioButtonList1;
     }
 
     public void setRadioButtonList1(HtmlSelectOneRadio hsor) {
@@ -125,7 +125,7 @@ public class InstallOrUpdateManager {
     private List radioButtonList1DefaultItems = new ArrayList();
 
     public List getRadioButtonList1DefaultItems() {
-        return radioButtonList1DefaultItems;
+        return this.radioButtonList1DefaultItems;
     }
 
     public void setRadioButtonList1DefaultItems(List dsia) {
@@ -135,7 +135,7 @@ public class InstallOrUpdateManager {
     private UISelectItems radioButtonList1SelectItems = new UISelectItems();
 
     public UISelectItems getRadioButtonList1SelectItems() {
-        return radioButtonList1SelectItems;
+        return this.radioButtonList1SelectItems;
     }
 
     public void setRadioButtonList1SelectItems(UISelectItems uisi) {
@@ -145,7 +145,7 @@ public class InstallOrUpdateManager {
     private HtmlCommandButton button1 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton1() {
-        return button1;
+        return this.button1;
     }
 
     public void setButton1(HtmlCommandButton hcb) {
@@ -155,7 +155,7 @@ public class InstallOrUpdateManager {
     private HtmlCommandButton button2 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton2() {
-        return button2;
+        return this.button2;
     }
 
     public void setButton2(HtmlCommandButton hcb) {
@@ -165,7 +165,7 @@ public class InstallOrUpdateManager {
     private HtmlCommandButton button3 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton3() {
-        return button3;
+        return this.button3;
     }
 
     public void setButton3(HtmlCommandButton hcb) {
@@ -173,26 +173,26 @@ public class InstallOrUpdateManager {
     }
     
     public String getOutputText1Value() {
-    	return outputText1Value;
+    	return this.outputText1Value;
     }
  
     public String getOutputText2Value() {
-    	return outputText2Value;
+    	return this.outputText2Value;
     }
     
     public String getButton1Label() {
-    	return button1Label;
+    	return this.button1Label;
     }
     
     public String getButton2Label() {
-    	return button2Label;
+    	return this.button2Label;
     }
     public String getButton3Label() {
-    	return button3Label;
+    	return this.button3Label;
     }
     	
     public String button2_action() {
-    	String action = (String) radioButtonList1.getValue();
+    	String action = (String) this.radioButtonList1.getValue();
     	if (ManagerConstants.ACTION_INSTALL_NEW_MODULES.equals(action)) {
     		InstallListManager installListManager = ManagerUtils.getInstallListManager();
     		if (installListManager != null) {

@@ -18,10 +18,10 @@ import java.util.StringTokenizer;
  * <p>
  * TODO thomas Describe Type VersionComparator
  * </p>
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VersionComparator implements Comparator{
 	
@@ -108,16 +108,16 @@ public class VersionComparator implements Comparator{
 	
 	private List getConvertedVersion(String version) {
 		// caching and shortcut
-		if (convertedVersions == null) {
-			convertedVersions = new HashMap();
+		if (this.convertedVersions == null) {
+			this.convertedVersions = new HashMap();
 		}
 		List list = null;
-		if (convertedVersions.containsKey(version)) {
-			list = (List) convertedVersions.get(version);
+		if (this.convertedVersions.containsKey(version)) {
+			list = (List) this.convertedVersions.get(version);
 		}
 		else {
 			list = convertVersion(version);
-			convertedVersions.put(version, list);
+			this.convertedVersions.put(version, list);
 		}
 		return list;
 	}

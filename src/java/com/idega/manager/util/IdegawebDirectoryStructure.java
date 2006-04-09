@@ -166,32 +166,32 @@ public class IdegawebDirectoryStructure {
 	}
 	
 	private File getPath(String key) {
-		if (pathes == null) {
+		if (this.pathes == null) {
 			initializePathes();
 		}
-		return (File) pathes.get(key);
+		return (File) this.pathes.get(key);
 	}
 	
 	private void initializePathes() {
-		pathes = new HashMap();
+		this.pathes = new HashMap();
 		
-		IWMainApplication mainApplication = context.getIWMainApplication();
+		IWMainApplication mainApplication = this.context.getIWMainApplication();
 		File application = new File(mainApplication.getApplicationRealPath());
-		pathes.put(APPLICATION_KEY, application);
+		this.pathes.put(APPLICATION_KEY, application);
 		
 		File bundles = new File(mainApplication.getBundlesRealPath());
-		pathes.put(BUNDLES_KEY, bundles);
+		this.pathes.put(BUNDLES_KEY, bundles);
 		
 		File applicationSpecial = new File(mainApplication.getApplicationSpecialRealPath());
-		pathes.put(APPLICATION_SPECIAL_KEY, applicationSpecial);
-		pathes.put(WORKING_DIRECTORY_KEY, new File(applicationSpecial, WORKING_FOLDER));
-		pathes.put(BACKUP_FOLDER_KEY, new File(applicationSpecial, BACKUP_FOLDER));
+		this.pathes.put(APPLICATION_SPECIAL_KEY, applicationSpecial);
+		this.pathes.put(WORKING_DIRECTORY_KEY, new File(applicationSpecial, WORKING_FOLDER));
+		this.pathes.put(BACKUP_FOLDER_KEY, new File(applicationSpecial, BACKUP_FOLDER));
 		
 		File webInf =  new File(application, WEB_INF_FOLDER);
-		pathes.put(WEB_INF_KEY, webInf);
-		pathes.put(FACES_CONFIG_FILE_KEY, new File(webInf, FACES_CONFIG_FILE));
-		pathes.put(DEPLOYMENT_DESCRIPTOR_FILE_KEY, new File(webInf, WEB_DEPLOYMENT_FILE));
-		pathes.put(LIBRARY_KEY, new File(webInf, WEB_LIBRARY_FOLDER));
-		pathes.put(TAG_LIBRARY_KEY, new File(webInf, WEB_TAG_LIBRARY_FOLDER));
+		this.pathes.put(WEB_INF_KEY, webInf);
+		this.pathes.put(FACES_CONFIG_FILE_KEY, new File(webInf, FACES_CONFIG_FILE));
+		this.pathes.put(DEPLOYMENT_DESCRIPTOR_FILE_KEY, new File(webInf, WEB_DEPLOYMENT_FILE));
+		this.pathes.put(LIBRARY_KEY, new File(webInf, WEB_LIBRARY_FOLDER));
+		this.pathes.put(TAG_LIBRARY_KEY, new File(webInf, WEB_TAG_LIBRARY_FOLDER));
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: InstallListManager.java,v 1.6 2005/10/04 11:49:42 gimmi Exp $
+ * $Id: InstallListManager.java,v 1.7 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -40,10 +40,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/10/04 11:49:42 $ by $Author: gimmi $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class InstallListManager {
 	
@@ -62,46 +62,46 @@ public class InstallListManager {
 	}
 	
 	private void initialize() {
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		this.resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
 	}
 	
 	private void initializePomSorter() {
-		if (pomSorter == null) {
-			pomSorter = ManagerUtils.getPomSorter();
+		if (this.pomSorter == null) {
+			this.pomSorter = ManagerUtils.getPomSorter();
 		}
 	}
 	
 	
 	private void initializeOutputText() {
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_select _new_modules","Select new modules you wish to install");
+		this.outputText1Value = this.resourceBundle.getLocalizedString("man_manager_header", "Manager");
+		this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_select _new_modules","Select new modules you wish to install");
 	}
 
 	private void initializeSubmitButtons() {
-		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
-		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
+		this.button1Label = this.resourceBundle.getLocalizedString("man_manager_back","Back");
+		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Next");
+		this.button3Label = this.resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	private void initializeList() {
-		 multiSelectListbox1DefaultItems = new ArrayList();
+		 this.multiSelectListbox1DefaultItems = new ArrayList();
 		 String errorMessage = null;
 			RepositoryLogin repositoryLogin = ManagerUtils.getRepositoryLogin();
 		 try {
-		 	pomSorter.initializeInstalledPomsAndAvailableNewModules(repositoryLogin); 
+		 	this.pomSorter.initializeInstalledPomsAndAvailableNewModules(repositoryLogin); 
 		 }
 		 catch (IOException ex) {
-		 	errorMessage = resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
+		 	errorMessage = this.resourceBundle.getLocalizedString("man_manager_no_connection", "Problems connecting to remote repository occurred");
 		 }
 		HtmlPanelGroup group = getGroupPanel1();
 		List list = group.getChildren();
 		list.clear();
-		button2.setDisabled(false);
+		this.button2.setDisabled(false);
 		if (errorMessage != null) {
-			button2.setDisabled(true);
+			this.button2.setDisabled(true);
 			errorMessage = errorMessage + " <br/>";
 			HtmlOutputText error = new HtmlOutputText();
 			error.setValue(errorMessage);
@@ -111,7 +111,7 @@ public class InstallListManager {
 			return;
 		}
 		 
-		 Map repositoryPom = pomSorter.getSortedSimpleProxyList();
+		 Map repositoryPom = this.pomSorter.getSortedSimpleProxyList();
 		 Map listItems = new HashMap();
 		 Iterator iterator = repositoryPom.keySet().iterator();
 		 while (iterator.hasNext()) {
@@ -119,17 +119,17 @@ public class InstallListManager {
 		 	SimpleProxyPomList simpleProxyPomList = (SimpleProxyPomList) repositoryPom.get(artifactId);
 		 	if (! simpleProxyPomList.isEmpty()) {
 		 		ProxyPom proxyPom = simpleProxyPomList.getRepresentative();
-		 		String name = proxyPom.getNameForLabel(resourceBundle);
+		 		String name = proxyPom.getNameForLabel(this.resourceBundle);
 			 	SelectItem item = new SelectItem(artifactId, name);
 		 	 	listItems.put(item, name);
 		 	}
 	 	}
-		Locale locale = resourceBundle.getLocale();
+		Locale locale = this.resourceBundle.getLocale();
 		SortedByValueMap sortedMap = new SortedByValueMap(listItems, locale);
 		Iterator valueIterator = sortedMap.keySet().iterator();
 		while (valueIterator.hasNext()) {
 			SelectItem item = (SelectItem) valueIterator.next();
-			 multiSelectListbox1DefaultItems.add(item);	
+			 this.multiSelectListbox1DefaultItems.add(item);	
 		}
 	}
 	
@@ -151,10 +151,10 @@ public class InstallListManager {
 		// get the value of the component we are really interested in....
 		UIComponent component = context.getViewRoot().findComponent(ManagerConstants.JSF_COMPONENT_ID_MULTI_SELECT_1);
 		Object componentValue = ((UIInput) component).getValue();
-		if (pomValidator == null) {
-			pomValidator = new PomValidator();
+		if (this.pomValidator == null) {
+			this.pomValidator = new PomValidator();
 		}
-		pomValidator.validateSelectedModuleNames(context, toValidate, componentValue, resourceBundle);
+		this.pomValidator.validateSelectedModuleNames(context, toValidate, componentValue, this.resourceBundle);
 	}
 	
 	public void initializeDynamicContent() {
@@ -164,7 +164,7 @@ public class InstallListManager {
     private HtmlSelectManyListbox multiSelectListbox1 = new HtmlSelectManyListbox();
 
     public HtmlSelectManyListbox getMultiSelectListbox1() {
-        return multiSelectListbox1;
+        return this.multiSelectListbox1;
     }
 
     public void setMultiSelectListbox1(HtmlSelectManyListbox hsml) {
@@ -174,7 +174,7 @@ public class InstallListManager {
     private List multiSelectListbox1DefaultItems = new ArrayList();
 
     public List getMultiSelectListbox1DefaultItems() {
-        return multiSelectListbox1DefaultItems;
+        return this.multiSelectListbox1DefaultItems;
     }
 
     public void setMultiSelectListbox1DefaultItems(List dsia) {
@@ -184,7 +184,7 @@ public class InstallListManager {
     private UISelectItems multiSelectListbox1SelectItems = new UISelectItems();
 
     public UISelectItems getMultiSelectListbox1SelectItems() {
-        return multiSelectListbox1SelectItems;
+        return this.multiSelectListbox1SelectItems;
     }
 
     public void setMultiSelectListbox1SelectItems(UISelectItems uisi) {
@@ -194,7 +194,7 @@ public class InstallListManager {
     private HtmlCommandButton button1 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton1() {
-        return button1;
+        return this.button1;
     }
 
     public void setButton1(HtmlCommandButton hcb) {
@@ -204,7 +204,7 @@ public class InstallListManager {
     private HtmlCommandButton button2 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton2() {
-        return button2;
+        return this.button2;
     }
 
     public void setButton2(HtmlCommandButton hcb) {
@@ -214,7 +214,7 @@ public class InstallListManager {
     private HtmlCommandButton button3 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton3() {
-        return button3;
+        return this.button3;
     }
 
     public void setButton3(HtmlCommandButton hcb) {
@@ -224,7 +224,7 @@ public class InstallListManager {
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
-        return outputText1;
+        return this.outputText1;
     }
 
     public void setOutputText1(HtmlOutputText hot) {
@@ -234,7 +234,7 @@ public class InstallListManager {
     private HtmlOutputText outputText2 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText2() {
-        return outputText2;
+        return this.outputText2;
     }
 
     public void setOutputText2(HtmlOutputText hot) {
@@ -242,22 +242,22 @@ public class InstallListManager {
     }
 
     public String getOutputText1Value() {
-    	return outputText1Value;
+    	return this.outputText1Value;
     }
  
     public String getOutputText2Value() {
-    	return outputText2Value;
+    	return this.outputText2Value;
     }    
     
     public String getButton1Label() {
-    	return button1Label;
+    	return this.button1Label;
     }
     
     public String getButton2Label() {
-    	return button2Label;
+    	return this.button2Label;
     }
     public String getButton3Label() {
-    	return button3Label;
+    	return this.button3Label;
     }
     
     public String button1_action() {
@@ -276,7 +276,7 @@ public class InstallListManager {
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
 
     public HtmlPanelGroup getGroupPanel1() {
-        return groupPanel1;
+        return this.groupPanel1;
     }
 
     public void setGroupPanel1(HtmlPanelGroup hpg) {

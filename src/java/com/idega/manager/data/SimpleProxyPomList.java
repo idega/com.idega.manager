@@ -15,10 +15,10 @@ import com.idega.manager.business.RepositoryBrowser;
  * <p>
  * TODO thomas Describe Type SimpleProxyPomList
  * </p>
- *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SimpleProxyPomList {
 	
@@ -34,31 +34,31 @@ public class SimpleProxyPomList {
 	}
 	
 	public void add(String[] simpleProxyPom) {
-		if (representative == null) {
-			ProxyPom proxyPom = ProxyPom.getInstanceOfGroupBundlesForSimpleProxyPom(simpleProxyPom, repositoryBrowser);
+		if (this.representative == null) {
+			ProxyPom proxyPom = ProxyPom.getInstanceOfGroupBundlesForSimpleProxyPom(simpleProxyPom, this.repositoryBrowser);
 			if (proxyPom.shouldBeIgnored()) {
 				return;
 			}
-			representative = proxyPom;
+			this.representative = proxyPom;
 		}
-		simplePomProxies.add(simpleProxyPom);
+		this.simplePomProxies.add(simpleProxyPom);
 	}
 	
 	public boolean isEmpty() {
-		return simplePomProxies.isEmpty();
+		return this.simplePomProxies.isEmpty();
 	}
 	
 
 	public ProxyPom getRepresentative() {
-		return representative;
+		return this.representative;
 	}
 	
 	public List getSimpleProxies() {
-		return simplePomProxies;
+		return this.simplePomProxies;
 	}
 	
 	
 	public RepositoryBrowser getRepositoryBrowser() {
-		return repositoryBrowser;
+		return this.repositoryBrowser;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.14 2005/04/14 14:01:00 thomas Exp $
+ * $Id: PomSorter.java,v 1.15 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.manager.util.VersionComparator;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/14 14:01:00 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class PomSorter {
 
@@ -116,32 +116,32 @@ public class PomSorter {
 		// not used at the moment
 		//bundlesTagLibraries = localBrowser.getTagLibrariesOfInstalledModules();
 		List installedPoms = localBrowser.getPomOfInstalledModules();
-		sortedInstalledPom = new TreeMap();
+		this.sortedInstalledPom = new TreeMap();
 		Iterator installedPomsIterator = installedPoms.iterator();
 		while (installedPomsIterator.hasNext()) {
 			RealPom pom = (RealPom) installedPomsIterator.next();
 			String artifactId = pom.getArtifactId();
-			sortedInstalledPom.put(artifactId, pom);
+			this.sortedInstalledPom.put(artifactId, pom);
 		}
 	}
 		
 	private void findAvailableUpdates(RepositoryLogin repositoryLogin, VersionComparator versionComparator) throws IOException {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
 		List allPoms = getAllPomsFromRepository(repositoryBrowser);
-		sortedRepositoryPomAvailableUpdates = new HashMap();
+		this.sortedRepositoryPomAvailableUpdates = new HashMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
 			String[] simpleProxyPom = (String[]) allPomsIterator.next();
 			// simpleProxyPom[0] contains the artifactId
-			if (sortedInstalledPom.containsKey(simpleProxyPom[0])) {
-				RealPom pom = (RealPom) sortedInstalledPom.get(simpleProxyPom[0]);
+			if (this.sortedInstalledPom.containsKey(simpleProxyPom[0])) {
+				RealPom pom = (RealPom) this.sortedInstalledPom.get(simpleProxyPom[0]);
 				// fetch only poms that are newer than the installed ones
 				// and fetch additionally versions if the installed one is a snapshot
 				// convert to a ProxyPom
 				ProxyPom proxy = ProxyPom.getInstanceOfGroupBundlesForSimpleProxyPom(simpleProxyPom, repositoryBrowser);
 				if ( (isValid(proxy)) &&
 					(proxy.compare(pom, versionComparator) > 0 || (pom.isSnapshot() && ! proxy.isSnapshot()))) {
-					putPom(simpleProxyPom[0], proxy, sortedRepositoryPomAvailableUpdates, versionComparator);
+					putPom(simpleProxyPom[0], proxy, this.sortedRepositoryPomAvailableUpdates, versionComparator);
 				}
 			}
 		}
@@ -151,13 +151,13 @@ public class PomSorter {
 	private void findAvailableNewModules(RepositoryLogin repositoryLogin) throws IOException {
 		RepositoryBrowser repositoryBrowser = RepositoryBrowser.getInstanceForIdegaRepository(repositoryLogin);
 		List allPoms= getAllPomsFromRepository(repositoryBrowser);
-		sortedSimpleProxyList = new TreeMap();
+		this.sortedSimpleProxyList = new TreeMap();
 		Iterator allPomsIterator = allPoms.iterator();
 		while (allPomsIterator.hasNext()) {
 			String[] simpleProxyPom = (String[]) allPomsIterator.next();
 			// simpleProxyPom[0] contains the artifactId
-			if (! sortedInstalledPom.containsKey(simpleProxyPom[0])) {
-				putPrimitiveProxyPom(simpleProxyPom[0], simpleProxyPom, sortedSimpleProxyList, repositoryBrowser);
+			if (! this.sortedInstalledPom.containsKey(simpleProxyPom[0])) {
+				putPrimitiveProxyPom(simpleProxyPom[0], simpleProxyPom, this.sortedSimpleProxyList, repositoryBrowser);
 			}
 		}
 	}
@@ -167,7 +167,7 @@ public class PomSorter {
 			return false;
 		}
 		String fileName = proxyPom.getFileName();
-		Iterator iterator = pomFileNames.iterator();
+		Iterator iterator = this.pomFileNames.iterator();
 		while (iterator.hasNext()) {
 			StringBuffer buffer = (StringBuffer) iterator.next();
 			if (fileName.contentEquals(buffer)) {
@@ -178,7 +178,7 @@ public class PomSorter {
 	}
 	
 	private List getAllPomsFromRepository(RepositoryBrowser repositoryBrowser) throws IOException {
-		pomFileNames = repositoryBrowser.getPomsScanningPomsFolder();
+		this.pomFileNames = repositoryBrowser.getPomsScanningPomsFolder();
 		return repositoryBrowser.getSimplePomProxiesFromBundleArchivesFolder();
 	}
 	
@@ -193,11 +193,11 @@ public class PomSorter {
 	
 	private void putPom(String key, ProxyPom value, Map pomMap, final VersionComparator versionComparator) {
 		// first store in fileNameMap
-		if (fileNameRepositoryPom == null) {
-			fileNameRepositoryPom = new HashMap();
+		if (this.fileNameRepositoryPom == null) {
+			this.fileNameRepositoryPom = new HashMap();
 		}
 		String fileName = value.getFileName();
-		fileNameRepositoryPom.put(fileName, value);
+		this.fileNameRepositoryPom.put(fileName, value);
 		// second store in sorted map
 		SortedSet pomSet = (SortedSet) pomMap.get(key);
 		if (pomSet == null) {
@@ -221,28 +221,28 @@ public class PomSorter {
 //	}
 	
 	public Map getRepositoryPoms() {
-		return fileNameRepositoryPom;
+		return this.fileNameRepositoryPom;
 	}
 		
 	public SortedMap getSortedInstalledPoms() {
-		return sortedInstalledPom;
+		return this.sortedInstalledPom;
 	}
 	
 	public Map getSortedRepositoryPomsOfAvailableUpdates() {
-		return sortedRepositoryPomAvailableUpdates;
+		return this.sortedRepositoryPomAvailableUpdates;
 	}
 	
 	
 	public Map getSortedSimpleProxyList() {
-		return sortedSimpleProxyList;
+		return this.sortedSimpleProxyList;
 	}
 	
 	public SortedMap getToBeInstalledPoms() {
-		return toBeInstalledPoms;
+		return this.toBeInstalledPoms;
 	}
 	
 	public Map getNecessaryPoms() {
-		return necessaryPoms;
+		return this.necessaryPoms;
 	}
 	
 	public void setNecessaryPoms(List necessaryPoms) {
@@ -260,7 +260,7 @@ public class PomSorter {
 	}
 
 	public List getErrorMessages() {
-		return errorMessages;
+		return this.errorMessages;
 	}
 	public void setErrorMessages(List errorMessages) {
 		this.errorMessages = errorMessages;
@@ -276,9 +276,9 @@ public class PomSorter {
 	 * @return
 	 */
 	public VersionComparator getUsedVersionComparator() {
-		if (usedVersionComparator == null) {
-			usedVersionComparator = new VersionComparator();
+		if (this.usedVersionComparator == null) {
+			this.usedVersionComparator = new VersionComparator();
 		}
-		return usedVersionComparator;
+		return this.usedVersionComparator;
 	}
 }

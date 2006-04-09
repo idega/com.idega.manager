@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.19 2005/04/08 14:17:27 thomas Exp $
+ * $Id: ModuleManager.java,v 1.20 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/08 14:17:27 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class ModuleManager {
 	
@@ -63,40 +63,40 @@ public class ModuleManager {
 	}
 	
 	private void initialize() {
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		this.resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		initializePomSorter();
 		initializeOutputText();
 		initializeSubmitButtons();
 	}
 	
 	private void initializePomSorter() {
-		if (pomSorter == null) {
-			pomSorter = ManagerUtils.getPomSorter();
+		if (this.pomSorter == null) {
+			this.pomSorter = ManagerUtils.getPomSorter();
 		}
 	}	
 	
 	private void initializeOutputText() {
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
+		this.outputText1Value = this.resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
+		this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
 	}
 
 	private void initializeSubmitButtons() {
-		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
-		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
+		this.button1Label = this.resourceBundle.getLocalizedString("man_manager_back","Back");
+		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Install");
+		this.button3Label = this.resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	private void initializeDataTable1() {
-		String noPreviousVersionInstalled = resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
+		String noPreviousVersionInstalled = this.resourceBundle.getLocalizedString("man_manager_no_previous_version_installed","No previous version installed");
 		List rows = new ArrayList();
 		SortedMap toBeInstalled = null;
 		SortedMap sortedInstalledMap = null;
-		if (pomSorter != null) {
-			toBeInstalled = pomSorter.getToBeInstalledPoms();
-			sortedInstalledMap =pomSorter.getSortedInstalledPoms();
+		if (this.pomSorter != null) {
+			toBeInstalled = this.pomSorter.getToBeInstalledPoms();
+			sortedInstalledMap =this.pomSorter.getSortedInstalledPoms();
 		}
 		if (toBeInstalled == null || toBeInstalled.isEmpty()) {
-			String noModulesNeedToBeInstalled = resourceBundle.getLocalizedString("man_manager_no_modules_need_to_be_installed","No modules need to be installed");
+			String noModulesNeedToBeInstalled = this.resourceBundle.getLocalizedString("man_manager_no_modules_need_to_be_installed","No modules need to be installed");
 			String[] firstRow = { noModulesNeedToBeInstalled };
 			rows.add(firstRow);
 		}
@@ -105,15 +105,15 @@ public class ModuleManager {
 			Iterator iterator = toBeInstalled.values().iterator();
 			while (iterator.hasNext()) {
 				Module module = (Module) iterator.next();
-				String name = module.getNameForLabel(resourceBundle);
-				String version = module.getCurrentVersionForLabel(resourceBundle);
+				String name = module.getNameForLabel(this.resourceBundle);
+				String version = module.getCurrentVersionForLabel(this.resourceBundle);
 				String artifactId = module.getArtifactId();
 				Module oldPom = (Module) sortedInstalledMap.get(artifactId);
-				String oldVersion = (oldPom == null) ? noPreviousVersionInstalled : oldPom.getCurrentVersionForLabel(resourceBundle);
+				String oldVersion = (oldPom == null) ? noPreviousVersionInstalled : oldPom.getCurrentVersionForLabel(this.resourceBundle);
 				String[] row = {name, version, oldVersion};
 				tableRows.put(row, name);
 			}
-			Locale locale = resourceBundle.getLocale();
+			Locale locale = this.resourceBundle.getLocale();
 			SortedByValueMap sortedMap = new SortedByValueMap(tableRows, locale);
 			Iterator valueIterator = sortedMap.keySet().iterator();
 			while (valueIterator.hasNext()) {
@@ -121,17 +121,17 @@ public class ModuleManager {
 				rows.add(row);	
 			}
 		}			
-		dataTable1Model = new ListDataModel(rows);
+		this.dataTable1Model = new ListDataModel(rows);
 		// initialize columnNames
-		String module = resourceBundle.getLocalizedString("man_manager_module", "Module");
-		String version = resourceBundle.getLocalizedString("man_manager_module", "New Version");
-		String oldVersion = resourceBundle.getLocalizedString("man_manager_old_version","Old version");
+		String module = this.resourceBundle.getLocalizedString("man_manager_module", "Module");
+		String version = this.resourceBundle.getLocalizedString("man_manager_module", "New Version");
+		String oldVersion = this.resourceBundle.getLocalizedString("man_manager_old_version","Old version");
 		String[] columnNames = {module, version, oldVersion};
 		initializeHtmlDataTable(columnNames);
 	}	
 
 	private void initializeErrorMessages() {
-		List errorMessages = pomSorter.getErrorMessages();
+		List errorMessages = this.pomSorter.getErrorMessages();
 		initializeErrorMessages(errorMessages);
 	}
 		
@@ -139,12 +139,12 @@ public class ModuleManager {
 		HtmlPanelGroup group = getGroupPanel1();
 		List list = group.getChildren();
 		list.clear();
-		button2.setDisabled(false);
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Install");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
+		this.button2.setDisabled(false);
+		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Install");
+		this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_do_you_want_to_install_modules","Do you want to install the following modules?");
 		if (errorMessages != null) {
-			outputText2Value = resourceBundle.getLocalizedString("man_manager_success","Problems occurred, you can not proceed");
-			button2.setDisabled(true);
+			this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_success","Problems occurred, you can not proceed");
+			this.button2.setDisabled(true);
 			Iterator iterator = errorMessages.iterator();
 			boolean go = true;
 			int i = 0;
@@ -152,7 +152,7 @@ public class ModuleManager {
 				String errorMessage = null;
 				if (i++ == maxNumberOfShownErrorMessages) {
 					go = false;
-					errorMessage = resourceBundle.getLocalizedString("man_manager_more_problems", "more problems...");
+					errorMessage = this.resourceBundle.getLocalizedString("man_manager_more_problems", "more problems...");
 				}
 				else {
 					errorMessage = (String) iterator.next();
@@ -175,7 +175,7 @@ public class ModuleManager {
     private HtmlDataTable dataTable1 = new HtmlDataTable();
 
     public HtmlDataTable getDataTable1() {
-    	return dataTable1;
+    	return this.dataTable1;
     }
 
     public void setDataTable1(HtmlDataTable dataTable1) {
@@ -186,7 +186,7 @@ public class ModuleManager {
     	Application application = ManagerUtils.getInstanceForCurrentContext().getApplication();
     	try {
     		// First we remove columns from table
-    		List list = dataTable1.getChildren();
+    		List list = this.dataTable1.getChildren();
     		list.clear();
 //    		// This is data obtained in "executeQuery" method
 //    		ResultSet resultSet = (ResultSet)data.getWrappedData();
@@ -197,8 +197,8 @@ public class ModuleManager {
     		HtmlOutputText headerText;
 //     
 //    		ResultSetMetaData metaData = resultSet.getMetaData();
-    		dataTable1.setVar("currentRow");
-    		dataTable1.setColumnClasses("moduleManagerBigColumnClass, moduleManagerColumnClass, moduleManagerColumnClass");
+    		this.dataTable1.setVar("currentRow");
+    		this.dataTable1.setColumnClasses("moduleManagerBigColumnClass, moduleManagerColumnClass, moduleManagerColumnClass");
 //			dataTable1.setHeaderClass("moduleManagerHeaderClass");
     		
     		// "currentRow" must be set in the corresponding JSP page!
@@ -220,7 +220,7 @@ public class ModuleManager {
     			outText = new HtmlOutputText();
      
     			//String vblExpression = 	"#{" + hdt.getVar() + "." + metaData.getColumnName(i + 1) + "}";
-    			String vblExpression = "#{" + dataTable1.getVar() + "[" + Integer.toString(i) + "]}";
+    			String vblExpression = "#{" + this.dataTable1.getVar() + "[" + Integer.toString(i) + "]}";
     			ValueBinding vb = application.createValueBinding(vblExpression);
     			outText.setValueBinding("value", vb);
      
@@ -240,8 +240,8 @@ public class ModuleManager {
     }
 
 	public void submitForm(ActionEvent event) {
-		if (pomSorter != null) {
-			ApplicationUpdater updater = new ApplicationUpdater(pomSorter);
+		if (this.pomSorter != null) {
+			ApplicationUpdater updater = new ApplicationUpdater(this.pomSorter);
 			if (! updater.installModules()) { 
 				String errorMessage = updater.getErrorMessage();
 				List errorMessages = new ArrayList(1);
@@ -249,11 +249,11 @@ public class ModuleManager {
 				initializeErrorMessages(errorMessages);
 			}
 			else {
-				outputText2Value = resourceBundle.getLocalizedString("man_manager_success","Modules have been successfully installed");
-				button1.setDisabled(true);
-				button2.setDisabled(true);
-				button3.setDisabled(true);
-				pomSorter = null;
+				this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_success","Modules have been successfully installed");
+				this.button1.setDisabled(true);
+				this.button2.setDisabled(true);
+				this.button3.setDisabled(true);
+				this.pomSorter = null;
 //				button2Label = resourceBundle.getLocalizedString("man_manager_finish","Finish");
 //				actionNextChangeToNewValue = ManagerConstants.ACTION_CANCEL;
 			}
@@ -264,7 +264,7 @@ public class ModuleManager {
     private ListDataModel dataTable1Model = new ListDataModel();
 
     public ListDataModel getDataTable1Model() {
-        return dataTable1Model;
+        return this.dataTable1Model;
     }
 
     public void setDataTable1Model(ListDataModel dtdm) {
@@ -274,7 +274,7 @@ public class ModuleManager {
     private HtmlCommandButton button1 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton1() {
-        return button1;
+        return this.button1;
     }
 
     public void setButton1(HtmlCommandButton hcb) {
@@ -284,7 +284,7 @@ public class ModuleManager {
     private HtmlCommandButton button2 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton2() {
-        return button2;
+        return this.button2;
     }
 
     public void setButton2(HtmlCommandButton hcb) {
@@ -294,7 +294,7 @@ public class ModuleManager {
     private HtmlCommandButton button3 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton3() {
-        return button3;
+        return this.button3;
     }
 
     public void setButton3(HtmlCommandButton hcb) {
@@ -304,7 +304,7 @@ public class ModuleManager {
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
-        return outputText1;
+        return this.outputText1;
     }
 
     public void setOutputText1(HtmlOutputText hot) {
@@ -314,7 +314,7 @@ public class ModuleManager {
     private HtmlOutputText outputText2 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText2() {
-        return outputText2;
+        return this.outputText2;
     }
 
     public void setOutputText2(HtmlOutputText hot) {
@@ -322,22 +322,22 @@ public class ModuleManager {
     }
     
     public String getOutputText1Value() {
-    	return outputText1Value;
+    	return this.outputText1Value;
     }
  
     public String getOutputText2Value() {
-    	return outputText2Value;
+    	return this.outputText2Value;
     }    
     
     public String getButton1Label() {
-    	return button1Label;
+    	return this.button1Label;
     }
     
     public String getButton2Label() {
-    	return button2Label;
+    	return this.button2Label;
     }
     public String getButton3Label() {
-    	return button3Label;
+    	return this.button3Label;
     }
     
     public void setActionBack(String actionBack) {
@@ -345,16 +345,16 @@ public class ModuleManager {
     }
     
     public String button1_action() {
-    	return actionBack;
+    	return this.actionBack;
     }
     
     // first submitForm is called then this method is invoked 
     // change the value after returning the old value!
     public String button2_action() {
-		String returnValue = actionNext;
-    	if (actionNextChangeToNewValue != null) {
-    		actionNext = actionNextChangeToNewValue;
-    		actionNextChangeToNewValue = null;
+		String returnValue = this.actionNext;
+    	if (this.actionNextChangeToNewValue != null) {
+    		this.actionNext = this.actionNextChangeToNewValue;
+    		this.actionNextChangeToNewValue = null;
     	}
     	return returnValue;
     }    
@@ -367,7 +367,7 @@ public class ModuleManager {
     private HtmlPanelGroup groupPanel1 = new HtmlPanelGroup();
 
     public HtmlPanelGroup getGroupPanel1() {
-        return groupPanel1;
+        return this.groupPanel1;
     }
 
     public void setGroupPanel1(HtmlPanelGroup hpg) {

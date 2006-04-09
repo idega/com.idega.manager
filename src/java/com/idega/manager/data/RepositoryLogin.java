@@ -46,28 +46,28 @@ public class RepositoryLogin {
 	
 	private void initialize(String repository, String userName, String password) {
 		initialize(repository);
-		passwordAuthentication = new PasswordAuthentication(userName, password.toCharArray());
-		authenticationInfo = new AuthenticationInfo();
-		authenticationInfo.setUserName(userName);
-		authenticationInfo.setPassword(password);
+		this.passwordAuthentication = new PasswordAuthentication(userName, password.toCharArray());
+		this.authenticationInfo = new AuthenticationInfo();
+		this.authenticationInfo.setUserName(userName);
+		this.authenticationInfo.setPassword(password);
 	}
 	
 	/**
 	 * @return Returns the passwordAuthentication.
 	 */
 	public PasswordAuthentication getPasswordAuthentication() {
-		return passwordAuthentication;
+		return this.passwordAuthentication;
 	}
 
 	public AuthenticationInfo getAuthenticationInfo()	{
-		return authenticationInfo;
+		return this.authenticationInfo;
 	}
 	
 	/**
 	 * @return Returns the repository.
 	 */
 	public String getRepository() {
-		return repository;
+		return this.repository;
 	}
 
 }

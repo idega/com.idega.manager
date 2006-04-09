@@ -1,5 +1,5 @@
 /*
- * $Id: CacheSettings.java,v 1.1 2006/01/12 15:41:01 tryggvil Exp $
+ * $Id: CacheSettings.java,v 1.2 2006/04/09 11:42:59 laddi Exp $
  * Created on 29.7.2005 in project com.idega.manager
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.servlet.filter.CacheFilter;
  * <p>
  * Managed bean to use to manipulate server properties
  * </p>
- *  Last modified: $Date: 2006/01/12 15:41:01 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CacheSettings {
 
@@ -73,7 +73,7 @@ public class CacheSettings {
 	 * @return
 	 */
 	private IWMainApplication getIwma() {
-		return iwma;
+		return this.iwma;
 	}
 
 	
@@ -81,7 +81,7 @@ public class CacheSettings {
 	 * @return Returns the cacheFilterEnabled.
 	 */
 	public boolean isCacheFilterEnabled() {
-		return cacheFilterEnabled;
+		return this.cacheFilterEnabled;
 	}
 
 	

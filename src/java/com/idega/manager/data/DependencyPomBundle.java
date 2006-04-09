@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyPomBundle.java,v 1.11 2005/03/23 15:31:07 thomas Exp $
+ * $Id: DependencyPomBundle.java,v 1.12 2006/04/09 11:42:59 laddi Exp $
  * Created on Dec 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.manager.util.VersionComparator;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/23 15:31:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class DependencyPomBundle extends Dependency {
 	
@@ -37,17 +37,17 @@ public class DependencyPomBundle extends Dependency {
 	}
 	
 	public Pom getPom() throws IOException {
-		if (pom == null) {
-			pom = getDependantPom().getPom(this);
+		if (this.pom == null) {
+			this.pom = getDependantPom().getPom(this);
 		}
-		return pom;
+		return this.pom;
 	}
 	
 	public File getBundleArchive() throws IOException {
-		if (bundleArchive == null) {
-			bundleArchive = getDependantPom().getBundleArchive(this);
+		if (this.bundleArchive == null) {
+			this.bundleArchive = getDependantPom().getBundleArchive(this);
 		}
-		return bundleArchive;
+		return this.bundleArchive;
 	}
 	
 	
@@ -86,11 +86,11 @@ public class DependencyPomBundle extends Dependency {
 	}
 	
 	public boolean isSnapshot() {
-		if (isSnapshot == null) {
+		if (this.isSnapshot == null) {
 			String tempVersion = getCurrentVersion();
-			isSnapshot = new Boolean(RealPom.isSnapshot(tempVersion));
+			this.isSnapshot = new Boolean(RealPom.isSnapshot(tempVersion));
 		}
-		return isSnapshot.booleanValue();
+		return this.isSnapshot.booleanValue();
 	}
 
 	public String getCurrentVersionForLabel(IWResourceBundle resourceBundle) {

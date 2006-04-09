@@ -1,5 +1,5 @@
 /*
- * $Id: RealPom.java,v 1.10 2005/04/08 14:16:15 thomas Exp $
+ * $Id: RealPom.java,v 1.11 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/08 14:16:15 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RealPom extends Pom {
 	
@@ -140,7 +140,7 @@ public class RealPom extends Pom {
 	private void initializeTimestamp() throws IOException {
 		IWTimestamp timestamp = null;
 		// try to get timestamp from origin file
-		File originFile = FileUtil.getFileRelativeToFile(projectFile, ManagerConstants.ORIGIN_FILE);
+		File originFile = FileUtil.getFileRelativeToFile(this.projectFile, ManagerConstants.ORIGIN_FILE);
 		if (originFile.exists()) {
 			BufferedReader fileReader = null;
 			try {
@@ -161,7 +161,7 @@ public class RealPom extends Pom {
 		}
 		if (timestamp == null) {
 			// failed?  try to get timestamp from corresponding MANIFEST_FILE  
-			File manifestFile = FileUtil.getFileRelativeToFile(projectFile, MANIFEST_PATH);
+			File manifestFile = FileUtil.getFileRelativeToFile(this.projectFile, MANIFEST_PATH);
 			if (manifestFile.exists()) {
 				long dateValue = manifestFile.lastModified();
 				Date date = new Date(dateValue);
@@ -178,44 +178,44 @@ public class RealPom extends Pom {
 	}
 	
 	public String getGroupId() {
-		if (groupId == null) {
-			groupId = getRoot().getTextTrim(GROUP_ID);
+		if (this.groupId == null) {
+			this.groupId = getRoot().getTextTrim(GROUP_ID);
 		}
-		return groupId;
+		return this.groupId;
 	}
 	
 	public String getArtifactId() {
-		if (artifactId == null) {
-			artifactId = getRoot().getTextTrim(ARTIFACT_ID);
+		if (this.artifactId == null) {
+			this.artifactId = getRoot().getTextTrim(ARTIFACT_ID);
 		}
-		return artifactId;
+		return this.artifactId;
 	}
 	
 	public boolean isSnapshot() {
-		return snapshot;
+		return this.snapshot;
 	}
 	
 	public String getCurrentVersion() {
-		if (currentVersion == null) { 
-			currentVersion = getRoot().getTextTrim(CURRENT_VERSION);
+		if (this.currentVersion == null) { 
+			this.currentVersion = getRoot().getTextTrim(CURRENT_VERSION);
 			// sometimes a version is not set
-			if (currentVersion == null) {
-				currentVersion = "";
+			if (this.currentVersion == null) {
+				this.currentVersion = "";
 			}
-			snapshot = RealPom.isSnapshot(currentVersion);
-			if (snapshot) {
-				currentVersion = StringHandler.remove(currentVersion, SNAPSHOT);
-				currentVersion = StringHandler.remove(currentVersion, "-");
+			this.snapshot = RealPom.isSnapshot(this.currentVersion);
+			if (this.snapshot) {
+				this.currentVersion = StringHandler.remove(this.currentVersion, SNAPSHOT);
+				this.currentVersion = StringHandler.remove(this.currentVersion, "-");
 			}
 		}
-		return currentVersion;
+		return this.currentVersion;
 	}
 	
 	private XMLElement  getRoot() {
-		if (root == null) {
-			root = xmlData.getDocument().getRootElement();
+		if (this.root == null) {
+			this.root = this.xmlData.getDocument().getRootElement();
 		}
-		return root;
+		return this.root;
 	}
 
 	public List getDependencies()  {
@@ -224,23 +224,23 @@ public class RealPom extends Pom {
 	
 	
 	public List getDependencies(Pom dependant) {
-		if (dependencies == null) {
-			dependencies = new ArrayList();
+		if (this.dependencies == null) {
+			this.dependencies = new ArrayList();
 			List elements = getRoot().getChildrenRecursive(DEPENDENCY);
 			Iterator iterator = elements.iterator();
 			while (iterator.hasNext()) {
 				XMLElement element = (XMLElement) iterator.next();
 				Dependency dependency = Dependency.getInstanceForElement(dependant, element);
-				dependencies.add(dependency);
+				this.dependencies.add(dependency);
 			}
 		}
-		return dependencies;
+		return this.dependencies;
 	}
 	
 	public Pom getPom(DependencyPomBundle dependency) throws IOException {
 		String dependencyArtifactId = dependency.getArtifactId();
 		String moduleName = (isEclipseProject()) ? dependencyArtifactId : StringHandler.concat(dependencyArtifactId, BUNDLE_SUFFIX);
-		File bundlesFolder = getBundlesFolder(projectFile);
+		File bundlesFolder = getBundlesFolder(this.projectFile);
 		File module = new File(bundlesFolder, moduleName);
 		File dependencyProjectFile = new File(module, RealPom.POM_FILE);
 		RealPom pom = RealPom.getPom(dependencyProjectFile);
@@ -258,17 +258,17 @@ public class RealPom extends Pom {
 	}
 
 	public IWTimestamp getTimestamp() {
-		return timesstamp;
+		return this.timesstamp;
 	}
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(getArtifactId()).append(" ").append(currentVersion).append(" ").append(timesstamp);
+		buffer.append(getArtifactId()).append(" ").append(this.currentVersion).append(" ").append(this.timesstamp);
 		return buffer.toString();
 	}
 	
 	public boolean isInstalled() {
-		return isInstalled;
+		return this.isInstalled;
 	}
 	
 	public void setIsInstalled(boolean isInstalled) {
@@ -309,7 +309,7 @@ public class RealPom extends Pom {
 	}
 	
 	public boolean isEclipseProject() {
-		return isEclipseProject;
+		return this.isEclipseProject;
 	}
 	public void setEclipseProject(boolean isEclipseProject) {
 		this.isEclipseProject = isEclipseProject;

@@ -28,13 +28,13 @@ public class ApplicationUpdater {
 	}
 	
 	public boolean installModules() {
-		Installer installer = Installer.getInstance(pomSorter);
+		Installer installer = Installer.getInstance(this.pomSorter);
 		LogFile logFile = null;
 		try {
 			logFile = installer.getLogFile(); 
 		}
 		catch (IOException ex) {
-			errorMessage = ex.getMessage();
+			this.errorMessage = ex.getMessage();
 			return false;
 		}
 		try {
@@ -54,7 +54,7 @@ public class ApplicationUpdater {
 			logFile.log(Level.INFO, "...merging web configuration finished");
 		}
 		catch (IOException ex) {
-			errorMessage = ex.getMessage();
+			this.errorMessage = ex.getMessage();
 			return false;
 		}
 		finally {
@@ -64,6 +64,6 @@ public class ApplicationUpdater {
 	}
 	
 	public String getErrorMessage() {
-		return errorMessage;
+		return this.errorMessage;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: InstallNewModuleListManager.java,v 1.6 2005/04/14 14:01:01 thomas Exp $
+ * $Id: InstallNewModuleListManager.java,v 1.7 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.manager.util.ManagerConstants;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class InstallNewModuleListManager extends UpdateListManager {
 	
@@ -39,26 +39,26 @@ public class InstallNewModuleListManager extends UpdateListManager {
 	}
 	
 	public String getTitle() {
-       	return resourceBundle.getLocalizedString("man_manager_install_new_modules","Install new modules");
+       	return this.resourceBundle.getLocalizedString("man_manager_install_new_modules","Install new modules");
 	}
 	
 	protected void initializeList() {
-		if (selectedModules == null) {
+		if (this.selectedModules == null) {
 		 	// nothing to initialize
 		 	return;
 		 }
-		 multiSelectListbox1DefaultItems = new ArrayList();
+		 this.multiSelectListbox1DefaultItems = new ArrayList();
 		 Map repositoryPom = new HashMap();
-		 Map sortedSimpleProxyList = pomSorter.getSortedSimpleProxyList();
-		 Iterator iterator = selectedModules.iterator();
+		 Map sortedSimpleProxyList = this.pomSorter.getSortedSimpleProxyList();
+		 Iterator iterator = this.selectedModules.iterator();
 		 while (iterator.hasNext()) {
 		 	String artifactId = (String) iterator.next();
 		 	SimpleProxyPomList simpleProxyPomList = (SimpleProxyPomList) sortedSimpleProxyList.get(artifactId);
-		 	pomSorter.addSimpleProxyPomList(artifactId, simpleProxyPomList, repositoryPom);
+		 	this.pomSorter.addSimpleProxyPomList(artifactId, simpleProxyPomList, repositoryPom);
 		 }
 		 // sort
-		 Collections.sort(selectedModules);
-		 fillList(selectedModules, repositoryPom, repositoryPom);
+		 Collections.sort(this.selectedModules);
+		 fillList(this.selectedModules, repositoryPom, repositoryPom);
 	}
 	
 	protected Module getModuleGroupItem(Map repositoryPom, String artifactId) {
@@ -67,14 +67,14 @@ public class InstallNewModuleListManager extends UpdateListManager {
 	}
 	
 	protected String getLabelForItemGroup(Module groupModule) {
-	 	return groupModule.getNameForLabel(resourceBundle);
+	 	return groupModule.getNameForLabel(this.resourceBundle);
 	}
 	
 	protected String getLabelForItem(Module groupModule, Module itemModule) {
- 		String label = itemModule.getCurrentVersionForLabel(resourceBundle);
+ 		String label = itemModule.getCurrentVersionForLabel(this.resourceBundle);
 		// if the suggested version is a snapshot do not recommend to install it
  		if (itemModule.isSnapshot()) {
- 			String notRecommended = resourceBundle.getLocalizedString("man_manager_not_recommended", "not recommended");
+ 			String notRecommended = this.resourceBundle.getLocalizedString("man_manager_not_recommended", "not recommended");
  			StringBuffer buffer = new StringBuffer(label);
  			buffer.append(" - ").append(notRecommended);
  			return buffer.toString();

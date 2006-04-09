@@ -1,5 +1,5 @@
 /*
- * $Id: LoginManager.java,v 1.4 2005/04/15 16:24:36 thomas Exp $
+ * $Id: LoginManager.java,v 1.5 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -46,10 +46,10 @@ import com.idega.manager.util.ManagerUtils;
  * 4. ModuleManager
  * 
  * 
- *  Last modified: $Date: 2005/04/15 16:24:36 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class LoginManager {
 	
@@ -73,33 +73,33 @@ public class LoginManager {
 	}
 	
 	private void initialize() {
-		resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
-		repositoryLogin = null;
+		this.resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
+		this.repositoryLogin = null;
 		initializeOutputText();
 		initializeInputFields();
 		initializeSubmitButtons();
 	}
 	
 	private void initializeOutputText() {
-		outputText1Value = resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
-		outputText2Value = resourceBundle.getLocalizedString("man_manager_login","Login");
-		outputText3Value = resourceBundle.getLocalizedString("man_repository", "Repository");
-		outputText4Value = resourceBundle.getLocalizedString("man_user_name", "User");
-		outputText5Value = resourceBundle.getLocalizedString("man_password","Password");
+		this.outputText1Value = this.resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
+		this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_login","Login");
+		this.outputText3Value = this.resourceBundle.getLocalizedString("man_repository", "Repository");
+		this.outputText4Value = this.resourceBundle.getLocalizedString("man_user_name", "User");
+		this.outputText5Value = this.resourceBundle.getLocalizedString("man_password","Password");
 	}
 
 	private void initializeSubmitButtons() {
-		button1Label = resourceBundle.getLocalizedString("man_manager_back","Back");
-		button2Label = resourceBundle.getLocalizedString("man_manager_next","Next");
-		button3Label = resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
+		this.button1Label = this.resourceBundle.getLocalizedString("man_manager_back","Back");
+		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Next");
+		this.button3Label = this.resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
 	
 	private void initializeInputFields() {
-		textField1.setValue(ManagerConstants.IDEGA_REPOSITORY_URL);
+		this.textField1.setValue(ManagerConstants.IDEGA_REPOSITORY_URL);
 	}
 	
 	public RepositoryLogin getRepositoryLogin() {
-		return repositoryLogin;
+		return this.repositoryLogin;
 	}
 	
 	public void submitForm(ActionEvent event) {
@@ -113,7 +113,7 @@ public class LoginManager {
 		userName = (userName == null) ? "" : userName; 
 		String password = (String) passwordInput.getValue();
 		password = (password == null) ? "" : password;
-		repositoryLogin = RepositoryLogin.getInstanceWithAuthentication(repositoryURL, userName, password);
+		this.repositoryLogin = RepositoryLogin.getInstanceWithAuthentication(repositoryURL, userName, password);
 	}
 		
 		
@@ -130,17 +130,17 @@ public class LoginManager {
 		Object componentRepositoryURLValue = ((UIInput) componentRepositoryURL).getValue();
 		Object componentUserValue = ((UIInput) componentUser).getValue();
 		Object componentPasswordValue = ((UIInput) componentPassword).getValue();
-		if (userPasswordValidator == null) {
-			userPasswordValidator = new UserPasswordValidator(); 
+		if (this.userPasswordValidator == null) {
+			this.userPasswordValidator = new UserPasswordValidator(); 
 		}
-		userPasswordValidator.validateUserPassword(context, toValidate, componentRepositoryURLValue, componentUserValue , componentPasswordValue, resourceBundle);
+		this.userPasswordValidator.validateUserPassword(context, toValidate, componentRepositoryURLValue, componentUserValue , componentPasswordValue, this.resourceBundle);
 	}
 
 	
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
-        return outputText1;
+        return this.outputText1;
     }
 
     public void setOutputText1(HtmlOutputText hot) {
@@ -150,7 +150,7 @@ public class LoginManager {
     private HtmlOutputText outputText2 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText2() {
-        return outputText2;
+        return this.outputText2;
     }
 
     public void setOutputText2(HtmlOutputText hot) {
@@ -160,7 +160,7 @@ public class LoginManager {
     private HtmlOutputText outputText3 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText3() {
-        return outputText3;
+        return this.outputText3;
     }
 
     public void setOutputText3(HtmlOutputText hot) {
@@ -170,7 +170,7 @@ public class LoginManager {
     private HtmlOutputText outputText4 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText4() {
-        return outputText4;
+        return this.outputText4;
     }
 
     public void setOutputText4(HtmlOutputText hot) {
@@ -180,7 +180,7 @@ public class LoginManager {
     private HtmlOutputText outputText5 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText5() {
-        return outputText5;
+        return this.outputText5;
     }
 
     public void setOutputText5(HtmlOutputText hot) {
@@ -191,7 +191,7 @@ public class LoginManager {
     private HtmlInputText textField1 = new HtmlInputText();
 
     public HtmlInputText getTextField1() {
-        return textField1;
+        return this.textField1;
     }
 
     public void setTextField1(HtmlInputText hit) {
@@ -201,7 +201,7 @@ public class LoginManager {
     private HtmlInputText textField2 = new HtmlInputText();
 
     public HtmlInputText getTextField2() {
-        return textField2;
+        return this.textField2;
     }
 
     public void setTextField2(HtmlInputText hit) {
@@ -212,13 +212,13 @@ public class LoginManager {
     private HtmlInputSecret secretField1 = new HtmlInputSecret();
 
     public HtmlInputSecret getSecretField1() {
-        return secretField1;
+        return this.secretField1;
     }    
     
     private HtmlCommandButton button1 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton1() {
-        return button1;
+        return this.button1;
     }
 
     public void setButton1(HtmlCommandButton hcb) {
@@ -228,7 +228,7 @@ public class LoginManager {
     private HtmlCommandButton button2 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton2() {
-        return button2;
+        return this.button2;
     }
 
     public void setButton2(HtmlCommandButton hcb) {
@@ -238,7 +238,7 @@ public class LoginManager {
     private HtmlCommandButton button3 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton3() {
-        return button3;
+        return this.button3;
     }
 
     public void setButton3(HtmlCommandButton hcb) {
@@ -246,34 +246,34 @@ public class LoginManager {
     }
     
     public String getOutputText1Value() {
-    	return outputText1Value;
+    	return this.outputText1Value;
     }
  
     public String getOutputText2Value() {
-    	return outputText2Value;
+    	return this.outputText2Value;
     }
     
     public String getOutputText3Value() {
-    	return outputText3Value;
+    	return this.outputText3Value;
     }
  
     public String getOutputText4Value() {
-    	return outputText4Value;
+    	return this.outputText4Value;
     }
 
     public String getOutputText5Value() {
-    	return outputText5Value;
+    	return this.outputText5Value;
     }
     
     public String getButton1Label() {
-    	return button1Label;
+    	return this.button1Label;
     }
     
     public String getButton2Label() {
-    	return button2Label;
+    	return this.button2Label;
     }
     public String getButton3Label() {
-    	return button3Label;
+    	return this.button3Label;
     }
  
     public String button2_action() {

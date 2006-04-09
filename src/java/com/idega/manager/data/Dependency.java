@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.13 2005/03/31 15:47:38 thomas Exp $
+ * $Id: Dependency.java,v 1.14 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.xml.XMLElement;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/31 15:47:38 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class Dependency extends ModulePomImpl  {
 	
@@ -77,32 +77,32 @@ public class Dependency extends ModulePomImpl  {
 	Pom dependantPom = null;
 	
 	public String getArtifactId() {
-		return artifactId;
+		return this.artifactId;
 	}
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
 	}
 	public Pom getDependantPom() {
-		return dependantPom;
+		return this.dependantPom;
 	}
 	public void setDependantPom(Pom dependantPom) {
 		this.dependantPom = dependantPom;
 	}
 	public String getGroupId() {
-		return groupId;
+		return this.groupId;
 	}
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 	public String getCurrentVersion() {
-		return version;
+		return this.version;
 	}
 	public void setCurrentVersion(String version) {
 		this.version = version;
 	}
 
 	public boolean isInstalled() {
-		return isInstalled;
+		return this.isInstalled;
 	}
 
 	public void setIsInstalled(boolean isInstalled) {
@@ -174,7 +174,7 @@ public class Dependency extends ModulePomImpl  {
 		return buffer.toString();
 	}
 	public String getJarFileName() {
-		return jarFileName;
+		return this.jarFileName;
 	}
 	public void setJarFileName(String jarFileName) {
 		this.jarFileName = jarFileName;
@@ -183,7 +183,7 @@ public class Dependency extends ModulePomImpl  {
 		return INCLUDED_IN_BUNDLE;
 	}
 	public boolean isIncludedInBundle() {
-		return includedInBundle;
+		return this.includedInBundle;
 	}
 	public void setIncludedInBundle(boolean includedInBundle) {
 		this.includedInBundle = includedInBundle;

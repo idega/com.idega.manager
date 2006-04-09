@@ -61,8 +61,8 @@ public class URLReadConnection {
 	private PasswordAuthentication passwordAuthentication = null;
 	
 	private URLConnection connect() throws IOException  {
-		URLConnection con = url.openConnection();
-		if (passwordAuthentication != null) {
+		URLConnection con = this.url.openConnection();
+		if (this.passwordAuthentication != null) {
 	  	    con.setDoInput( true );
 	  	    String base64UserPassword = getBase64UserPassword();
 	  	    con.setRequestProperty( "Authorization", base64UserPassword);
@@ -109,8 +109,8 @@ public class URLReadConnection {
 	
 	
 	private String getBase64UserPassword() {
-		String userName = passwordAuthentication.getUserName();
-		char[] password = passwordAuthentication.getPassword();
+		String userName = this.passwordAuthentication.getUserName();
+		char[] password = this.passwordAuthentication.getPassword();
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(userName).append(":").append(password);
 		Charset charset = Charset.forName("ISO-8859-1");

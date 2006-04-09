@@ -1,5 +1,5 @@
 /*
- * $Id: SystemSettings.java,v 1.4 2006/03/20 12:23:00 tryggvil Exp $
+ * $Id: SystemSettings.java,v 1.5 2006/04/09 11:42:59 laddi Exp $
  * Created on 29.7.2005 in project com.idega.manager
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * Managed bean to use to manipulate server properties
  * </p>
- *  Last modified: $Date: 2006/03/20 12:23:00 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SystemSettings {
 
@@ -67,7 +67,7 @@ public class SystemSettings {
 	 * @return Returns the iwma.
 	 */
 	public IWMainApplication getIwma() {
-		return iwma;
+		return this.iwma;
 	}
 
 	
@@ -83,7 +83,7 @@ public class SystemSettings {
 	 * @return Returns the mainDomainName.
 	 */
 	public String getMainDomainName() {
-		return mainDomainName;
+		return this.mainDomainName;
 	}
 
 	
@@ -99,7 +99,7 @@ public class SystemSettings {
 	 * @return Returns the mainDomainUrl.
 	 */
 	public String getMainDomainUrl() {
-		return mainDomainUrl;
+		return this.mainDomainUrl;
 	}
 
 	
@@ -148,7 +148,7 @@ public class SystemSettings {
 	 * @return Returns the mainDomainServerName.
 	 */
 	public String getMainDomainServerName() {
-		return mainDomainServerName;
+		return this.mainDomainServerName;
 	}
 
 

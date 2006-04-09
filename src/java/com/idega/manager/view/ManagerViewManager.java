@@ -60,17 +60,17 @@ public class ManagerViewManager implements Singleton {
 	}
 	
 	public ViewManager getViewManager(){
-		return ViewManager.getInstance(iwma);
+		return ViewManager.getInstance(this.iwma);
 	}
 	
 	
 	public ViewNode getContentNode(){
-		IWBundle iwb = iwma.getBundle(BUNDLE_IDENTIFIER);
+		IWBundle iwb = this.iwma.getBundle(BUNDLE_IDENTIFIER);
 		//ViewNode content = root.getChild(CONTENT_ID);
-		if(managerRootNode==null){
-			managerRootNode = initalizeManagerNode(iwb);
+		if(this.managerRootNode==null){
+			this.managerRootNode = initalizeManagerNode(iwb);
 		}
-		return managerRootNode;
+		return this.managerRootNode;
 	}
 	
 	public ViewNode initalizeManagerNode(IWBundle bundle){
@@ -82,8 +82,8 @@ public class ManagerViewManager implements Singleton {
 		Collection roles = new ArrayList();
 		roles.add(StandardRoles.ROLE_KEY_ADMIN);
 		managerNode.setAuthorizedRoles(roles);
-		managerRootNode = managerNode;
-		return managerRootNode;
+		this.managerRootNode = managerNode;
+		return this.managerRootNode;
 	}
 	
 	

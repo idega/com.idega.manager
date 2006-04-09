@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.11 2005/04/05 16:14:29 thomas Exp $
+ * $Id: Installer.java,v 1.12 2006/04/09 11:42:59 laddi Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.util.logging.LogFile;
 
 /**
  * 
- *  Last modified: $Date: 2005/04/05 16:14:29 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class Installer {
 	
@@ -63,14 +63,14 @@ public class Installer {
 	
 	private void initialize(PomSorter pomSorter) {
 		this.pomSorter = pomSorter;
-		idegawebDirectoryStructure = ManagerUtils.getInstanceForCurrentContext().getIdegawebDirectoryStructure();
+		this.idegawebDirectoryStructure = ManagerUtils.getInstanceForCurrentContext().getIdegawebDirectoryStructure();
 	}
 	
 	public void extractBundleArchives() throws IOException {
-		Iterator iterator = pomSorter.getToBeInstalledPoms().values().iterator();
+		Iterator iterator = this.pomSorter.getToBeInstalledPoms().values().iterator();
 		while (iterator.hasNext()) {
 			Module module = (Module) iterator.next();
-			idegawebDirectoryStructure.getExtractedArchive(module);
+			this.idegawebDirectoryStructure.getExtractedArchive(module);
 			String artifactId = module.getArtifactId();
 			writeToLogger("Extracting bundle ", artifactId, " finished");
 		}
@@ -78,12 +78,12 @@ public class Installer {
 	
 	// from auxiliary folder
 	public void mergeBundles() throws IOException {
-		File bundlesFolder = idegawebDirectoryStructure.getBundlesRealPath();
-		Collection toBeInstalledModules = pomSorter.getToBeInstalledPoms().values();
+		File bundlesFolder = this.idegawebDirectoryStructure.getBundlesRealPath();
+		Collection toBeInstalledModules = this.pomSorter.getToBeInstalledPoms().values();
 		Iterator moduleIterator = toBeInstalledModules.iterator();
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
-			File moduleArchive = idegawebDirectoryStructure.getExtractedArchive(module);
+			File moduleArchive = this.idegawebDirectoryStructure.getExtractedArchive(module);
 			String artifactId = module.getArtifactId();
 			StringBuffer buffer = new StringBuffer(artifactId);
 			buffer.append('.').append(ManagerConstants.BUNDLE_EXTENSION);
@@ -103,16 +103,16 @@ public class Installer {
 	
 	//from auxiliary folder
 	public void mergeTagLibraries() throws IOException {
-		File tagLibrary = idegawebDirectoryStructure.getTagLibrary();
+		File tagLibrary = this.idegawebDirectoryStructure.getTagLibrary();
 		FileUtil.backupToFolder(tagLibrary, getBackupDirectory());
 		// delete all files that are not necessary
 		//TODO: !!!!! does not work, because the tag libraries are not stored in the bundle folders !!!!!!
 		// cleanTagLibrary(tagLibrary);
 		// add the new missing files to the tag library
-		Iterator moduleIterator = pomSorter.getToBeInstalledPoms().values().iterator();
+		Iterator moduleIterator = this.pomSorter.getToBeInstalledPoms().values().iterator();
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
-			File moduleTagLibrary = idegawebDirectoryStructure.getTagLibrary(module);
+			File moduleTagLibrary = this.idegawebDirectoryStructure.getTagLibrary(module);
 			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleTagLibrary, tagLibrary);
 			String artifactId = module.getArtifactId();
 			writeToLogger("Merging tag library ", artifactId, " finished");
@@ -150,7 +150,7 @@ public class Installer {
 	
 	//from auxiliary folder
 	public void mergeWebConfiguration() throws IOException {
-		File webXml = idegawebDirectoryStructure.getDeploymentDescriptor();
+		File webXml = this.idegawebDirectoryStructure.getDeploymentDescriptor();
 		BundleFileMerger merger = new WebXmlMerger();
 		mergeConfiguration(merger, webXml, true);
 		writeToLogger("Merging web configuration finished", null, null);
@@ -159,7 +159,7 @@ public class Installer {
 	
 	
 	public void mergeFacesConfiguration() throws IOException {
-		File facesConfig = idegawebDirectoryStructure.getFacesConfig();
+		File facesConfig = this.idegawebDirectoryStructure.getFacesConfig();
 		BundleFileMerger merger = new FacesConfigMerger();
 		mergeConfiguration(merger, facesConfig, false);
 		writeToLogger("Merging faces configuration finished", null, null);
@@ -214,10 +214,10 @@ public class Installer {
 			
 	private void mergeConfiguration(BundleFileMerger merger, File sourceFile, File outputFile) throws IOException {
 		merger.setOutputFile(outputFile);
-		Iterator moduleIterator = pomSorter.getToBeInstalledPoms().values().iterator();
+		Iterator moduleIterator = this.pomSorter.getToBeInstalledPoms().values().iterator();
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
-			File tempSourceFile = idegawebDirectoryStructure.getCorrespondingFileFromWebInf(module, sourceFile);
+			File tempSourceFile = this.idegawebDirectoryStructure.getCorrespondingFileFromWebInf(module, sourceFile);
 			// not every module has a config file
 			if (tempSourceFile.exists()) {
 				String artifactId = module.getArtifactId();
@@ -231,15 +231,15 @@ public class Installer {
 
 	// from auxiliary folder
 	public void mergeLibrary() throws IOException {
-		File library = idegawebDirectoryStructure.getLibrary();
+		File library = this.idegawebDirectoryStructure.getLibrary();
 		FileUtil.backupToFolder(library, getBackupDirectory());
 		// delete all files that are not necessary
 		cleanLibrary(library);
 		// add the new missing jars to the library
-		Iterator moduleIterator = pomSorter.getToBeInstalledPoms().values().iterator();
+		Iterator moduleIterator = this.pomSorter.getToBeInstalledPoms().values().iterator();
 		while (moduleIterator.hasNext()) {
 			Module module = (Module) moduleIterator.next();
-			File moduleLibrary = idegawebDirectoryStructure.getLibrary(module);
+			File moduleLibrary = this.idegawebDirectoryStructure.getLibrary(module);
 			FileUtil.copyDirectoryRecursivelyKeepTimestamps(moduleLibrary, library);
 			String artifactId = module.getArtifactId();
 			writeToLogger("Merging library ", artifactId, " finished");
@@ -248,7 +248,7 @@ public class Installer {
 	
 	private void cleanLibrary(File library) throws IOException {
 		// build a list of necessary file names...
-		Map necessaryPomsMap = pomSorter.getNecessaryPoms();
+		Map necessaryPomsMap = this.pomSorter.getNecessaryPoms();
 		Collection necessaryPoms = necessaryPomsMap.values();
 		Map necessaryFileNames = new HashMap(necessaryPoms.size());
 		List notInstalledYet = new ArrayList();
@@ -341,21 +341,21 @@ public class Installer {
 	}
 	
 	public LogFile getLogFile() throws IOException {
-		if (logFile == null) {
+		if (this.logFile == null) {
 			File tempBackupFolder = getBackupDirectory();
 			File logDestination = new File(tempBackupFolder, "install.log");
-			logFile = new LogFile(logDestination);
+			this.logFile = new LogFile(logDestination);
 		}
-		return logFile;
+		return this.logFile;
 	}
 	
 	
 	private File getBackupDirectory() {
-		if (backupFolder == null) {
-			File folder = idegawebDirectoryStructure.getBackupDirectory();
-			backupFolder = new File(folder, getIdentifier());
+		if (this.backupFolder == null) {
+			File folder = this.idegawebDirectoryStructure.getBackupDirectory();
+			this.backupFolder = new File(folder, getIdentifier());
 		}
-		return backupFolder;
+		return this.backupFolder;
 	}
 	
 	private void writeToLogger(String prefix, String main, String suffix) throws IOException {

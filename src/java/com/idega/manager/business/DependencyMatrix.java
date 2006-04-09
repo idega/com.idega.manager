@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.9 2005/03/16 17:49:40 thomas Exp $
+ * $Id: DependencyMatrix.java,v 1.10 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.datastructures.HashMatrix;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/16 17:49:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class DependencyMatrix {
 	
@@ -54,10 +54,10 @@ public class DependencyMatrix {
 	}
 	
 	public List getListOfNecessaryModules(VersionComparator versionComparator) {
-		Collection tempNotInstalled = notInstalledModules;
-		Collection tempInstalled = installedModules;
-		tempToBeInstalledModules = null;
-		tempNecessaryModules = null;
+		Collection tempNotInstalled = this.notInstalledModules;
+		Collection tempInstalled = this.installedModules;
+		this.tempToBeInstalledModules = null;
+		this.tempNecessaryModules = null;
 		boolean go = true;
 		// this loop removes modules that are obsolete to be installed 
 		// (e.g. another modules demands a newer version, the older version must not to be installed) 
@@ -67,32 +67,32 @@ public class DependencyMatrix {
 				tryCalculateListOfModulesToBeInstalled(versionComparator);
 			}
 			catch (IOException ex) {
-				String errorMessage = resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies" + ex.getMessage());
+				String errorMessage = this.resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies" + ex.getMessage());
 				addErrorMessage(errorMessage);
-				return tempNecessaryModules;
+				return this.tempNecessaryModules;
 			}
-			go = tempNotInstalled.retainAll(tempToBeInstalledModules);
+			go = tempNotInstalled.retainAll(this.tempToBeInstalledModules);
 		}
-		return tempNecessaryModules;
+		return this.tempNecessaryModules;
 	}
 			
 	public boolean hasErrors() {
-		return ! (errorMessages == null || errorMessages.isEmpty());
+		return ! (this.errorMessages == null || this.errorMessages.isEmpty());
 	}
 	
 	public List getErrorMessages() {
-		return errorMessages;
+		return this.errorMessages;
 	}
 	
 	private void tryCalculateListOfModulesToBeInstalled(VersionComparator versionComparator) throws IOException {
-		tempToBeInstalledModules = new ArrayList();
-		tempNecessaryModules = new ArrayList();
+		this.tempToBeInstalledModules = new ArrayList();
+		this.tempNecessaryModules = new ArrayList();
 		// get a list of required modules
-		Iterator iterator = moduleDependencies.firstKeySet().iterator();
+		Iterator iterator = this.moduleDependencies.firstKeySet().iterator();
 		while (iterator.hasNext()) {
 			// x (also key) = dependencyKey
 			String key = (String) iterator.next();
-			Map map = moduleDependencies.get(key);
+			Map map = this.moduleDependencies.get(key);
 			Iterator iteratorMap = map.keySet().iterator();
 			Module toBeInstalled = null;
 			while (iteratorMap.hasNext()) {
@@ -105,9 +105,9 @@ public class DependencyMatrix {
 			}
 			// install only modules that are not installed and not included in other modules
 			if (! (toBeInstalled.isInstalled() || toBeInstalled.isIncluded())) {
-				tempToBeInstalledModules.add(toBeInstalled);
+				this.tempToBeInstalledModules.add(toBeInstalled);
 			}
-			tempNecessaryModules.add(toBeInstalled);	
+			this.tempNecessaryModules.add(toBeInstalled);	
 		}
 	}
 	
@@ -131,14 +131,14 @@ public class DependencyMatrix {
 	}
 	
 	private HashMatrix getModuleDependencies() {
-		if (moduleDependencies == null) {
-			moduleDependencies = new HashMatrix();
+		if (this.moduleDependencies == null) {
+			this.moduleDependencies = new HashMatrix();
 		}
-		return moduleDependencies;
+		return this.moduleDependencies;
 	}
 	
 	private void initializeMatrix(Collection tempNotInstalledModules, Collection tempInstalledModules) {
-		errorMessages = null;
+		this.errorMessages = null;
 		addEntries(tempInstalledModules);
 		addEntries(tempNotInstalledModules);
 	}
@@ -163,13 +163,13 @@ public class DependencyMatrix {
 		// e.g. dependencyKeyForDependant "bundles_com.idega.block.article"
 		String dependencyKeyForDependant = getKeyForDependency(dependant).toString();
 		// x = dependencyKey, y = dependantKey
-		moduleDependencies.put(dependencyKeyForDependant, dependantKey, dependant);
+		this.moduleDependencies.put(dependencyKeyForDependant, dependantKey, dependant);
 		List dependencies = null;
 		try {
 			 dependencies = source.getDependencies();
 		}
 		catch (IOException ex) {
-			String errorMessage = resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies of ") + source.getArtifactId();
+			String errorMessage = this.resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies of ") + source.getArtifactId();
 			addErrorMessage(errorMessage);
 			return;
 		}
@@ -177,13 +177,13 @@ public class DependencyMatrix {
 		while (iterator.hasNext()) {
 			Dependency dependency = (Dependency) iterator.next();
 			String dependencyKey = getKeyForDependency(dependency).toString();
-			moduleDependencies.put(dependencyKey, dependantKey, dependency);
+			this.moduleDependencies.put(dependencyKey, dependantKey, dependency);
 			Pom dependencyPom = null;
 			try {
 				dependencyPom  = dependency.getPom();
 			}
 			catch (IOException ex) {
-				String errorMessage = resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies of ") + dependency.getArtifactId();
+				String errorMessage = this.resourceBundle.getLocalizedString("man_manager_could_not_get_dependencies","Could not figure out dependencies of ") + dependency.getArtifactId();
 				addErrorMessage(errorMessage);
 
 			}
@@ -195,10 +195,10 @@ public class DependencyMatrix {
 	}
 	
 	private void addErrorMessage(String errorMessage) {
-		if (errorMessages == null) {
-			errorMessages = new ArrayList();
+		if (this.errorMessages == null) {
+			this.errorMessages = new ArrayList();
 		}
-		errorMessages.add(errorMessage);
+		this.errorMessages.add(errorMessage);
 	}
 	
 	

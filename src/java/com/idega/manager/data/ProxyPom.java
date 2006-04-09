@@ -1,5 +1,5 @@
 /*
- * $Id: ProxyPom.java,v 1.12 2005/04/14 14:01:01 thomas Exp $
+ * $Id: ProxyPom.java,v 1.13 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.util.StringHandler;
  * 
  * In any case the reference to the real subject is resolved by pointing to the real pom file.
  * 
- *  Last modified: $Date: 2005/04/14 14:01:01 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ProxyPom extends Pom {
 
@@ -106,92 +106,92 @@ public class ProxyPom extends Pom {
 	}
 		
 	private void initialize(String[] primitiveProxyPom) {
-		artifactId = primitiveProxyPom[0];
+		this.artifactId = primitiveProxyPom[0];
 		String tempVersion = null; 
 		try {
 			tempVersion = primitiveProxyPom[1];
-			if (fileName == null) {
+			if (this.fileName == null) {
 				StringBuffer buffer = new StringBuffer(primitiveProxyPom[0]);
 				buffer.append(ManagerConstants.ARTIFACT_ID_VERSION_SEPARATOR);
 				buffer.append(primitiveProxyPom[1]);
-				fileName = buffer.toString();
+				this.fileName = buffer.toString();
 			}
 		}
 		// usually does not happen
 		catch (ArrayIndexOutOfBoundsException ex) {
 			tempVersion = "no version available";
-			if (fileName == null) {
-				fileName = primitiveProxyPom[0];
+			if (this.fileName == null) {
+				this.fileName = primitiveProxyPom[0];
 			}
 		}
 		// is it a snapshot?
 		// com.idega.content-SNAPSHOT.pom
 		if (RealPom.isSnapshot(tempVersion)) {
-			snapshot = true;
-			currentVersion = tempVersion;
+			this.snapshot = true;
+			this.currentVersion = tempVersion;
 		}
 		else {
 			// is it a snapshot with a timestamp?
 			// com.idega.block.article-20041109.112340.pom
 			// parse timestamp
-			timestamp = parseVersion(tempVersion);
-			if (timestamp != null) {
-				currentVersion = "";
-				snapshot = true;
+			this.timestamp = parseVersion(tempVersion);
+			if (this.timestamp != null) {
+				this.currentVersion = "";
+				this.snapshot = true;
 			}
 		}
 		// is it a version?  
 		// com.idega.core-1.9.1.pom 
-		if (timestamp == null) {
-			currentVersion = tempVersion;
+		if (this.timestamp == null) {
+			this.currentVersion = tempVersion;
 		}
 	}
 	
 	public String getGroupId()	{
-		return groupId;
+		return this.groupId;
 	}
 	
 	public String getArtifactId() {
-		return artifactId;
+		return this.artifactId;
 	}
 	public String getCurrentVersion() {
-		return currentVersion;
+		return this.currentVersion;
 	}
 	public boolean isSnapshot() {
-		return snapshot;
+		return this.snapshot;
 	}
 	public IWTimestamp getTimestamp() {
-		return timestamp;
+		return this.timestamp;
 	}
 	
 	public String getFileName() {
-		return fileName;
+		return this.fileName;
 	}
 	
 	private RealPom getRealSubject() {
-		if (realSubject == null) {
+		if (this.realSubject == null) {
 			String fileNameWithPomExtension = StringHandler.concat(getFileName(), POM_EXTENSION);
 			try {
-				File pomFile = repositoryBrowser.getPom(fileNameWithPomExtension);
-				realSubject = RealPom.getPom(pomFile);
+				File pomFile = this.repositoryBrowser.getPom(fileNameWithPomExtension);
+				this.realSubject = RealPom.getPom(pomFile);
 			}
 			catch (IOException ex) {
-				realSubject = null;
+				this.realSubject = null;
 				getLogger().log(Level.WARNING, "[PomProxy] Could not download real subject: "+ getFileName() , ex);
 			}
 		}
-		return realSubject;
+		return this.realSubject;
 	}
 	
 	public Pom getPom(DependencyPomBundle dependency) throws IOException {
 		StringBuffer buffer = constructFileName(dependency, POM_EXTENSION);
-		String pomFileName = repositoryBrowser.convertPomNameIfNecessary(buffer.toString());
-		return ProxyPom.getInstanceOfGroupBundlesWithFileExtension(pomFileName, repositoryBrowser);
+		String pomFileName = this.repositoryBrowser.convertPomNameIfNecessary(buffer.toString());
+		return ProxyPom.getInstanceOfGroupBundlesWithFileExtension(pomFileName, this.repositoryBrowser);
 	}
 	
 	public File getBundleArchive(DependencyPomBundle dependency) throws IOException  {
 		StringBuffer buffer = constructFileName(dependency, IWBAR_EXTENSION);
-		return repositoryBrowser.getBundleArchive(buffer.toString());
+		return this.repositoryBrowser.getBundleArchive(buffer.toString());
 	}
 
 	private StringBuffer constructFileName(DependencyPomBundle dependency, String useExtension) { 		
@@ -215,12 +215,12 @@ public class ProxyPom extends Pom {
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(artifactId).append(" ").append(fileName);
+		buffer.append(this.artifactId).append(" ").append(this.fileName);
 		return buffer.toString();
 	}
 	
 	public boolean isInstalled() {
-		return isInstalled;
+		return this.isInstalled;
 	}
 	
 	public void setIsInstalled(boolean isInstalled) {
@@ -232,12 +232,12 @@ public class ProxyPom extends Pom {
 	}
 	
 	public File getBundleArchive() throws IOException {
-		if (bundleArchive == null) {
+		if (this.bundleArchive == null) {
 			String fileNameWithBundleArchiveExtension = StringHandler.concat(getFileName(), IWBAR_EXTENSION);
-			File bundleArchivFile = repositoryBrowser.getBundleArchive(fileNameWithBundleArchiveExtension);
-			bundleArchive = bundleArchivFile;
+			File bundleArchivFile = this.repositoryBrowser.getBundleArchive(fileNameWithBundleArchiveExtension);
+			this.bundleArchive = bundleArchivFile;
 		}
-		return bundleArchive;
+		return this.bundleArchive;
 	}
 	
 	public boolean isIncluded() {
@@ -251,7 +251,7 @@ public class ProxyPom extends Pom {
 	// a corresponding identical file with a
 	// a name that contains the timestamp.
 	public boolean shouldBeIgnored() {
-		return (snapshot && timestamp == null);
+		return (this.snapshot && this.timestamp == null);
 	}
 	
 	public String getNameForLabel(IWResourceBundle resourceBundle) {
@@ -272,7 +272,7 @@ public class ProxyPom extends Pom {
 			DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM , DateFormat.MEDIUM , locale);
 			buffer.append(resourceBundle.getLocalizedString("man_manager_build", "Build"));
 			buffer.append(" ");
-			buffer.append(dateFormat.format(timestamp.getDate()));
+			buffer.append(dateFormat.format(this.timestamp.getDate()));
 		}
 		else {
 			buffer.append(resourceBundle.getLocalizedString("man_manager_version", "Version"));

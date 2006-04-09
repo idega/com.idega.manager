@@ -1,5 +1,5 @@
 /*
- * $Id: ManagerUtils.java,v 1.9 2005/02/23 18:02:18 thomas Exp $
+ * $Id: ManagerUtils.java,v 1.10 2006/04/09 11:42:59 laddi Exp $
  * Created on Nov 5, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.presentation.IWContext;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/23 18:02:18 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ManagerUtils {
 	
@@ -79,58 +79,58 @@ public class ManagerUtils {
 
 	
 	private ManagerUtils() {
-		facesContext = FacesContext.getCurrentInstance();
-		application = facesContext.getApplication();
-		context = IWContext.getIWContext(facesContext);
-		idegawebDirectoryStructure = new IdegawebDirectoryStructure(context);
+		this.facesContext = FacesContext.getCurrentInstance();
+		this.application = this.facesContext.getApplication();
+		this.context = IWContext.getIWContext(this.facesContext);
+		this.idegawebDirectoryStructure = new IdegawebDirectoryStructure(this.context);
 	}
 	
 	public FacesContext getFacesContext() {
-		return facesContext;
+		return this.facesContext;
 	}
 	
 	public IWContext getIWContext() {
-		return context;
+		return this.context;
 	}
 	
 	public Application getApplication() {
-		return application;
+		return this.application;
 	}
 	
 	public IWBundle getBundle() {
-		if (bundle == null) {
+		if (this.bundle == null) {
 			getBundleAndResourceBundle();
 		}
-		return bundle;
+		return this.bundle;
 	}
 	
 	public IWResourceBundle getResourceBundle(){
-		if (resourceBundle == null) {
+		if (this.resourceBundle == null) {
 			getBundleAndResourceBundle();
 		}
-		return resourceBundle;
+		return this.resourceBundle;
 	}
 	
 	public IdegawebDirectoryStructure getIdegawebDirectoryStructure() {
-		return idegawebDirectoryStructure;
+		return this.idegawebDirectoryStructure;
 	}
 	
 	public File getBundlesRealPath() {
-		return idegawebDirectoryStructure.getBundlesRealPath();
+		return this.idegawebDirectoryStructure.getBundlesRealPath();
 	}
 	
 	public File getWorkingDirectory() {
-		return idegawebDirectoryStructure.getWorkingDirectory();
+		return this.idegawebDirectoryStructure.getWorkingDirectory();
 	}
 	
 	public Object getValue(String valueRef) {
-		ValueBinding binding = application.createValueBinding(valueRef);
-		return binding.getValue(context);
+		ValueBinding binding = this.application.createValueBinding(valueRef);
+		return binding.getValue(this.context);
 	}
 	
 	private void getBundleAndResourceBundle() {
-		bundle = context.getIWMainApplication().getBundle(BUNDLE_IDENTIFIER);
-		resourceBundle = bundle.getResourceBundle(context.getExternalContext().getRequestLocale());
+		this.bundle = this.context.getIWMainApplication().getBundle(BUNDLE_IDENTIFIER);
+		this.resourceBundle = this.bundle.getResourceBundle(this.context.getExternalContext().getRequestLocale());
 	}
 
 
