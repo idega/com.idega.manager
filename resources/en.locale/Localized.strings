@@ -2,6 +2,7 @@ cachesettings=Cache Settings
 enable_global_page_cache=Use Global Page Cache
 install_update=Install & Update
 mainDomainName=System name
+mainDomainServerName=Domain name
 mainDomainUrl=System main URL
 save=Save
 systemsettings=System Settings
