@@ -47,6 +47,13 @@ then
 maven iw-bundle:deploy
 fi
 
+echo "[Helper] Next step: Deploy documentation site to central web server? [y/n]?"
+read answer
+if [ "$answer" = "y" ] || [ "$answer" = "Y" ]
+then
+maven site:deploy
+fi
+
 
 echo "[Helper] Next step: Change snapshots in project.xml? (comments in SNAPSHOT) [y/n]?"
 read answer
