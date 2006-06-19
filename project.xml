@@ -29,6 +29,11 @@
       <name>1.0</name>
       <tag>MANAGER_1_0</tag>
     </version>
+    <version>
+      <id>3.1.0</id>
+      <name>3.1.0</name>
+      <tag>MANAGER_3_1_0</tag>
+    </version>
   </versions>
   <developers>
     <developer>
@@ -97,8 +102,7 @@
       <version>0.6</version>
       <type>jar</type>
       <url>http://ehcache.sourceforge.net/</url>
-      <properties>
-      </properties>
+      <properties></properties>
     </dependency>
   </dependencies>
   <build>
