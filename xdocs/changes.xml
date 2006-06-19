@@ -4,7 +4,16 @@
     <author email="tryggvi@idega.com">Tryggvi Larusson</author>
   </properties>
   <body>
-          <release version="1.0" date="2005-09-15">
+	<release version="3.1.0" date="2005-06-19">
+      <action dev="tryggvil" type="update">
+      	Declaration of version for including in ePlatform release 3.1
+      </action>
+      <action dev="tryggvil" type="update">
+      	Addition of System Settings pane under Manager.
+      </action>
+    </release>
+
+	<release version="1.0" date="2005-09-15">
       <action dev="tryggvil" type="update">
         Declaration of version for use with core 3.0.6
       </action>              
