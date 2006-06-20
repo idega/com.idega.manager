@@ -41,13 +41,13 @@
     <dependency>
       <groupId>maven</groupId>
       <artifactId>wagon-api</artifactId>
-      <version>1.0-alpha-1</version>
+      <version>1.0-alpha-1b</version>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>maven</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
-      <version>20040714.210443</version>
+      <version>1.0-alpha-3</version>
       <type>jar</type>
     </dependency>
     <dependency>
@@ -57,19 +57,10 @@
       <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>ehcache</groupId>
+      <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-constructs</artifactId>
       <version>0.6</version>
       <type>jar</type>
     </dependency>
   </dependencies>
-  <build>
-    <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-    <unitTest>
-      <includes>
-        <include>**/*Test.java</include>
-      </includes>
-    </unitTest>
-  </build>
 </project>
