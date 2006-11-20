@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.12 2006/04/09 11:42:59 laddi Exp $
+ * $Id: Installer.java,v 1.12.2.1 2006/11/20 14:44:35 eiki Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,10 @@ import com.idega.util.logging.LogFile;
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/11/20 14:44:35 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.12.2.1 $
  */
 public class Installer {
 	
@@ -208,6 +208,7 @@ public class Installer {
 			          }
 			    }
 			};
+			thread.setDaemon(true);
 			thread.start();	
 		}
 	}
