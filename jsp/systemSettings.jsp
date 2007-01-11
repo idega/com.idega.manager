@@ -10,6 +10,7 @@
     <f:view>
 		<ws:page id="systemsettingspage" javascripturls="/dwr/engine.js,
         			/dwr/interface/ThemesEngine.js,
+        			/idegaweb/bundles/com.idega.content.bundle/resources/javascript/ThemesHelper.js,
         			/idegaweb/bundles/com.idega.content.bundle/resources/javascript/SiteInfoHelper.js">
 		<h:form id="systemsettingsform" >
 			<x:div id="siteInfoContainer" forceId="true">
