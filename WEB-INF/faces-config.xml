@@ -28,11 +28,6 @@
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>
-		<managed-bean-name>InstallManager</managed-bean-name>
-		<managed-bean-class>com.idega.manager.bean.InstallManager</managed-bean-class>
-		<managed-bean-scope>session</managed-bean-scope>
-	</managed-bean>
-	<managed-bean>
 		<managed-bean-name>InstallListManager</managed-bean-name>
 		<managed-bean-class>com.idega.manager.bean.InstallListManager</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
