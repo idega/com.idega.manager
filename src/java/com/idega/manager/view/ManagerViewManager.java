@@ -64,7 +64,7 @@ public class ManagerViewManager implements Singleton {
 	}
 	
 	
-	public ViewNode getContentNode(){
+	public ViewNode getManagerNode(){
 		IWBundle iwb = this.iwma.getBundle(BUNDLE_IDENTIFIER);
 		//ViewNode content = root.getChild(CONTENT_ID);
 		if(this.managerRootNode==null){
