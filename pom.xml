@@ -14,6 +14,10 @@
   <version>4.0-SNAPSHOT</version>
   <inceptionYear>2004</inceptionYear>
   <description>idegaWeb manager is a manager for updating and installing modules</description>
+  <scm>
+    <connection>scm:cvs:ext:${user.name}@code.idega.com:/idega/cvs:${groupId}/${artifactId}/</connection>
+    <developerConnection>scm:cvs:ext:${user.name}@code.idega.com:/idega/cvs:${groupId}/${artifactId}/</developerConnection>
+  </scm>
 
   <developers>
     <developer>
