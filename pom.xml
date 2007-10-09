@@ -53,7 +53,7 @@
     <dependency>
       <groupId>jug</groupId>
       <artifactId>jug</artifactId>
-      <version>1.1</version>
+      <version>${jug-jug-version}</version>
       <type>jar</type>
     </dependency>
     <dependency>
