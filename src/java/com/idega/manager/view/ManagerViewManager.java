@@ -8,7 +8,9 @@ package com.idega.manager.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.faces.context.FacesContext;
+
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.view.ApplicationViewNode;
 import com.idega.core.view.DefaultViewNode;
@@ -30,6 +32,7 @@ import com.idega.repository.data.SingletonRepository;
 public class ManagerViewManager implements Singleton {
 	
 	private static Instantiator instantiator = new Instantiator() {
+		@Override
 		public Object getInstance(Object parameter) {
 			IWMainApplication iwma = null;
 			if (parameter instanceof FacesContext) {
@@ -125,7 +128,7 @@ public class ManagerViewManager implements Singleton {
 		serverSettings.setJspUri(bundle.getJSPURI("systemSettings.jsp"));
 		serverSettings.setName("#{localizedStrings['com.idega.manager']['systemsettings']}");
 		// cache settings   
-		DefaultViewNode cacheSettings = new DefaultViewNode("cachesettings", serverSettings);
+		DefaultViewNode cacheSettings = new DefaultViewNode("cachesettings", contentNode);
 		cacheSettings.setJspUri(bundle.getJSPURI("cacheSettings.jsp"));
 		cacheSettings.setName("#{localizedStrings['com.idega.manager']['cachesettings']}");
 	}
