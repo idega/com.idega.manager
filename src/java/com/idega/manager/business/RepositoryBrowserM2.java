@@ -51,7 +51,7 @@ public class RepositoryBrowserM2 extends RepositoryBrowser{
 		return modules;
 	}*/
 
-	public Metadata getModulesInGroupAndArtifactId(String groupId,String artifactId){
+	public Metadata getModuleWithGroupAndArtifactId(String groupId,String artifactId){
 		String artifactUrl = getURLForArtifactMetadata(groupId, artifactId);
 		Metadata metadata=null;
 		try {
@@ -102,6 +102,15 @@ public class RepositoryBrowserM2 extends RepositoryBrowser{
 		return modules;
 	}
 
+	public String getArtifactUrlForMostRecent(String groupId, String artifactId){
+		return getArtifactUrlForMostRecent(groupId,artifactId,true);
+	}
+	
+	public String getArtifactUrlForMostRecent(String groupId, String artifactId,boolean snapshot){
+		Metadata metadata = getModuleWithGroupAndArtifactId(groupId,artifactId);
+		return getArtifactUrlForMostRecent(metadata,snapshot);
+	}
+	
 	public String getArtifactUrlForMostRecent(Metadata metadata){
 		return getArtifactUrlForMostRecent(metadata,true);
 	}
@@ -232,7 +241,7 @@ public class RepositoryBrowserM2 extends RepositoryBrowser{
 			}
 		}
 		else{
-			Metadata module = browser.getModulesInGroupAndArtifactId(appsGroupId, artifactId);
+			Metadata module = browser.getModuleWithGroupAndArtifactId(appsGroupId, artifactId);
 			//System.out.println("Module found: "+module.getArtifactId()+" with version:"+module.getMostRecentVersion()+", last updated: "+module.getLastUpdated());
 			System.out.println("Module metadata with: "+module.getArtifactId()+" with most recent version: "+module.getVersion()+", lastupdated: "+module.getVersioning().getLastUpdated());
 			
