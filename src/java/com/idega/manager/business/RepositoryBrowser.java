@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.10 2006/04/09 11:42:59 laddi Exp $
+ * $Id: RepositoryBrowser.java,v 1.11 2008/06/05 20:54:10 tryggvil Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,9 +11,13 @@ package com.idega.manager.business;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
+import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -30,11 +39,14 @@ import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
 import org.apache.maven.wagon.repository.Repository;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.doomdark.uuid.UUID;
 import org.doomdark.uuid.UUIDGenerator;
+
 import com.idega.manager.data.ProxyPom;
 import com.idega.manager.data.RealPom;
 import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.util.ManagerConstants;
 import com.idega.manager.util.ManagerUtils;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
@@ -42,18 +54,22 @@ import com.idega.util.StringHandler;
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/05 20:54:10 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RepositoryBrowser {
 	
-	private final static String SNAPSHOT_VERSION_SUFFIX = "snapshot-version";
+	protected final static String SNAPSHOT_VERSION_SUFFIX = "snapshot-version";
 	
-	private final static char[] HTML_IWBAR_START_PATTERN = "r\">".toCharArray();  //"iwbar\">".toCharArray();
-	private final static char[] HTML_POM_START_PATTERN = "m\">".toCharArray(); //"pom\">".toCharArray();
-	private final static char HTML_LINK_END_PATTERN = '<';
+	protected final static char[] HTML_IWBAR_START_PATTERN = "r\">".toCharArray();  //"iwbar\">".toCharArray();
+	protected final static char[] HTML_POM_START_PATTERN = "m\">".toCharArray(); //"pom\">".toCharArray();
+	protected final static char[] HTML_FOLDER_START_PATTERN = "/\">".toCharArray(); //"pom\">".toCharArray();
+	protected final static char HTML_LINK_END_PATTERN = '<';
+
+	public static final String MAVEN_METADATA_FILE_NAME = "maven-metadata.xml";
+
 	
 	public static RepositoryBrowser getInstanceForIdegaRepository(RepositoryLogin repositoryLogin)	{
 		return new RepositoryBrowser(repositoryLogin);
@@ -63,16 +79,18 @@ public class RepositoryBrowser {
 		 return Logger.getLogger(ManagerUtils.class.getName());
 	 }
 	
-	private String identifier;
+	protected String identifier;
 	
-	private File workingDirectory;
+	protected File workingDirectory;
 	
-	private RepositoryLogin repositoryLogin;
+	protected RepositoryLogin repositoryLogin;
 	
-	private String cachedBundlesPomsURL = null;
-	private String cachedBundlesIwbarsURL = null;
+	protected String cachedBundlesPomsURL = null;
+	protected String cachedBundlesIwbarsURL = null;
 	// map of file names and files
-	private Map cachedDownloadedFiles = null;
+	protected Map cachedDownloadedFiles = null;
+
+	protected boolean useMaven2Layout=true;
 	
 	public RepositoryBrowser(RepositoryLogin repositoryLogin) {
 		this.repositoryLogin = repositoryLogin;
@@ -105,14 +123,18 @@ public class RepositoryBrowser {
 	
 	private List getPomsScanningBundleArchivesFolder() throws IOException {
 		String urlAddress = getURLForBundlesArchives();
-		return getPomProxies(urlAddress, HTML_IWBAR_START_PATTERN);
+		return getPomProxies(urlAddress, HTML_IWBAR_START_PATTERN,true);
 	}
 
 	public List getPomsScanningPomsFolder()	throws IOException {
-		String urlAddress = getURLForBundlesPoms();
-		return getPomProxies(urlAddress, HTML_POM_START_PATTERN);
+		return getPomsScanningPomsFolder(ManagerConstants.BUNDLES_DEFAULT_GROUP);
 	}
 	
+	
+	public List getPomsScanningPomsFolder(String groupId)	throws IOException {
+		String urlAddress = getURLForGroupPoms(groupId);
+		return getPomProxies(urlAddress, HTML_POM_START_PATTERN,true);
+	}
 	
 	/* if pomName is a snapshot like "com.idega.content-SNAPSHOT.pom"
 	 * read the corresponding version from 
@@ -188,22 +210,122 @@ public class RepositoryBrowser {
 			buffer.append('/');
 		}
 		buffer.append(group).append("/");
-		buffer.append(type).append("/");
+		if(type!=null){
+			buffer.append(type).append("/");
+		}
 		return buffer.toString();
 	}
 	
-	private String getURLForBundlesArchives() {
+	protected String getURLForBundlesArchives() {
 		if (this.cachedBundlesIwbarsURL == null) {
-			this.cachedBundlesIwbarsURL = getURL("bundles", "iwbars");
+			this.cachedBundlesIwbarsURL = getURL(ManagerConstants.BUNDLES_DEFAULT_GROUP, "iwbars");
 		}
 		return this.cachedBundlesIwbarsURL;
 	}
 	
-	private String getURLForBundlesPoms() {
+	protected String getURLForGroupPoms(String groupId) {
+		String groupPath=groupId;
+		groupPath = getGroupPath(groupId);
+		
 		if (this.cachedBundlesPomsURL == null ) {
-			this.cachedBundlesPomsURL = getURL("bundles", "poms");
+			this.cachedBundlesPomsURL = getURL(groupPath, "poms");
 		}
 		return this.cachedBundlesPomsURL;
+	}
+	
+	protected String getURLForGroupFolder(String groupId) {
+		String groupPath=groupId;
+		groupPath = getGroupPath(groupId);
+		String groupUrl = getURL(groupPath, null);
+		return groupUrl;
+	}
+
+	public String getURLForArtifactFolder(String groupId, String artifactId){
+		String groupUrl = getURLForGroupFolder(groupId);
+		String newUrl = groupUrl+artifactId+"/";
+		return newUrl;
+	}
+	
+	public String getURLForArtifactMetadata(String groupId, String artifactId){
+		String folderUrl = getURLForArtifactFolder(groupId,artifactId);
+		return folderUrl+"maven-metadata.xml";
+	}
+	
+	public String getURLForArtifactPom(Metadata metadata, boolean snapshot){
+		return getURLForArtifactFile(metadata,snapshot,"pom");
+	}
+	
+	public String getURLForArtifactFile(Metadata metadata, boolean snapshot, String type){
+		
+		String groupId = metadata.getGroupId();
+		String artifactId = metadata.getArtifactId();
+		
+		String folderPath = getURLForArtifactFolder(groupId,artifactId);
+		String fileUrl = folderPath;
+		Versioning versioning = metadata.getVersioning();
+		if(!snapshot){
+
+			String releaseVersion = versioning.getRelease();
+			fileUrl+=releaseVersion+"/"+artifactId+"-"+releaseVersion+"."+type;
+		}
+		else{
+			String version = metadata.getVersion();
+			String snapshotFolderUrl = folderPath+version;
+			String snapshotMetadataFileUrl = snapshotFolderUrl+"/maven-metadata.xml";
+			
+			Metadata snapshotMetadata;
+			try {
+				snapshotMetadata = getMetadataFromUrl(snapshotMetadataFileUrl);
+
+				Versioning snapshotVersioning = snapshotMetadata.getVersioning();
+				
+				Snapshot snap = snapshotVersioning.getSnapshot();
+				
+				String snapshotVersion = metadata.getVersion();
+				String tstamp = snap.getTimestamp();
+				int buildNumber = snap.getBuildNumber();
+				String snapshotVersionMinusSnapshot = snapshotVersion.substring(0,snapshotVersion.indexOf("SNAPSHOT")-1);
+				
+				fileUrl+=snapshotVersion+"/"+artifactId+"-"+snapshotVersionMinusSnapshot+"-"+tstamp+"-"+buildNumber+"."+type;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (XmlPullParserException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return fileUrl;
+		
+	}
+	
+	protected Metadata getMetadataFromUrl(String artifactUrl) throws IOException, XmlPullParserException {
+		URL uRepositoryUrl = new URL(artifactUrl);
+
+		//HttpClient client = HttpClient.New(uRepositoryUrl);
+		//client.getInputStream();
+		//reader = new   FileReader("file://");
+		//Reader reader = new InputStreamReader(client.getInputStream());
+		URLConnection conn = uRepositoryUrl.openConnection();
+		Object content = conn.getContent();
+		InputStream input = (InputStream)content;
+		Reader reader = new InputStreamReader(input);
+		
+		MetadataXpp3Reader mReader = new MetadataXpp3Reader();
+		Metadata metadata = mReader.read(reader);
+		return metadata;
+	}
+	
+	private String getGroupPath(String groupId) {
+		String groupPath = groupId;
+		if(useMaven2Layout){
+			groupPath = groupId.replace('.', '/');
+		}
+		return groupPath;
+	}
+	
+	private String getURLForBundlesPoms() {
+		return getURLForGroupPoms(ManagerConstants.BUNDLES_DEFAULT_GROUP);
 	}
 	
 	/** Use this only for very small content otherwise 
@@ -249,10 +371,26 @@ public class RepositoryBrowser {
 	}
 	
 	
-	private List getPomProxies(String urlAddress, char[] startPatternChar) throws IOException {
+	public List<StringBuffer> getFolderList(String urlAddress) throws IOException{
+		List<StringBuffer> folderList =  getPomProxies(urlAddress, HTML_FOLDER_START_PATTERN,false);
+		List<StringBuffer> newList = new ArrayList<StringBuffer>();
+		for(StringBuffer folder: folderList){
+			String folderString = folder.toString();
+			if(folderString.endsWith("/")){
+				folder = new StringBuffer(folderString.substring(0, folderString.length()-1));
+			}
+			//Exclude the special folder Parent Directory:
+			if(!folderString.equals("Parent Directory")){
+				newList.add(folder);
+			}
+		}
+		return newList;
+	}
+	
+	protected List<StringBuffer> getPomProxies(String urlAddress, char[] startPatternChar,boolean stripOutExtension) throws IOException {
 		InputStreamReader inputStreamReader = null;
 		StringBuffer nameBuffer = null;
-		List poms = new ArrayList();
+		List<StringBuffer> poms = new ArrayList<StringBuffer>();
 		try {
 			PasswordAuthentication passwordAuthentication = this.repositoryLogin.getPasswordAuthentication();
 			inputStreamReader = URLReadConnection.getReaderForURLWithAuthentication(urlAddress, passwordAuthentication);
@@ -272,7 +410,9 @@ public class RepositoryBrowser {
 					// is the end of the name reached?
 					if (c == HTML_LINK_END_PATTERN) {
 						// yes it is, store the name and reset the buffer and read variable
-						nameBuffer = nameBuffer.delete(dotIndex, nameBuffer.length());
+						if(stripOutExtension){
+							nameBuffer = nameBuffer.delete(dotIndex, nameBuffer.length());
+						}
 						poms.add(nameBuffer);
 						nameBuffer = null;
 						read = false;
@@ -354,10 +494,10 @@ public class RepositoryBrowser {
 			wagon = new LightweightHttpWagon();
 		    Repository localRepository = new Repository();
 		    AuthenticationInfo authenticationInfo = this.repositoryLogin.getAuthenticationInfo();
-		    localRepository.setAuthenticationInfo(authenticationInfo);
+		    //localRepository.setAuthenticationInfo(authenticationInfo);
 		    localRepository.setUrl(urlAddress);
 		    if ( !destination.exists() ) {
-			        wagon.connect(localRepository);
+			        wagon.connect(localRepository,authenticationInfo);
 			        wagon.get(fileName, destination );
 		    }
 		}
@@ -416,7 +556,7 @@ public class RepositoryBrowser {
 		return this.identifier;
 	}
 	
-	
+
 }
 	
 	

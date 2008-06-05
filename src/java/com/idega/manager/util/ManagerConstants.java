@@ -25,7 +25,10 @@ public class ManagerConstants {
 	
 	// for testing use this one: user is "joeuser" pasword: "a.b.C.D"
 	//public static final String IDEGA_REPOSITORY_URL =  "http://www.rahul.net/joeuser/";
-	public static final String IDEGA_REPOSITORY_URL = "http://repository.idega.com/maven/";    
+	public static final String IDEGA_REPOSITORY_URL = "http://repository.idega.com/maven2/";
+	
+	//public static final String BUNDLES_DEFAULT_GROUP="bundles";
+	public static final String BUNDLES_DEFAULT_GROUP="com.idega.block.addons";
 	
 	// JSF input references
 	public static final String JSF_COMPONENT_ID_MULTI_SELECT_1 = "form1:multiSelectListbox1";
