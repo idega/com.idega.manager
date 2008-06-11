@@ -1,5 +1,5 @@
 /*
- * $Id: DependencyMatrix.java,v 1.10 2006/04/09 11:42:59 laddi Exp $
+ * $Id: DependencyMatrix.java,v 1.1 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,20 +15,21 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.data.Dependency;
-import com.idega.manager.data.Module;
-import com.idega.manager.data.Pom;
-import com.idega.manager.util.VersionComparator;
+import com.idega.manager.maven1.data.Dependency;
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.data.Pom;
+import com.idega.manager.maven1.util.VersionComparator;
 import com.idega.util.datastructures.HashMatrix;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.1 $
  */
 public class DependencyMatrix {
 	

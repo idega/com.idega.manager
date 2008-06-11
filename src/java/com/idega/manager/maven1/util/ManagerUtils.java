@@ -1,5 +1,5 @@
 /*
- * $Id: ManagerUtils.java,v 1.10 2006/04/09 11:42:59 laddi Exp $
+ * $Id: ManagerUtils.java,v 1.1 2008/06/11 21:10:02 tryggvil Exp $
  * Created on Nov 5, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.util;
+package com.idega.manager.maven1.util;
 
 import java.io.File;
 
@@ -23,17 +23,17 @@ import com.idega.manager.bean.InstallOrUpdateManager;
 import com.idega.manager.bean.LoginManager;
 import com.idega.manager.bean.ModuleManager;
 import com.idega.manager.bean.UpdateListManager;
-import com.idega.manager.business.PomSorter;
-import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.maven1.business.PomSorter;
+import com.idega.manager.maven1.data.RepositoryLogin;
 import com.idega.presentation.IWContext;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:02 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.1 $
  */
 public class ManagerUtils {
 	

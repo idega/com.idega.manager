@@ -1,5 +1,5 @@
 /*
- * $Id: Installer.java,v 1.13 2007/04/05 23:44:48 eiki Exp $
+ * $Id: Installer.java,v 1.1 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,14 +18,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.doomdark.uuid.UUID;
 import org.doomdark.uuid.UUIDGenerator;
-import com.idega.manager.data.Module;
-import com.idega.manager.data.Pom;
-import com.idega.manager.data.RealPom;
-import com.idega.manager.util.IdegawebDirectoryStructure;
-import com.idega.manager.util.ManagerConstants;
-import com.idega.manager.util.ManagerUtils;
+
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.data.Pom;
+import com.idega.manager.maven1.data.RealPom;
+import com.idega.manager.maven1.util.IdegawebDirectoryStructure;
+import com.idega.manager.maven1.util.ManagerConstants;
+import com.idega.manager.maven1.util.ManagerUtils;
 import com.idega.util.BundleFileMerger;
 import com.idega.util.FacesConfigMerger;
 import com.idega.util.FileUtil;
@@ -36,10 +38,10 @@ import com.idega.util.logging.LogFile;
 
 /**
  * 
- *  Last modified: $Date: 2007/04/05 23:44:48 $ by $Author: eiki $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.1 $
  */
 public class Installer {
 	

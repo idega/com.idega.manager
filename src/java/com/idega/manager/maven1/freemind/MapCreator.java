@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.idega.manager.freemind;
+package com.idega.manager.maven1.freemind;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,13 +17,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import com.idega.manager.data.ApplicationRealPom;
-import com.idega.manager.data.Dependency;
-import com.idega.manager.data.Module;
-import com.idega.manager.data.Pom;
-import com.idega.manager.data.RealPom;
+
+import com.idega.manager.maven1.data.ApplicationRealPom;
+import com.idega.manager.maven1.data.Dependency;
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.data.Pom;
+import com.idega.manager.maven1.data.RealPom;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -33,10 +35,10 @@ import com.idega.xml.XMLElement;
  * <p>
  * TODO thomas Describe Type MapCreator
  * </p>
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:02 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  */
 public class MapCreator {
 	

@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -16,7 +16,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+
 import sun.misc.BASE64Encoder;
+
 import com.idega.util.StringHandler;
 
 

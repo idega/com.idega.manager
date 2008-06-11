@@ -1,5 +1,5 @@
 /*
- * $Id: PomValidator.java,v 1.5 2005/01/17 19:14:16 thomas Exp $
+ * $Id: PomValidator.java,v 1.1 2008/06/11 21:10:02 tryggvil Exp $
  * Created on Nov 24, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,15 +19,15 @@ import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.data.Module;
+import com.idega.manager.maven1.data.Module;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/01/17 19:14:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2008/06/11 21:10:02 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  */
 public class PomValidator {
 	

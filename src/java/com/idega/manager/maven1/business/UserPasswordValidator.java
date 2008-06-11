@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,10 +12,12 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+
 import com.idega.idegaweb.IWResourceBundle;
 
 

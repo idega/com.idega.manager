@@ -1,5 +1,5 @@
 /*
- * $Id: InstallNewModuleListManager.java,v 1.7 2006/04/09 11:42:59 laddi Exp $
+ * $Id: InstallNewModuleListManager.java,v 1.8 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,18 +16,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.faces.event.ActionEvent;
-import com.idega.manager.data.Module;
-import com.idega.manager.data.SimpleProxyPomList;
-import com.idega.manager.util.ManagerConstants;
+
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.data.SimpleProxyPomList;
+import com.idega.manager.maven1.util.ManagerConstants;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class InstallNewModuleListManager extends UpdateListManager {
 	

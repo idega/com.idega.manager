@@ -4,21 +4,22 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.idega.manager.data;
+package com.idega.manager.maven1.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.idega.manager.business.RepositoryBrowser;
+
+import com.idega.manager.maven1.business.RepositoryBrowser;
 
 
 /**
  * <p>
  * TODO thomas Describe Type SimpleProxyPomList
  * </p>
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
 public class SimpleProxyPomList {
 	

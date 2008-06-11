@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateListManager.java,v 1.18 2006/04/09 11:42:59 laddi Exp $
+ * $Id: UpdateListManager.java,v 1.19 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
+
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItems;
@@ -30,26 +31,27 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.business.DependencyMatrix;
-import com.idega.manager.business.PomSorter;
-import com.idega.manager.business.PomValidator;
-import com.idega.manager.data.Module;
-import com.idega.manager.data.Pom;
-import com.idega.manager.data.ProxyPom;
-import com.idega.manager.data.RepositoryLogin;
-import com.idega.manager.util.ManagerConstants;
-import com.idega.manager.util.ManagerUtils;
-import com.idega.manager.util.VersionComparator;
+import com.idega.manager.maven1.business.DependencyMatrix;
+import com.idega.manager.maven1.business.PomSorter;
+import com.idega.manager.maven1.business.PomValidator;
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.data.Pom;
+import com.idega.manager.maven1.data.ProxyPom;
+import com.idega.manager.maven1.data.RepositoryLogin;
+import com.idega.manager.maven1.util.ManagerConstants;
+import com.idega.manager.maven1.util.ManagerUtils;
+import com.idega.manager.maven1.util.VersionComparator;
 import com.idega.util.datastructures.SortedByValueMap;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class UpdateListManager {
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: Dependency.java,v 1.14 2006/04/09 11:42:59 laddi Exp $
+ * $Id: Dependency.java,v 1.1 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,21 +7,22 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.data;
+package com.idega.manager.maven1.data;
 
 import java.io.File;
 import java.io.IOException;
+
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.util.VersionComparator;
+import com.idega.manager.maven1.util.VersionComparator;
 import com.idega.xml.XMLElement;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.1 $
  */
 public class Dependency extends ModulePomImpl  {
 	

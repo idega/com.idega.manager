@@ -1,4 +1,4 @@
-package com.idega.manager.business;
+package com.idega.manager.maven2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,14 +12,20 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
+import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import com.idega.manager.data.RepositoryLogin;
+import com.idega.manager.maven1.business.RepositoryBrowser;
+import com.idega.manager.maven1.data.RepositoryLogin;
 
 public class RepositoryBrowserM2 extends RepositoryBrowser{
 
+	public static final String MAVEN_METADATA_FILE_NAME = "maven-metadata.xml";
+	
 	public static RepositoryBrowserM2 getInstanceForIdegaRepository(RepositoryLogin repositoryLogin)	{
 		return new RepositoryBrowserM2(repositoryLogin);
 	}
@@ -183,6 +189,86 @@ public class RepositoryBrowserM2 extends RepositoryBrowser{
 		return null;
 	}
 	
+	public String getURLForArtifactFolder(String groupId, String artifactId) {
+		String groupUrl = getURLForGroupFolder(groupId);
+		String newUrl = groupUrl+artifactId+"/";
+		return newUrl;
+	}
+
+	public String getURLForArtifactMetadata(String groupId, String artifactId) {
+		String folderUrl = getURLForArtifactFolder(groupId,artifactId);
+		return folderUrl+"maven-metadata.xml";
+	}
+
+	public String getURLForArtifactPom(Metadata metadata, boolean snapshot) {
+		return getURLForArtifactFile(metadata,snapshot,"pom");
+	}
+
+	public String getURLForArtifactFile(Metadata metadata, boolean snapshot, String type) {
+		
+		String groupId = metadata.getGroupId();
+		String artifactId = metadata.getArtifactId();
+		
+		String folderPath = getURLForArtifactFolder(groupId,artifactId);
+		String fileUrl = folderPath;
+		Versioning versioning = metadata.getVersioning();
+		String mostRecentVersion = ModuleVersion.getMostRecentVersionAsString(metadata, versioning.getVersions(), snapshot);
+		
+		if(!snapshot){
+			//String releaseVersion = versioning.getRelease();
+			String releaseVersion = mostRecentVersion;
+			fileUrl+=releaseVersion+"/"+artifactId+"-"+releaseVersion+"."+type;
+		}
+		else{
+			//String version = metadata.getVersion();
+			String version = mostRecentVersion;
+			String snapshotFolderUrl = folderPath+version;
+			String snapshotMetadataFileUrl = snapshotFolderUrl+"/maven-metadata.xml";
+			
+			Metadata snapshotMetadata;
+			try {
+				snapshotMetadata = getMetadataFromUrl(snapshotMetadataFileUrl);
+	
+				Versioning snapshotVersioning = snapshotMetadata.getVersioning();
+				
+				Snapshot snap = snapshotVersioning.getSnapshot();
+				
+				String snapshotVersion = snapshotMetadata.getVersion();
+				String tstamp = snap.getTimestamp();
+				int buildNumber = snap.getBuildNumber();
+				String snapshotVersionMinusSnapshot = snapshotVersion.substring(0,snapshotVersion.indexOf("SNAPSHOT")-1);
+				
+				fileUrl+=snapshotVersion+"/"+artifactId+"-"+snapshotVersionMinusSnapshot+"-"+tstamp+"-"+buildNumber+"."+type;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (XmlPullParserException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return fileUrl;
+		
+	}
+
+	protected Metadata getMetadataFromUrl(String artifactUrl) throws IOException,
+			XmlPullParserException {
+				URL uRepositoryUrl = new URL(artifactUrl);
+			
+				//HttpClient client = HttpClient.New(uRepositoryUrl);
+				//client.getInputStream();
+				//reader = new   FileReader("file://");
+				//Reader reader = new InputStreamReader(client.getInputStream());
+				URLConnection conn = uRepositoryUrl.openConnection();
+				Object content = conn.getContent();
+				InputStream input = (InputStream)content;
+				Reader reader = new InputStreamReader(input);
+				
+				MetadataXpp3Reader mReader = new MetadataXpp3Reader();
+				Metadata metadata = mReader.read(reader);
+				return metadata;
+			}
+
 	public static void main(String[] args){
 		
 		
@@ -225,27 +311,29 @@ public class RepositoryBrowserM2 extends RepositoryBrowser{
 		
 		String appsGroupId = "com.idega.webapp.custom";
 		//String artifactId = null;
-		String artifactId = "lucid";
+		String artifactId = "felixclub";
+		boolean includeSnapshot=true;
 		
 		if(artifactId==null){
 			List<Metadata> poms = browser.getModulesInGroup(appsGroupId);
 			for (Iterator iterator = poms.iterator(); iterator.hasNext();) {
 				Metadata module = (Metadata) iterator.next();
+				String mostRecent = ModuleVersion.getMostRecentVersionAsString(module, includeSnapshot);
 				//System.out.println("Module found: "+module.getArtifactId()+" with version:"+module.getMostRecentVersion()+", last updated: "+module.getLastUpdated());
-				System.out.println("Module metadata with: "+module.getArtifactId()+" with most recent version: "+module.getVersion()+", lastupdated: "+module.getVersioning().getLastUpdated());
-				
+				System.out.println("Module metadata with: "+module.getArtifactId()+" with most recent version: "+mostRecent+", lastupdated: "+module.getVersioning().getLastUpdated());
 				//Model model = browser.getModuleForMostRecent(module);
-				System.out.println("Module: "+module.getArtifactId()+" has url: "+browser.getArtifactUrlForMostRecent(module));
+				System.out.println("Module: "+module.getArtifactId()+" has url: "+browser.getArtifactUrlForMostRecent(module,includeSnapshot));
 				
 			}
 		}
 		else{
 			Metadata module = browser.getModuleWithGroupAndArtifactId(appsGroupId, artifactId);
+			String mostRecent = ModuleVersion.getMostRecentVersionAsString(module, includeSnapshot);
 			//System.out.println("Module found: "+module.getArtifactId()+" with version:"+module.getMostRecentVersion()+", last updated: "+module.getLastUpdated());
-			System.out.println("Module metadata with: "+module.getArtifactId()+" with most recent version: "+module.getVersion()+", lastupdated: "+module.getVersioning().getLastUpdated());
+			System.out.println("Module metadata with: "+module.getArtifactId()+" with most recent version: "+mostRecent+", lastupdated: "+module.getVersioning().getLastUpdated());
 			
 			//Model model = browser.getModuleForMostRecent(module);
-			System.out.println("Module: "+module.getArtifactId()+" has url: "+browser.getArtifactUrlForMostRecent(module));
+			System.out.println("Module: "+module.getArtifactId()+" has url: "+browser.getArtifactUrlForMostRecent(module,includeSnapshot));
 		}
 		
 	}

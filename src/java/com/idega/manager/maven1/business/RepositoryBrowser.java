@@ -1,5 +1,5 @@
 /*
- * $Id: RepositoryBrowser.java,v 1.11 2008/06/05 20:54:10 tryggvil Exp $
+ * $Id: RepositoryBrowser.java,v 1.1 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,17 +7,13 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,10 +22,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Snapshot;
-import org.apache.maven.artifact.repository.metadata.Versioning;
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -39,25 +31,24 @@ import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.doomdark.uuid.UUID;
 import org.doomdark.uuid.UUIDGenerator;
 
-import com.idega.manager.data.ProxyPom;
-import com.idega.manager.data.RealPom;
-import com.idega.manager.data.RepositoryLogin;
-import com.idega.manager.util.ManagerConstants;
-import com.idega.manager.util.ManagerUtils;
+import com.idega.manager.maven1.data.ProxyPom;
+import com.idega.manager.maven1.data.RealPom;
+import com.idega.manager.maven1.data.RepositoryLogin;
+import com.idega.manager.maven1.util.ManagerConstants;
+import com.idega.manager.maven1.util.ManagerUtils;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
 
 
 /**
  * 
- *  Last modified: $Date: 2008/06/05 20:54:10 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.1 $
  */
 public class RepositoryBrowser {
 	
@@ -67,8 +58,6 @@ public class RepositoryBrowser {
 	protected final static char[] HTML_POM_START_PATTERN = "m\">".toCharArray(); //"pom\">".toCharArray();
 	protected final static char[] HTML_FOLDER_START_PATTERN = "/\">".toCharArray(); //"pom\">".toCharArray();
 	protected final static char HTML_LINK_END_PATTERN = '<';
-
-	public static final String MAVEN_METADATA_FILE_NAME = "maven-metadata.xml";
 
 	
 	public static RepositoryBrowser getInstanceForIdegaRepository(RepositoryLogin repositoryLogin)	{
@@ -240,82 +229,6 @@ public class RepositoryBrowser {
 		return groupUrl;
 	}
 
-	public String getURLForArtifactFolder(String groupId, String artifactId){
-		String groupUrl = getURLForGroupFolder(groupId);
-		String newUrl = groupUrl+artifactId+"/";
-		return newUrl;
-	}
-	
-	public String getURLForArtifactMetadata(String groupId, String artifactId){
-		String folderUrl = getURLForArtifactFolder(groupId,artifactId);
-		return folderUrl+"maven-metadata.xml";
-	}
-	
-	public String getURLForArtifactPom(Metadata metadata, boolean snapshot){
-		return getURLForArtifactFile(metadata,snapshot,"pom");
-	}
-	
-	public String getURLForArtifactFile(Metadata metadata, boolean snapshot, String type){
-		
-		String groupId = metadata.getGroupId();
-		String artifactId = metadata.getArtifactId();
-		
-		String folderPath = getURLForArtifactFolder(groupId,artifactId);
-		String fileUrl = folderPath;
-		Versioning versioning = metadata.getVersioning();
-		if(!snapshot){
-
-			String releaseVersion = versioning.getRelease();
-			fileUrl+=releaseVersion+"/"+artifactId+"-"+releaseVersion+"."+type;
-		}
-		else{
-			String version = metadata.getVersion();
-			String snapshotFolderUrl = folderPath+version;
-			String snapshotMetadataFileUrl = snapshotFolderUrl+"/maven-metadata.xml";
-			
-			Metadata snapshotMetadata;
-			try {
-				snapshotMetadata = getMetadataFromUrl(snapshotMetadataFileUrl);
-
-				Versioning snapshotVersioning = snapshotMetadata.getVersioning();
-				
-				Snapshot snap = snapshotVersioning.getSnapshot();
-				
-				String snapshotVersion = metadata.getVersion();
-				String tstamp = snap.getTimestamp();
-				int buildNumber = snap.getBuildNumber();
-				String snapshotVersionMinusSnapshot = snapshotVersion.substring(0,snapshotVersion.indexOf("SNAPSHOT")-1);
-				
-				fileUrl+=snapshotVersion+"/"+artifactId+"-"+snapshotVersionMinusSnapshot+"-"+tstamp+"-"+buildNumber+"."+type;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (XmlPullParserException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return fileUrl;
-		
-	}
-	
-	protected Metadata getMetadataFromUrl(String artifactUrl) throws IOException, XmlPullParserException {
-		URL uRepositoryUrl = new URL(artifactUrl);
-
-		//HttpClient client = HttpClient.New(uRepositoryUrl);
-		//client.getInputStream();
-		//reader = new   FileReader("file://");
-		//Reader reader = new InputStreamReader(client.getInputStream());
-		URLConnection conn = uRepositoryUrl.openConnection();
-		Object content = conn.getContent();
-		InputStream input = (InputStream)content;
-		Reader reader = new InputStreamReader(input);
-		
-		MetadataXpp3Reader mReader = new MetadataXpp3Reader();
-		Metadata metadata = mReader.read(reader);
-		return metadata;
-	}
-	
 	private String getGroupPath(String groupId) {
 		String groupPath = groupId;
 		if(useMaven2Layout){

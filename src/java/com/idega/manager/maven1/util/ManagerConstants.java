@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.idega.manager.util;
+package com.idega.manager.maven1.util;
 
 
 /**

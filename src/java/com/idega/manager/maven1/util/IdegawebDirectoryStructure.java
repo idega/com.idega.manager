@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.idega.manager.util;
+package com.idega.manager.maven1.util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.ZipInstaller;
-import com.idega.manager.data.Module;
+import com.idega.manager.maven1.data.Module;
 import com.idega.presentation.IWContext;
 
 /**

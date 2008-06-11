@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleManager.java,v 1.20 2006/04/09 11:42:59 laddi Exp $
+ * $Id: ModuleManager.java,v 1.21 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 10, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
+
 import javax.faces.application.Application;
 import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlCommandButton;
@@ -25,21 +26,22 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.el.ValueBinding;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
+
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.business.ApplicationUpdater;
-import com.idega.manager.business.PomSorter;
-import com.idega.manager.data.Module;
-import com.idega.manager.util.ManagerConstants;
-import com.idega.manager.util.ManagerUtils;
+import com.idega.manager.maven1.business.ApplicationUpdater;
+import com.idega.manager.maven1.business.PomSorter;
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.util.ManagerConstants;
+import com.idega.manager.maven1.util.ManagerUtils;
 import com.idega.util.datastructures.SortedByValueMap;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class ModuleManager {
 	

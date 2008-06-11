@@ -1,5 +1,5 @@
 /*
- * $Id: PomSorter.java,v 1.15 2006/04/09 11:42:59 laddi Exp $
+ * $Id: PomSorter.java,v 1.1 2008/06/11 21:10:02 tryggvil Exp $
  * Created on Nov 22, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package com.idega.manager.business;
+package com.idega.manager.maven1.business;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -19,21 +19,22 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import com.idega.manager.data.Module;
-import com.idega.manager.data.Pom;
-import com.idega.manager.data.ProxyPom;
-import com.idega.manager.data.RealPom;
-import com.idega.manager.data.RepositoryLogin;
-import com.idega.manager.data.SimpleProxyPomList;
-import com.idega.manager.util.VersionComparator;
+
+import com.idega.manager.maven1.data.Module;
+import com.idega.manager.maven1.data.Pom;
+import com.idega.manager.maven1.data.ProxyPom;
+import com.idega.manager.maven1.data.RealPom;
+import com.idega.manager.maven1.data.RepositoryLogin;
+import com.idega.manager.maven1.data.SimpleProxyPomList;
+import com.idega.manager.maven1.util.VersionComparator;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:02 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.1 $
  */
 public class PomSorter {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: LoginManager.java,v 1.5 2006/04/09 11:42:59 laddi Exp $
+ * $Id: LoginManager.java,v 1.6 2008/06/11 21:10:01 tryggvil Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,11 +18,12 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.manager.business.UserPasswordValidator;
-import com.idega.manager.data.RepositoryLogin;
-import com.idega.manager.util.ManagerConstants;
-import com.idega.manager.util.ManagerUtils;
+import com.idega.manager.maven1.business.UserPasswordValidator;
+import com.idega.manager.maven1.data.RepositoryLogin;
+import com.idega.manager.maven1.util.ManagerConstants;
+import com.idega.manager.maven1.util.ManagerUtils;
 
 
 /**
@@ -46,10 +47,10 @@ import com.idega.manager.util.ManagerUtils;
  * 4. ModuleManager
  * 
  * 
- *  Last modified: $Date: 2006/04/09 11:42:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class LoginManager {
 	
