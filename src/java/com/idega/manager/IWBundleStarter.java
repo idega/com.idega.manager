@@ -1,5 +1,5 @@
 /*
- * $Id: IWBundleStarter.java,v 1.4 2005/03/06 13:17:41 tryggvil Exp $
+ * $Id: IWBundleStarter.java,v 1.5 2008/10/20 11:57:10 laddi Exp $
  * Created on 2.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,20 +11,17 @@ package com.idega.manager;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
-import com.idega.idegaweb.include.GlobalIncludeManager;
 import com.idega.manager.view.ManagerViewManager;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/06 13:17:41 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2008/10/20 11:57:10 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class IWBundleStarter implements IWBundleStartable {
-	private static final String STYLE_SHEET_URL = "/style/manager.css";
-	private static final String BUNDLE_IDENTIFIER="com.idega.manager";
 
 	/**
 	 * 
@@ -38,8 +35,6 @@ public class IWBundleStarter implements IWBundleStartable {
 	 */
 	public void start(IWBundle starterBundle) {
 		addManagerViews(starterBundle);
-		//Add the stylesheet:
-		GlobalIncludeManager.getInstance().addBundleStyleSheet(BUNDLE_IDENTIFIER,STYLE_SHEET_URL);
 	}
 
 	/* (non-Javadoc)

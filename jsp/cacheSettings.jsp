@@ -6,7 +6,7 @@
 	xmlns:wf="http://xmlns.idega.com/com.idega.webface">
     <jsp:directive.page contentType="text/html"/><!--;charset=UTF-8" pageEncoding="UTF-8"-->
     <f:view>
-		<ws:page id="cachesettingspage">
+		<ws:page id="cachesettingspage" stylesheeturls="/idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css">
 		<h:form id="cachesettingsform" > <!-- acceptCharset="UTF-8" -->
 			<wf:wfblock id="cachesettingsblock" title="#{localizedStrings['com.idega.manager']['cachesettings']}">
 				<wf:container styleClass="formitem" >

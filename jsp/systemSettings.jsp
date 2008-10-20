@@ -11,7 +11,8 @@
 		<ws:page id="systemsettingspage" javascripturls="/dwr/engine.js,
         			/dwr/interface/ThemesEngine.js,
         			/idegaweb/bundles/com.idega.content.bundle/resources/javascript/ThemesHelper.js,
-        			/idegaweb/bundles/com.idega.content.bundle/resources/javascript/SiteManagerHelper.js">
+        			/idegaweb/bundles/com.idega.content.bundle/resources/javascript/SiteManagerHelper.js"
+        			 stylesheeturls="/idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css">
 		<h:form id="systemsettingsform" >
 			<x:div id="siteInfoContainer" forceId="true">
 				<c:SiteInfo id="siteInfo"></c:SiteInfo>

@@ -6,7 +6,7 @@
 	xmlns:wf="http://xmlns.idega.com/com.idega.webface">
     <jsp:directive.page contentType="text/html;charset=ISO-8859-1" pageEncoding="UTF-8"/>
     <f:view>
-		<ws:page>
+		<ws:page stylesheeturls="/idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css">
         	<h:form id="loginManagerForm1">
             <wf:wfblock title="#{localizedStrings['com.idega.manager']['install_update']}">
                 
