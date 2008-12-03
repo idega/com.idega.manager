@@ -138,10 +138,10 @@ public class RepositoryBrowserM2 extends RepositoryBrowser{
 	
 	
 	public Model getModuleForMostRecent(Metadata metadata,boolean snapshot){
-		String groupId = metadata.getGroupId();
-		String artifactId = metadata.getArtifactId();
-		String groupUrl=getURLForGroupFolder(metadata.getGroupId());
-		List<StringBuffer> artifactIds = getArtifactIdsUnder(groupUrl);
+		//String groupId = metadata.getGroupId();
+		//String artifactId = metadata.getArtifactId();
+		//String groupUrl = getURLForGroupFolder(metadata.getGroupId());
+		//List<StringBuffer> artifactIds = getArtifactIdsUnder(groupUrl);
 		//for(StringBuffer bufferArtifactId: artifactIds){
 		//	String artifactId = bufferArtifactId.toString();
 			//String mavenMetadataUrl = getURLForMavenMetadataFile(groupId, artifactId);
