@@ -1,0 +1,51 @@
+    <document>
+  <properties>
+    <title>Manager changes</title>
+    <author email='tryggvi@idega.com'>Tryggvi Larusson</author>
+  </properties>
+  <body>
+  
+  <release date='2009-01-27' description='First 4.1.x Release' version='4.1.0'>
+          <action type='add' dev='tryggvil'>First 4.1.x Release</action>
+        </release>
+        <release date='2006-11-20' version='3.1.1'>
+      <action type='update' dev='eiki'>
+      	Changed a thread in the Installer to a daemon thread
+      </action>
+    </release>
+    
+    
+	<release date='2005-06-19' version='3.1.0'>
+      <action type='update' dev='tryggvil'>
+      	Declaration of version for including in ePlatform release 3.1
+      </action>
+      <action type='update' dev='tryggvil'>
+      	Addition of System Settings pane under Manager.
+      </action>
+    </release>
+
+	<release date='2005-09-15' version='1.0'>
+      <action type='update' dev='tryggvil'>
+        Declaration of version for use with core 3.0.6
+      </action>              
+    </release>
+        <release date='2005-05-25' version='0.1.2'>
+      <action type='update' dev='tryggvil'>
+        Declaration of version for use with core 3.0.5
+      </action>              
+    </release>
+      <release date='2005-04-06' version='0.1.1'>
+      <action type='update' dev='tryggvil'>
+        Declaration of version for use with core 3.0.4
+      </action>              
+    </release>
+  
+    <release date='2005-03-10' version='0.1.0'>
+      <action type='update' dev='tryggvil'>
+        Declaration of version for use with core 3.0.0
+      </action>              
+    </release>
+
+  </body>
+</document>
+
