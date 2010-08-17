@@ -1,10 +1,11 @@
-<jsp:root version="1.2" 
+<jsp:root version="2.1" 
 	xmlns:f="http://java.sun.com/jsf/core" 
-	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
 	xmlns:jsp="http://java.sun.com/JSP/Page"
 	xmlns:ws="http://xmlns.idega.com/com.idega.workspace"
 	xmlns:wf="http://xmlns.idega.com/com.idega.webface">
-    <jsp:directive.page contentType="text/html;charset=ISO-8859-1" pageEncoding="UTF-8"/>
+    <jsp:directive.page contentType="text/html" pageEncoding="UTF-8"/>
     <f:view>
 		<ws:page stylesheeturls="/idegaweb/bundles/com.idega.manager.bundle/resources/style/manager.css">
         	<h:form id="loginManagerForm1">
@@ -60,9 +61,10 @@
                    		binding="#{LoginManager.outputText5}" 
                    		id="outputText5" 
                    		value="#{LoginManager.outputText5Value}"/>
-                   	<h:inputSecret binding="#{LoginManager.secretField1}" 
+                   	<t:inputSecret binding="#{LoginManager.secretField1}" 
                    		style="width: 300px"
-                   		id="secretField1"/>
+                   		id="secretField1"
+                   		forceId="true"/>
 				</wf:container>
 				
 	            	<h:inputHidden value="noSelection" validator="#{LoginManager.validateUserPassword}"/>

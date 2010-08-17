@@ -13,11 +13,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlInputSecret;
 import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+
+import org.apache.myfaces.component.html.ext.HtmlInputSecret;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.manager.maven1.business.UserPasswordValidator;
@@ -27,35 +29,35 @@ import com.idega.manager.maven1.util.ManagerUtils;
 
 
 /**
- * 
+ *
  * Start of the install and update wizard
- * 
+ *
  * 1. LoginManager
  * 2. InstallOrUpdateManager
- * 
+ *
  * then either
- * 
+ *
  * 3.1 InstallListManager
  * 3.2 InstallNewModuleListManager
- * 
+ *
  * or
- * 
+ *
  * 3.1UpdateListManager
- * 
+ *
  * then
- * 
+ *
  * 4. ModuleManager
- * 
- * 
+ *
+ *
  *  Last modified: $Date: 2008/06/11 21:10:01 $ by $Author: tryggvil $
- * 
+ *
  * @author <a href="mailto:thomas@idega.com">thomas</a>
  * @version $Revision: 1.6 $
  */
 public class LoginManager {
-	
+
 	private IWResourceBundle resourceBundle = null;
-	
+
 	private String outputText1Value;
 	private String outputText2Value;
 	private String outputText3Value;
@@ -64,15 +66,15 @@ public class LoginManager {
 	private String button1Label;
 	private String button2Label;
 	private String button3Label;
-	
+
 	private UserPasswordValidator userPasswordValidator = null;
-	
+
 	RepositoryLogin repositoryLogin = null;
-	
+
 	public LoginManager() {
 		initialize();
 	}
-	
+
 	private void initialize() {
 		this.resourceBundle = ManagerUtils.getInstanceForCurrentContext().getResourceBundle();
 		this.repositoryLogin = null;
@@ -80,7 +82,7 @@ public class LoginManager {
 		initializeInputFields();
 		initializeSubmitButtons();
 	}
-	
+
 	private void initializeOutputText() {
 		this.outputText1Value = this.resourceBundle.getLocalizedString("man_manager_header", "Module Manager");
 		this.outputText2Value = this.resourceBundle.getLocalizedString("man_manager_login","Login");
@@ -94,15 +96,15 @@ public class LoginManager {
 		this.button2Label = this.resourceBundle.getLocalizedString("man_manager_next","Next");
 		this.button3Label = this.resourceBundle.getLocalizedString("man_manager_cancel","Cancel");
 	}
-	
+
 	private void initializeInputFields() {
 		this.textField1.setValue(ManagerConstants.IDEGA_REPOSITORY_URL);
 	}
-	
+
 	public RepositoryLogin getRepositoryLogin() {
 		return this.repositoryLogin;
 	}
-	
+
 	public void submitForm(ActionEvent event) {
 		UIComponent component = event.getComponent();
 		UIComponent parentForm = component.getParent();
@@ -111,15 +113,15 @@ public class LoginManager {
 		UIInput passwordInput = (UIInput) parentForm.findComponent(ManagerConstants.JSF_COMPONENT_ID_PASSWORD);
 		String repositoryURL = (String) repositoryURLInput.getValue();
 		String userName = (String) usernameInput.getValue();
-		userName = (userName == null) ? "" : userName; 
+		userName = (userName == null) ? "" : userName;
 		String password = (String) passwordInput.getValue();
 		password = (password == null) ? "" : password;
 		this.repositoryLogin = RepositoryLogin.getInstanceWithAuthentication(repositoryURL, userName, password);
 	}
-		
-		
 
-	
+
+
+
 	public void validateUserPassword(FacesContext context, UIComponent toValidate, Object value) {
 		// the value of a hidden input is validated because only in this way this method is called even if nothing has been selected.
 		// We could use the attribute "required" but this causes problems with the localization of the corresponding error message.
@@ -132,12 +134,12 @@ public class LoginManager {
 		Object componentUserValue = ((UIInput) componentUser).getValue();
 		Object componentPasswordValue = ((UIInput) componentPassword).getValue();
 		if (this.userPasswordValidator == null) {
-			this.userPasswordValidator = new UserPasswordValidator(); 
+			this.userPasswordValidator = new UserPasswordValidator();
 		}
 		this.userPasswordValidator.validateUserPassword(context, toValidate, componentRepositoryURLValue, componentUserValue , componentPasswordValue, this.resourceBundle);
 	}
 
-	
+
     private HtmlOutputText outputText1 = new HtmlOutputText();
 
     public HtmlOutputText getOutputText1() {
@@ -158,37 +160,37 @@ public class LoginManager {
         this.outputText2 = hot;
     }
 
-    private HtmlOutputText outputText3 = new HtmlOutputText();
+    private HtmlOutputLabel outputText3 = new HtmlOutputLabel();
 
-    public HtmlOutputText getOutputText3() {
+    public HtmlOutputLabel getOutputText3() {
         return this.outputText3;
     }
 
-    public void setOutputText3(HtmlOutputText hot) {
+    public void setOutputText3(HtmlOutputLabel hot) {
         this.outputText3 = hot;
     }
 
-    private HtmlOutputText outputText4 = new HtmlOutputText();
+    private HtmlOutputLabel outputText4 = new HtmlOutputLabel();
 
-    public HtmlOutputText getOutputText4() {
+    public HtmlOutputLabel getOutputText4() {
         return this.outputText4;
     }
 
-    public void setOutputText4(HtmlOutputText hot) {
+    public void setOutputText4(HtmlOutputLabel hot) {
         this.outputText4 = hot;
     }
 
-    private HtmlOutputText outputText5 = new HtmlOutputText();
+    private HtmlOutputLabel outputText5 = new HtmlOutputLabel();
 
-    public HtmlOutputText getOutputText5() {
+    public HtmlOutputLabel getOutputText5() {
         return this.outputText5;
     }
 
-    public void setOutputText5(HtmlOutputText hot) {
+    public void setOutputText5(HtmlOutputLabel hot) {
         this.outputText5 = hot;
     }
 
-    
+
     private HtmlInputText textField1 = new HtmlInputText();
 
     public HtmlInputText getTextField1() {
@@ -198,7 +200,7 @@ public class LoginManager {
     public void setTextField1(HtmlInputText hit) {
         this.textField1 = hit;
     }
-    
+
     private HtmlInputText textField2 = new HtmlInputText();
 
     public HtmlInputText getTextField2() {
@@ -214,8 +216,12 @@ public class LoginManager {
 
     public HtmlInputSecret getSecretField1() {
         return this.secretField1;
-    }    
-    
+    }
+
+    public void setSecretField1(Object secretField1) {
+    	System.out.println(secretField1);
+    }
+
     private HtmlCommandButton button1 = new HtmlCommandButton();
 
     public HtmlCommandButton getButton1() {
@@ -245,19 +251,19 @@ public class LoginManager {
     public void setButton3(HtmlCommandButton hcb) {
         this.button3 = hcb;
     }
-    
+
     public String getOutputText1Value() {
     	return this.outputText1Value;
     }
- 
+
     public String getOutputText2Value() {
     	return this.outputText2Value;
     }
-    
+
     public String getOutputText3Value() {
     	return this.outputText3Value;
     }
- 
+
     public String getOutputText4Value() {
     	return this.outputText4Value;
     }
@@ -265,22 +271,22 @@ public class LoginManager {
     public String getOutputText5Value() {
     	return this.outputText5Value;
     }
-    
+
     public String getButton1Label() {
     	return this.button1Label;
     }
-    
+
     public String getButton2Label() {
     	return this.button2Label;
     }
     public String getButton3Label() {
     	return this.button3Label;
     }
- 
+
     public String button2_action() {
     	return ManagerConstants.ACTION_NEXT;
     }
-    
+
     public String button3_action() {
     	return ManagerConstants.ACTION_CANCEL;
     }
