@@ -6,3 +6,10 @@ mainDomainServerName=Domain name
 mainDomainUrl=System main URL
 save=Save
 systemsettings=System Settings
+
+content_migrator=Content migrator
+migrating=Migrating
+migrate=Migrate
+enter_path_to_the_old_repository=Enter path to the old repository
+copying=Copying
+failures=Failures

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html	xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:ws="http://xmlns.idega.com/com.idega.workspace"
+		xmlns:wf="http://xmlns.idega.com/com.idega.webface"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+>
+
+	<ws:page id="contentMigrator" showFunctionMenu="true" javascripturls="/dwr/engine.js,/dwr/util.js,/dwr/interface/ContentMigrator.js,#{iwResourcePluginsResolver['jquery']},#{iwResourceResolver['com.idega.manager']['javascript/ContentMigratorHelper.js']}">
+		<h:form>
+			<wf:block id="contentMigratorBlock" title="#{localizedStrings['com.idega.manager']['content_migrator']}">
+				<wf:container styleClass="formitem" >
+					<h:outputLabel for="repositoryValue" id="repositoryValueLabel" value="#{localizedStrings['com.idega.manager']['enter_path_to_the_old_repository']}:"/>
+					<t:inputText forceId="true" id="repositoryValue" styleClass="repositoryValueInput"/>
+				</wf:container>
+				<div class="formitem migrationProgress" style="display: none;">
+					<h:outputLabel for="migrationProgress" value="#{localizedStrings['com.idega.manager']['copying']}:"/>
+					<t:outputText forceId="true" id="migrationProgress" />
+				</div>
+				<t:div id="failures" forceId="true" style="display: none" styleClass="contentMigrationFailures">
+					<h4>#{localizedStrings['com.idega.manager']['failures']}:</h4>
+					<div class="contentMigrationFailuresContainer">
+						<ul class="failuresList"></ul>
+					</div>
+				</t:div>
+				<f:facet name="footer">
+					<wf:container styleClass="buttons">
+						<input type="button" class="contentMigratorButton" id="content_migrate_button" onclick="showLoadingMessage('#{localizedStrings['com.idega.manager']['migrating']}');ContentMigratorHelper.migrate(dwr.util.getValue('repositoryValue'));" value="#{localizedStrings['com.idega.manager']['migrate']}"/>
+					</wf:container>
+				</f:facet>
+			</wf:block>
+		</h:form>
+	</ws:page>
+</html>

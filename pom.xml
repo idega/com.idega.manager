@@ -25,19 +25,15 @@
       <organization />
     </developer>
   </developers>
-  <scm>
-  	<connection>scm:cvs:ext:idegaweb@code.idega.com:/idega/cvs:com.idega.block.platform/com.idega.manager/</connection>
-    <developerConnection>scm:cvs:ext:idegaweb@code.idega.com:/idega/cvs:com.idega.block.platform/com.idega.manager/</developerConnection>
-    <!-- 
-    <connection>scm:cvs:ext:idegaweb@code.idega.com:/idega/cvs:com.idega.block.platform/com.idega.manager/</connection>
-    <developerConnection>scm:cvs:ext:idegaweb@code.idega.com:/idega/cvs:com.idega.block.platform/com.idega.manager/</developerConnection>
-     -->
-    <tag>com_idega_block_platform-4_1_2</tag>
-  </scm>
+  
   <dependencies>
     <dependency>
       <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.idega.block.platform</groupId>
+      <artifactId>com.idega.dwr</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>

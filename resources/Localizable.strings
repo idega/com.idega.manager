@@ -18,3 +18,10 @@ man_update_installed_modules=Update installed modules
 man_user_name=User
 save=save
 systemsettings=systemsettings
+
+content_migrator=Content migrator
+migrating=Migrating
+migrate=Migrate
+enter_path_to_the_old_repository=Enter path to the old repository
+copying=Copying
+failures=Failures
