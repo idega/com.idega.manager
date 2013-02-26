@@ -2,6 +2,7 @@ package com.idega.manager.business;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,6 +28,7 @@ import com.idega.manager.view.ManagerViewManager;
 import com.idega.repository.RepositoryService;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
+import com.idega.util.IOUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 
@@ -143,10 +145,12 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 				String fileName = new StringBuilder(name).toString();
 				int length = fileName.length();
 				int newLength = StringHandler.removeCharacters(fileName, CoreConstants.DOT, CoreConstants.EMPTY).length();
-				if (length - newLength > 1 && getBundle(fileName) != null)
+				if (length - newLength > 1 && getBundle(fileName) != null) {
 					continue;	//	Skipping bundle folders
+				}
 
 				String progress = null;
+				InputStream stream = null;
 				try {
 					String path = tmp.getParent();
 					int start = path.indexOf(CoreConstants.WEBDAV_SERVLET_URI);
@@ -154,7 +158,18 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 
 					progress = path.concat(File.separator).concat(fileName);
 					progressInfo.setProgress(progress);
-					success = repository.uploadFileAndCreateFoldersFromStringAsRoot(path, fileName, new FileInputStream(tmp), null);
+
+					stream = new FileInputStream(tmp);
+
+					if (fileName.endsWith(".strings") ||									//	Localizations
+						(fileName.endsWith(".xml") && path.indexOf("/pages/") != -1) ||		//	Page
+						(fileName.endsWith(".xml") && path.indexOf(".article/") != -1))	{	//	Article
+						if (!path.endsWith(CoreConstants.SLASH))
+							path = path.concat(CoreConstants.SLASH);
+						success = repository.updateFileContents(path + fileName, stream, true) != null;
+					} else {
+						success = repository.uploadFile(path, fileName, null, stream);
+					}
 					if (!success) {
 						progressInfo.addFailure(progress);
 						getLogger().warning("Failed to import file " + progress);
@@ -167,6 +182,8 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 					getLogger().log(Level.WARNING, "Error importing file: " + progress, e);
 					progressInfo.addFailure(progress);
 					return false;
+				} finally {
+					IOUtil.close(stream);
 				}
 			}
 		}
