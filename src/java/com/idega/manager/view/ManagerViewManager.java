@@ -78,10 +78,10 @@ public class ManagerViewManager implements Singleton {
 	}
 
 	public void initializeStandardNodes(IWBundle bundle){
-		ViewNode contentNode = initalizeManagerNode(bundle);
+		ViewNode viewNode = initalizeManagerNode(bundle);
 
 		// login manager / step 1
-		DefaultViewNode loginNode = new DefaultViewNode("install", contentNode);
+		DefaultViewNode loginNode = new DefaultViewNode("install", viewNode);
 		loginNode.setJspUri(bundle.getJSPURI("LoginManager.jsp"));
 		loginNode.setName("#{localizedStrings['com.idega.manager']['install_update']}");
 
@@ -111,18 +111,23 @@ public class ManagerViewManager implements Singleton {
 		commitNode.setJspUri(bundle.getJSPURI("ModuleManager.jsp"));
 
 		// server settings
-		DefaultViewNode serverSettings = new DefaultViewNode("systemsettings", contentNode);
+		DefaultViewNode serverSettings = new DefaultViewNode("systemsettings", viewNode);
 		serverSettings.setJspUri(bundle.getJSPURI("systemSettings.jsp"));
 		serverSettings.setName("#{localizedStrings['com.idega.manager']['systemsettings']}");
 
 		// cache settings
-		DefaultViewNode cacheSettings = new DefaultViewNode("cachesettings", contentNode);
+		DefaultViewNode cacheSettings = new DefaultViewNode("cachesettings", viewNode);
 		cacheSettings.setJspUri(bundle.getJSPURI("cacheSettings.jsp"));
 		cacheSettings.setName("#{localizedStrings['com.idega.manager']['cachesettings']}");
 
 		//	Content migrator
-		DefaultViewNode contentMigrator = new DefaultViewNode("content_migrator", contentNode);
+		DefaultViewNode contentMigrator = new DefaultViewNode("content_migrator", viewNode);
 		contentMigrator.setFaceletUri(bundle.getFaceletURI("contentMigrator.xhtml"));
 		contentMigrator.setName("#{localizedStrings['com.idega.manager']['content_migrator']}");
+
+		//	Content exporter/importer
+		DefaultViewNode contentExporterImporterMigrator = new DefaultViewNode("content_exporter_importer", viewNode);
+		contentExporterImporterMigrator.setFaceletUri(bundle.getFaceletURI("contentExporterImporter.xhtml"));
+		contentExporterImporterMigrator.setName("#{localizedStrings['com.idega.manager']['content_exporter_importer']}");
 	}
 }

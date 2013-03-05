@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html	xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:ws="http://xmlns.idega.com/com.idega.workspace"
+		xmlns:wf="http://xmlns.idega.com/com.idega.webface"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+>
+
+	<ws:page id="contentExporterImporter" showFunctionMenu="true" javascripturls="/dwr/engine.js,/dwr/util.js,/dwr/interface/ContentMigrator.js,#{iwResourcePluginsResolver['jquery']},#{iwResourceResolver['com.idega.manager']['javascript/ContentMigratorHelper.js']}">
+		<h:form>
+			<wf:block id="contentExporterImporterBlock" title="#{localizedStrings['com.idega.manager']['content_exporter_importer']}">
+				<wf:container styleClass="formitem" >
+					<h:outputLabel for="repositoryOutputValue" id="repositoryOutputValueLabel" value="#{localizedStrings['com.idega.manager']['enter_path_of_repository_output']}:"/>
+					<t:inputText forceId="true" id="repositoryOutputValue" styleClass="repositoryOutputValueInput"/>
+				</wf:container>
+				<div class="formitem exportProgress" style="display: none;">
+					<h:outputLabel for="exportProgress" value="#{localizedStrings['com.idega.manager']['exporting']}:"/>
+					<t:outputText forceId="true" id="exportProgress" />
+				</div>
+				<t:div id="exportFailures" forceId="true" style="display: none" styleClass="contentMigrationFailures">
+					<h4>#{localizedStrings['com.idega.manager']['failures']}:</h4>
+					<div class="contentMigrationFailuresContainer">
+						<ul class="failuresList"></ul>
+					</div>
+				</t:div>
+					<wf:container styleClass="buttons">
+						<input type="button" class="contentExporterImporterButton" id="content_export_button" onclick="showLoadingMessage('#{localizedStrings['com.idega.manager']['exporting']}');ContentMigratorHelper.exportRepository(dwr.util.getValue('repositoryOutputValue'));" value="#{localizedStrings['com.idega.manager']['export']}"/>
+					</wf:container>
+				
+				<br />
+				
+				<wf:container styleClass="formitem" >
+					<h:outputLabel for="repositoryInputValue" id="repositoryInputValueLabel" value="#{localizedStrings['com.idega.manager']['enter_path_of_repository_input']}:"/>
+					<t:inputText forceId="true" id="repositoryInputValue" styleClass="repositoryInputValueInput"/>
+				</wf:container>
+				<div class="formitem importProgress" style="display: none;">
+					<h:outputLabel for="importProgress" value="#{localizedStrings['com.idega.manager']['importing']}:"/>
+					<t:outputText forceId="true" id="importProgress" />
+				</div>
+				<t:div id="importFailures" forceId="true" style="display: none" styleClass="contentMigrationFailures">
+					<h4>#{localizedStrings['com.idega.manager']['failures']}:</h4>
+					<div class="contentMigrationFailuresContainer">
+						<ul class="failuresList"></ul>
+					</div>
+				</t:div>
+					<wf:container styleClass="buttons">
+						<input type="button" class="contentExporterImporterButton" id="content_import_button" onclick="showLoadingMessage('#{localizedStrings['com.idega.manager']['importing']}');ContentMigratorHelper.importRepository(dwr.util.getValue('repositoryInputValue'));" value="#{localizedStrings['com.idega.manager']['import']}"/>
+					</wf:container>
+			</wf:block>
+		</h:form>
+	</ws:page>
+</html>

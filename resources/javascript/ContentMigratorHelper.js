@@ -1,5 +1,28 @@
 if (ContentMigratorHelper == null) var ContentMigratorHelper = {};
 
+ContentMigratorHelper.exportRepository = function(output) {
+	ContentMigrator.doExport(output, {
+		callback: function(result) {
+			closeAllLoadingMessages();
+			
+			if (result != null)
+				alert(result.value);
+		}
+	});
+}
+
+ContentMigratorHelper.importRepository = function(input) {
+	ContentMigrator.doImport(input, {
+		callback: function(result) {
+			closeAllLoadingMessages();
+			
+			if (result != null)
+				alert(result.value);
+		}
+	});
+}
+
+
 ContentMigratorHelper.migrate = function(path) {
 	jQuery('input.contentMigratorButton').attr('disabled', 'disabled');
 	

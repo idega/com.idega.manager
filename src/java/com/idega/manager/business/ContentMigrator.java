@@ -2,11 +2,13 @@ package com.idega.manager.business;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.servlet.http.HttpSession;
 
@@ -47,6 +49,40 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 	private RepositoryService repository;
 
 	private Map<String, MigrationProgress> progress = new HashMap<String, MigrationProgress>();
+
+	@RemoteMethod
+	public AdvancedProperty doImport(String inputFile) {
+		IWResourceBundle iwrb = getResourceBundle(getBundle(ManagerViewManager.BUNDLE_IDENTIFIER));
+		String success = iwrb.getLocalizedString("successfully_imported_repository", "Successfully imported repository");
+		String error = iwrb.getLocalizedString("error_importing_repository", "Error importing repository");
+
+		try {
+			if (repository.doImportWorkspace("default", inputFile))
+				return new AdvancedProperty(Boolean.TRUE.toString(), success);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		return new AdvancedProperty(Boolean.FALSE.toString(), error);
+	}
+
+	@RemoteMethod
+	public AdvancedProperty doExport(String outputFile) {
+		IWResourceBundle iwrb = getResourceBundle(getBundle(ManagerViewManager.BUNDLE_IDENTIFIER));
+		String success = iwrb.getLocalizedString("successfully_exported_repository", "Successfully exported repository");
+		String error = iwrb.getLocalizedString("error_exporting_repository", "Error exporting repository");
+
+		try {
+			if (repository.doExportWorkspace("default", outputFile))
+				return new AdvancedProperty(Boolean.TRUE.toString(), success);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		return new AdvancedProperty(Boolean.FALSE.toString(), error);
+	}
 
 	@RemoteMethod
 	public AdvancedProperty doMigrate(String path) {

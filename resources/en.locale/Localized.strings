@@ -13,3 +13,11 @@ migrate=Migrate
 enter_path_to_the_old_repository=Enter path to the old repository
 copying=Copying
 failures=Failures
+
+content_exporter_importer=Content exporter/importer
+enter_path_of_repository_output=Path where to export repository
+export=Export
+exporting=Exporting...
+enter_path_of_repository_input=Path to the repository to import (XML file)
+importing=Importing...
+import=Import
