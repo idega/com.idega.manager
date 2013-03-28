@@ -2,9 +2,14 @@ package com.idega.manager.business;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -165,6 +170,42 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 		return false;
 	}
 
+	private InputStream getStreamToTheFinalVersion(String path, final String fileName, File file) throws Exception {
+		if (!isVersionable(path, fileName))
+			return new FileInputStream(file);
+
+		File[] versions = file.getParentFile().listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith(fileName);
+			}
+		});
+
+		if (ArrayUtil.isEmpty(versions) || versions.length == 1) {
+			getLogger().warning("Expected to find versions for file '" + fileName + "' at '" + path + "', but no versions found");
+			return new FileInputStream(file);
+		}
+
+		List<File> fileVersions = new ArrayList<File>(Arrays.asList(versions));
+		Collections.sort(fileVersions, new java.util.Comparator<File>() {
+			@Override
+			public int compare(File file1, File file2) {
+				return -1 * (Long.valueOf(file1.lastModified()).compareTo(Long.valueOf(file2.lastModified())));
+			}
+		});
+
+		File theLatestVersion = fileVersions.get(0);
+		getLogger().info("Using the latest version (" + theLatestVersion + ") from all versions: " + fileVersions);
+		return new FileInputStream(theLatestVersion);
+	}
+
+	private boolean isVersionable(String path, String fileName) {
+		return	fileName.endsWith(".strings") ||									//	Localizations
+				(fileName.endsWith(".xml") && path.indexOf("/pages/") != -1) ||		//	Page
+				(fileName.endsWith(".xml") && path.indexOf(".article/") != -1);		//	Article
+	}
+
 	private boolean doMigrateFilesAndFolders(String sessionId, String parentPath, String[] filesAndFolders) {
 		if (ArrayUtil.isEmpty(filesAndFolders))
 			return true;
@@ -227,21 +268,26 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 						continue;
 					}
 
-					progress = path.concat(File.separator).concat(fileName);
+					if (!path.endsWith(File.separator))
+						path = path.concat(File.separator);
+
+					if (progressInfo.isFileCopied(path + fileName))
+						continue;
+
+					//	Doing actual copy
+					progress = path.concat(fileName);
 					progressInfo.setProgress(progress);
 
-					stream = new FileInputStream(tmp);
+					stream = getStreamToTheFinalVersion(path, fileName, tmp);
 
-					if (fileName.endsWith(".strings") ||									//	Localizations
-						(fileName.endsWith(".xml") && path.indexOf("/pages/") != -1) ||		//	Page
-						(fileName.endsWith(".xml") && path.indexOf(".article/") != -1))	{	//	Article
-						if (!path.endsWith(CoreConstants.SLASH))
-							path = path.concat(CoreConstants.SLASH);
+					if (isVersionable(path, fileName)) {
 						success = repository.updateFileContents(path + fileName, stream, true) != null;
 					} else {
 						success = repository.uploadFile(path, fileName, null, stream);
 					}
-					if (!success) {
+					if (success) {
+						progressInfo.doMarkFileAsCopied(path + fileName);
+					} else {
 						progressInfo.addFailure(progress);
 						getLogger().warning("Failed to import file '" + fileName + "' at '" + path + "'");
 						return false;
