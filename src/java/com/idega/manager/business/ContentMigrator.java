@@ -49,6 +49,13 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 	private RepositoryService repository;
 
 	private Map<String, MigrationProgress> progress = new HashMap<String, MigrationProgress>();
+	private Map<String, String> FILES_TO_IGNORE = new HashMap<String, String>();
+
+	public ContentMigrator() {
+		super();
+
+		FILES_TO_IGNORE.put("1.2.3", "jquery");
+	}
 
 	@RemoteMethod
 	public AdvancedProperty doImport(String inputFile) {
@@ -143,6 +150,21 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 			progress.doClearFailures();
 	}
 
+	private boolean isInvalid(String path, String name) {
+		String pathPart = FILES_TO_IGNORE.get(name);
+		if (!StringUtil.isEmpty(pathPart) && path.indexOf(pathPart) != -1)
+			return true;
+
+		String lastPartOfName = name.substring(name.lastIndexOf(CoreConstants.DOT));
+		if (StringUtil.isEmpty(lastPartOfName) || CoreConstants.DOT.equals(lastPartOfName))
+			return true;
+
+		if (lastPartOfName.startsWith(".rwtheme"))
+			return true;
+
+		return false;
+	}
+
 	private boolean doMigrateFilesAndFolders(String sessionId, String parentPath, String[] filesAndFolders) {
 		if (ArrayUtil.isEmpty(filesAndFolders))
 			return true;
@@ -181,16 +203,29 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 				String fileName = new StringBuilder(name).toString();
 				int length = fileName.length();
 				int newLength = StringHandler.removeCharacters(fileName, CoreConstants.DOT, CoreConstants.EMPTY).length();
-				if (length - newLength > 1 && getBundle(fileName) != null) {
-					continue;	//	Skipping bundle folders
+				if (length - newLength > 1) {
+					if (getBundle(fileName) != null)
+						continue;	//	Skipping bundle folders
+
+					String[] children = tmp.list();
+					if (!ArrayUtil.isEmpty(children)) {
+						getLogger().info("Skipping file " + tmp + " that is actualy a directory");
+						continue;
+					}
 				}
 
+				String path = null;
 				String progress = null;
 				InputStream stream = null;
 				try {
-					String path = tmp.getParent();
+					path = tmp.getParent();
 					int start = path.indexOf(CoreConstants.WEBDAV_SERVLET_URI);
 					path = path.substring(start);
+
+					if (isInvalid(path, fileName)) {
+						getLogger().info("Skipping invalid file " + tmp);
+						continue;
+					}
 
 					progress = path.concat(File.separator).concat(fileName);
 					progressInfo.setProgress(progress);
@@ -208,14 +243,14 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 					}
 					if (!success) {
 						progressInfo.addFailure(progress);
-						getLogger().warning("Failed to import file " + progress);
+						getLogger().warning("Failed to import file '" + fileName + "' at '" + path + "'");
 						return false;
 					}
 				} catch (ConstraintViolationException e) {
-					getLogger().warning("Failed to import " + progress + ". Reason: " + e.getMessage());
+					getLogger().warning("Failed to import file '" + fileName + "' at '" + path + "'. Reason: " + e.getMessage());
 					progressInfo.addFailure(progress);
 				} catch (Exception e) {
-					getLogger().log(Level.WARNING, "Error importing file: " + progress, e);
+					getLogger().log(Level.WARNING, "Failed to import file '" + fileName + "' at '" + path + "'.", e);
 					progressInfo.addFailure(progress);
 					return false;
 				} finally {
