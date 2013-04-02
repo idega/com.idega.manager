@@ -61,7 +61,7 @@ public class MigrationProgress implements Serializable, DWRAnnotationPersistance
 			return false;
 
 		Boolean copied = copiedFiles.get(file);
-		return copied == null ? Boolean.FALSE : Boolean.TRUE;
+		return copied == null ? Boolean.FALSE : copied;
 	}
 
 	public void doMarkFileAsCopied(String file) {
