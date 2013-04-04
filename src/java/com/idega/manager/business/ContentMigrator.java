@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.idega.builder.bean.AdvancedProperty;
+import com.idega.builder.business.BuilderLogicWrapper;
 import com.idega.core.business.DefaultSpringBean;
 import com.idega.dwr.business.DWRAnnotationPersistance;
 import com.idega.idegaweb.IWResourceBundle;
@@ -52,6 +53,9 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 
 	@Autowired
 	private RepositoryService repository;
+
+	@Autowired
+	private BuilderLogicWrapper builderLogic;
 
 	private Map<String, MigrationProgress> progress = new HashMap<String, MigrationProgress>();
 	private Map<String, String> FILES_TO_IGNORE = new HashMap<String, String>();
@@ -130,6 +134,8 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 				result.setValue(iwrb.getLocalizedString("some_error_occurred_while_migrating", "Some error occured while migrating"));
 				return result;
 			}
+
+			builderLogic.getBuilderService(getApplication().getIWApplicationContext()).clearAllCaches();
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error migrating from repository: " + path, e);
 			result.setValue(iwrb.getLocalizedString("unable_to_read_from_repository", "Unable to read from repository"));
