@@ -60,7 +60,9 @@ ContentMigratorHelper.migrate = function(path) {
 						ContentMigrator.doClearMigrationFailures();
 					}
 				}
+			},
+			errorHandler: function(ob1, ob2) {
 			}
 		});
-	}, 1000);
+	}, 3000);
 }

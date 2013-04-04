@@ -188,16 +188,43 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 		}
 
 		List<File> fileVersions = new ArrayList<File>(Arrays.asList(versions));
-		Collections.sort(fileVersions, new java.util.Comparator<File>() {
+		Map<String, File> allVersions = new HashMap<String, File>();
+		List<Integer> minorVersions = new ArrayList<Integer>(fileVersions.size());
+		List<String> versionNumbers = new ArrayList<String>(fileVersions.size());
+		Integer majorVersion = null;
+		for (File fileVersion: fileVersions) {
+			String name = fileVersion.getName();
+			allVersions.put(name, fileVersion);
+
+			String versionNumber = name.substring(name.lastIndexOf(CoreConstants.UNDER) + 1);
+			versionNumbers.add(versionNumber);
+
+			String tmpMajorVersion = versionNumber.substring(0, versionNumber.indexOf(CoreConstants.DOT));
+			String minorVersion = versionNumber.substring(versionNumber.indexOf(CoreConstants.DOT) + 1);
+			try {
+				majorVersion = Integer.valueOf(tmpMajorVersion);
+				minorVersions.add(Integer.valueOf(minorVersion));
+			} catch (Exception e) {
+				getLogger().warning("Failed to extract version from " + versionNumber);
+			}
+		}
+		Collections.sort(minorVersions, new java.util.Comparator<Integer>() {
 			@Override
-			public int compare(File file1, File file2) {
-				return -1 * (Long.valueOf(file1.lastModified()).compareTo(Long.valueOf(file2.lastModified())));
+			public int compare(Integer version1, Integer version2) {
+				return -1 * (version1.compareTo(version2));
 			}
 		});
+		Integer latestMinorVersionNumber = minorVersions.get(0);
+		String latestVersionNumber = String.valueOf(majorVersion) + CoreConstants.DOT + String.valueOf(latestMinorVersionNumber);
+		String latestVersionFileName = fileName + CoreConstants.UNDER + latestVersionNumber;
+		File latestVersion = allVersions.get(latestVersionFileName);
+		if (latestVersion == null) {
+			latestVersion = fileVersions.get(fileVersions.size() - 1);
+			getLogger().warning("Failed to get file " + latestVersionFileName + " from " + allVersions + ". Using " + latestVersion);
+		} else
+			getLogger().info("Using the latest version (" + latestVersionNumber + ") from all versions: " + versionNumbers + " for file " + fileName);
 
-		File theLatestVersion = fileVersions.get(0);
-		getLogger().info("Using the latest version (" + theLatestVersion + ") from all versions: " + fileVersions);
-		return new FileInputStream(theLatestVersion);
+		return new FileInputStream(latestVersion);
 	}
 
 	private boolean isVersionable(String path, String fileName) {
