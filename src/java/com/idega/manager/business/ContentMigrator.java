@@ -173,6 +173,9 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 		if (lastPartOfName.startsWith(".rwtheme"))
 			return true;
 
+		if (name.toLowerCase().indexOf("thumbs.db") >= 0)
+			return true;
+
 		return false;
 	}
 
@@ -234,9 +237,21 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 	}
 
 	private boolean isVersionable(String path, String fileName) {
-		return	fileName.endsWith(".strings") ||									//	Localizations
-				(fileName.endsWith(".xml") && path.indexOf("/pages/") != -1) ||		//	Page
-				(fileName.endsWith(".xml") && path.indexOf(".article/") != -1);		//	Article
+		if (StringUtil.isEmpty(path) || StringUtil.isEmpty(fileName))
+			return false;
+
+		if (fileName.endsWith(".strings"))
+			return true;		//	Localization
+
+		if (fileName.endsWith(".xml")) {
+			if (path.indexOf(CoreConstants.CONTENT_PATH + CoreConstants.PAGES_URI_PREFIX) != -1)
+				return true;	//	Page
+
+			if (path.indexOf(CoreConstants.CONTENT_PATH + CoreConstants.ARTICLE_CONTENT_PATH) != -1)
+				return true; 	//	Article
+		}
+
+		return false;
 	}
 
 	private boolean doMigrateFilesAndFolders(String sessionId, String parentPath, String[] filesAndFolders) {
@@ -307,6 +322,13 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 					if (progressInfo.isFileCopied(path + fileName))
 						continue;
 
+					try {
+						if (getRepositoryService().getExistence(path + fileName)) {
+							getLogger().info("File '" + path + fileName + "' already exists");
+							continue;
+						}
+					} catch (Exception e) {}
+
 					//	Doing actual copy
 					progress = path.concat(fileName);
 					progressInfo.setProgress(progress);
@@ -315,6 +337,9 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 
 					if (isVersionable(path, fileName)) {
 						success = repository.updateFileContents(path + fileName, stream, true) != null;
+						if (success) {
+							getLogger().info("Copied the latest version of '" + path + fileName + "' and made it versionable");
+						}
 					} else {
 						success = repository.uploadFile(path, fileName, null, stream);
 					}
