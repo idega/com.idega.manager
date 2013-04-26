@@ -254,7 +254,14 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 		return false;
 	}
 
-	private boolean doMigrateFilesAndFolders(String sessionId, String parentPath, String[] filesAndFolders) {
+	private Map<String, Boolean> failures = new HashMap<String, Boolean>();
+
+	private boolean doMigrateFilesAndFolders(final String sessionId, String parentPath, String[] filesAndFolders) {
+		Boolean failure = failures.remove(sessionId);
+		if (failure != null && failure) {
+			return false;
+		}
+
 		if (ArrayUtil.isEmpty(filesAndFolders))
 			return true;
 
@@ -269,11 +276,31 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 			if (!tmp.exists())
 				continue;
 
-			if (tmp.isDirectory())
-				if (!doMigrateFilesAndFolders(sessionId, tmp.getAbsolutePath(), tmp.list()))
-					return false;
+			if (tmp.isDirectory()) {
+				final String dir = tmp.getAbsolutePath();
 
-			if (tmp.isFile()) {
+				try {
+					if (!getRepositoryService().createFolderAsRoot(dir)) {
+						getLogger().warning("Failed to create directory " + dir);
+						return false;
+					}
+				} catch (RepositoryException e) {
+					getLogger().log(Level.WARNING, "Failed to create directory: " + dir, e);
+					return false;
+				}
+
+				final String[] dirContent = tmp.list();
+				Thread migrator = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						if (!doMigrateFilesAndFolders(sessionId, dir, dirContent)) {
+							failures.put(sessionId, Boolean.TRUE);
+						}
+					}
+				});
+				migrator.start();
+			} else if (tmp.isFile()) {
 				String name = tmp.getName();
 				if (name.indexOf(CoreConstants.DOT) == -1) {
 					getLogger().warning("Skipping file " + name);
@@ -336,7 +363,7 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 					stream = getStreamToTheFinalVersion(path, fileName, tmp);
 
 					if (isVersionable(path, fileName)) {
-						success = repository.updateFileContents(path + fileName, stream, true) != null;
+						success = repository.updateFileContentsAsRoot(path + fileName, stream, true) != null;
 						if (success) {
 							getLogger().info("Copied the latest version of '" + path + fileName + "' and made it versionable");
 						}
