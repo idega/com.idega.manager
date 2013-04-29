@@ -129,7 +129,8 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 			if ("content".equals(oldRepository.getName()))
 				filesAndFolders = oldRepository.list();
 
-			boolean migrationResult = doMigrateFilesAndFolders(sessionId, oldRepository.getAbsolutePath(), filesAndFolders);
+			boolean useThreads = getApplication().getSettings().getBoolean("content_migrator_threads", Boolean.FALSE);
+			boolean migrationResult = doMigrateFilesAndFolders(sessionId, oldRepository.getAbsolutePath(), filesAndFolders, useThreads);
 			if (!migrationResult) {
 				result.setValue(iwrb.getLocalizedString("some_error_occurred_while_migrating", "Some error occured while migrating"));
 				return result;
@@ -174,6 +175,9 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 			return true;
 
 		if (name.toLowerCase().indexOf("thumbs.db") >= 0)
+			return true;
+
+		if (name.startsWith(CoreConstants.DOT))
 			return true;
 
 		return false;
@@ -256,7 +260,7 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 
 	private Map<String, Boolean> failures = new HashMap<String, Boolean>();
 
-	private boolean doMigrateFilesAndFolders(final String sessionId, String parentPath, String[] filesAndFolders) {
+	private boolean doMigrateFilesAndFolders(final String sessionId, String parentPath, String[] filesAndFolders, final boolean useThreads) {
 		Boolean failure = failures.remove(sessionId);
 		if (failure != null && failure) {
 			return false;
@@ -294,12 +298,15 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 
 					@Override
 					public void run() {
-						if (!doMigrateFilesAndFolders(sessionId, dir, dirContent)) {
+						if (!doMigrateFilesAndFolders(sessionId, dir, dirContent, useThreads)) {
 							failures.put(sessionId, Boolean.TRUE);
 						}
 					}
 				});
-				migrator.start();
+				if (useThreads)
+					migrator.start();
+				else
+					migrator.run();
 			} else if (tmp.isFile()) {
 				String name = tmp.getName();
 				if (name.indexOf(CoreConstants.DOT) == -1) {
