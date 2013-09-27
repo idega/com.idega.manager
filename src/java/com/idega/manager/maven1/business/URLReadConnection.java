@@ -17,7 +17,7 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
 
 import com.idega.util.StringHandler;
 
@@ -29,28 +29,28 @@ import com.idega.util.StringHandler;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class URLReadConnection {
-	
+
 	public static final String UNKNOWN_CONNECTION_ERROR = "unknown_connection_error";
 	public static final String NOT_FOUND_ERROR = "not_found_error";
 	public static final String FORBIDDEN_ERROR = "forbidden_error";
 	public static final String UNAUTHORIZED_ERROR = "unauthorized_error";
 	public static final String NO_CONTENT_ERROR = "no_content_error";
-	
+
 	public static String authenticationValid(URL url, PasswordAuthentication passwordAuthentication) throws MalformedURLException, IOException {
 		URLReadConnection conn = new URLReadConnection();
 		conn.url = url;
 		conn.passwordAuthentication = passwordAuthentication;
 		return conn.authenticationValid();
 	}
-	
+
 	public static  InputStreamReader getReaderForURLWithoutAuthentication(URL url) throws MalformedURLException, IOException {
 		return getReaderForURLWithAuthentication(url, null);
 	}
-	
+
 	public static InputStreamReader getReaderForURLWithAuthentication(String url, PasswordAuthentication passwordAuthentication) throws MalformedURLException, IOException {
 		return getReaderForURLWithAuthentication(new URL(url), passwordAuthentication);
 	}
-	
+
 	public static  InputStreamReader getReaderForURLWithAuthentication(URL url, PasswordAuthentication passwordAuthentication) throws IOException  {
 		URLReadConnection conn = new URLReadConnection();
 		conn.url = url;
@@ -59,9 +59,9 @@ public class URLReadConnection {
 	}
 
 	private URL url = null;
-	
+
 	private PasswordAuthentication passwordAuthentication = null;
-	
+
 	private URLConnection connect() throws IOException  {
 		URLConnection con = this.url.openConnection();
 		if (this.passwordAuthentication != null) {
@@ -72,20 +72,20 @@ public class URLReadConnection {
 		}
 		return con;
 	}
-	
+
 	private InputStreamReader getReader() throws IOException  {
 		URLConnection con = connect();
 		InputStream inputStream = con.getInputStream();
 		BufferedInputStream  buffInputStream = new BufferedInputStream(inputStream);
 		return new InputStreamReader(buffInputStream, "8859_1");
 	}
-	
+
 	private String authenticationValid() throws IOException  {
 		// check the most common errors
 		URLConnection con = connect();
 		String state = con.getHeaderField(null);
 		if (state == null) {
-			return UNKNOWN_CONNECTION_ERROR; 
+			return UNKNOWN_CONNECTION_ERROR;
 		}
 		state = state.toUpperCase();
 		if (StringHandler.contains(state, "200")) {
@@ -106,10 +106,10 @@ public class URLReadConnection {
 		}
 		return UNKNOWN_CONNECTION_ERROR;
 	}
-	
-	
-	
-	
+
+
+
+
 	private String getBase64UserPassword() {
 		String userName = this.passwordAuthentication.getUserName();
 		char[] password = this.passwordAuthentication.getPassword();
@@ -118,8 +118,7 @@ public class URLReadConnection {
 		Charset charset = Charset.forName("ISO-8859-1");
 		ByteBuffer byteBuffer = charset.encode(buffer.toString());
 		byte[] byteArray = byteBuffer.array();
-		BASE64Encoder base64Encoder = new BASE64Encoder();
-		String encodedUser = base64Encoder.encode(byteArray);
+		String encodedUser = new String(Base64.encodeBase64(byteArray));
 		// put Basic at the beginning
 		buffer = new StringBuffer("Basic ");
 		buffer.append(encodedUser);
