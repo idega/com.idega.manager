@@ -17,7 +17,7 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
 
 import com.idega.util.RequestUtil;
 import com.idega.util.StringHandler;
@@ -119,8 +119,7 @@ public class URLReadConnection {
 		Charset charset = Charset.forName("ISO-8859-1");
 		ByteBuffer byteBuffer = charset.encode(buffer.toString());
 		byte[] byteArray = byteBuffer.array();
-		BASE64Encoder base64Encoder = new BASE64Encoder();
-		String encodedUser = base64Encoder.encode(byteArray);
+		String encodedUser = new String(Base64.encodeBase64(byteArray));
 		// put Basic at the beginning
 		buffer = new StringBuffer("Basic ");
 		buffer.append(encodedUser);
