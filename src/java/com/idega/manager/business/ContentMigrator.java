@@ -179,6 +179,9 @@ public class ContentMigrator extends DefaultSpringBean implements DWRAnnotationP
 
 		if (name.startsWith(CoreConstants.DOT))
 			return true;
+		
+		if (name.startsWith("*."))
+			return true;
 
 		return false;
 	}
