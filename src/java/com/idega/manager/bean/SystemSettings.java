@@ -102,6 +102,9 @@ public class SystemSettings {
 		return this.mainDomainUrl;
 	}
 
+	public String getMainDomainUrlWithoutBackSlash() {
+		return getMainDomainUrl().substring(0, getMainDomainUrl().lastIndexOf("/"));
+	}
 	
 	/**
 	 * @param mainDomainUrl The mainDomainUrl to set.
